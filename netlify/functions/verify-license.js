@@ -1,3 +1,5 @@
+const https = require('https');
+
 exports.handler = async function(event) {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
@@ -7,41 +9,52 @@ exports.handler = async function(event) {
   try {
     body = JSON.parse(event.body);
   } catch {
-    return { statusCode: 400, body: JSON.stringify({ success: false, message: 'Invalid request body' }) };
+    return { statusCode: 400, body: JSON.stringify({ success: false }) };
   }
 
   const { license_key } = body;
   if (!license_key) {
-    return { statusCode: 400, body: JSON.stringify({ success: false, message: 'Missing license_key' }) };
+    return { statusCode: 400, body: JSON.stringify({ success: false }) };
   }
 
-  try {
-    const params = new URLSearchParams({
-      product_id: 'giewkh',
-      license_key: license_key,
-      increment_uses_count: 'false'
-    });
+  const postData = new URLSearchParams({
+    product_id: 'giewkh',
+    license_key: license_key,
+    increment_uses_count: 'false'
+  }).toString();
 
-    const response = await fetch('https://api.gumroad.com/v2/licenses/verify', {
+  return new Promise((resolve) => {
+    const req = https.request({
+      hostname: 'api.gumroad.com',
+      path: '/v2/licenses/verify',
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params.toString()
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': Buffer.byteLength(postData)
+      }
+    }, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        resolve({
+          statusCode: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          },
+          body: data
+        });
+      });
     });
 
-    const data = await response.json();
+    req.on('error', (err) => {
+      resolve({
+        statusCode: 500,
+        body: JSON.stringify({ success: false, message: err.message })
+      });
+    });
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify(data)
-    };
-  } catch (err) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ success: false, message: 'Verification failed: ' + err.message })
-    };
-  }
+    req.write(postData);
+    req.end();
+  });
 };

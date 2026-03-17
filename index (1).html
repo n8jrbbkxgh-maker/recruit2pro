@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RecruitPro — Baseball Recruiting Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#07111f;
+  --navy2:#0d1e36;
+  --navy3:#142d55;
+  --gold:#e8a020;
+  --gold2:#f5c040;
+  --white:#fff;
+  --off:#f4f7fb;
+  --green:#22c55e;
+  --red:#ef4444;
+  --text2:#3d5068;
+  --text3:#7a8fa6;
+}
+
+html{scroll-behavior:smooth}
+body{font-family:'Barlow',sans-serif;background:var(--navy);color:#fff;overflow-x:hidden}
+
+/* ─── NOISE OVERLAY ─── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:.4
+}
+
+/* ─── NAV ─── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:18px 48px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(7,17,31,.85);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,255,255,.06)
+}
+.logo{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:#fff;letter-spacing:.2px}
+.logo em{color:var(--gold);font-style:normal}
+.nav-cta{
+  background:var(--gold);color:var(--navy);
+  font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;letter-spacing:.5px;
+  padding:10px 24px;border-radius:6px;border:none;cursor:pointer;
+  text-decoration:none;display:inline-block;
+  transition:all .2s
+}
+.nav-cta:hover{background:var(--gold2);transform:translateY(-1px)}
+
+/* ─── HERO ─── */
+.hero{
+  position:relative;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:120px 48px 80px;text-align:center;overflow:hidden
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%,rgba(232,160,32,.18) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 20% 80%,rgba(20,45,85,.6) 0%,transparent 50%),
+    linear-gradient(180deg,var(--navy) 0%,#0a1828 100%);
+}
+/* animated field lines */
+.hero-lines{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.hero-lines svg{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:140%;opacity:.06}
+
+.hero-eyebrow{
+  display:inline-block;
+  font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--gold);background:rgba(232,160,32,.1);
+  border:1px solid rgba(232,160,32,.25);padding:6px 18px;border-radius:99px;
+  margin-bottom:28px;
+  animation:fadeUp .6s ease both .1s
+}
+.hero h1{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(52px,9vw,110px);font-weight:900;line-height:.92;
+  letter-spacing:-.02em;margin-bottom:28px;
+  animation:fadeUp .6s ease both .25s
+}
+.hero h1 .line2{color:var(--gold)}
+.hero h1 .line3{
+  -webkit-text-stroke:2px rgba(255,255,255,.15);
+  color:transparent;
+  font-size:clamp(36px,6vw,72px);
+}
+.hero-sub{
+  font-size:clamp(16px,2vw,22px);color:rgba(255,255,255,.55);
+  max-width:620px;margin:0 auto 48px;line-height:1.6;
+  animation:fadeUp .6s ease both .4s
+}
+.hero-ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;animation:fadeUp .6s ease both .55s}
+.btn-hero-primary{
+  background:var(--gold);color:var(--navy);
+  font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:.5px;
+  padding:18px 40px;border-radius:8px;border:none;cursor:pointer;
+  text-decoration:none;display:inline-block;
+  box-shadow:0 8px 32px rgba(232,160,32,.35);
+  transition:all .2s
+}
+.btn-hero-primary:hover{background:var(--gold2);transform:translateY(-2px);box-shadow:0 12px 40px rgba(232,160,32,.45)}
+.btn-hero-ghost{
+  background:transparent;color:rgba(255,255,255,.7);
+  font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;letter-spacing:.3px;
+  padding:18px 40px;border-radius:8px;border:1.5px solid rgba(255,255,255,.18);cursor:pointer;
+  text-decoration:none;display:inline-block;
+  transition:all .2s
+}
+.btn-hero-ghost:hover{border-color:rgba(255,255,255,.4);color:#fff;background:rgba(255,255,255,.05)}
+
+.hero-proof{
+  display:flex;gap:32px;justify-content:center;flex-wrap:wrap;
+  margin-top:64px;padding-top:48px;border-top:1px solid rgba(255,255,255,.07);
+  animation:fadeUp .6s ease both .7s
+}
+.proof-stat{text-align:center}
+.proof-num{font-family:'Barlow Condensed',sans-serif;font-size:48px;font-weight:900;color:var(--gold);line-height:1}
+.proof-label{font-size:13px;color:rgba(255,255,255,.4);margin-top:4px}
+
+/* ─── PROBLEM SECTION ─── */
+.problem{
+  position:relative;padding:100px 48px;
+  background:linear-gradient(180deg,#0a1828 0%,#0d1e36 100%)
+}
+.section-label{
+  font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:20px
+}
+.problem-layout{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;max-width:1100px;margin:0 auto}
+.problem h2{
+  font-family:'Barlow Condensed',sans-serif;font-size:clamp(40px,5vw,64px);font-weight:900;line-height:1;
+  margin-bottom:24px
+}
+.problem h2 em{color:var(--gold);font-style:normal}
+.problem-body{font-size:17px;color:rgba(255,255,255,.55);line-height:1.75;margin-bottom:32px}
+.pain-list{display:flex;flex-direction:column;gap:14px}
+.pain-item{display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px}
+.pain-x{font-size:18px;color:var(--red);flex-shrink:0;margin-top:1px}
+.pain-text{font-size:15px;color:rgba(255,255,255,.6);line-height:1.5}
+.pain-text strong{color:rgba(255,255,255,.85)}
+
+/* ─── FEATURES ─── */
+.features{padding:100px 48px;background:var(--navy)}
+.features-header{text-align:center;max-width:700px;margin:0 auto 70px}
+.features-header h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(40px,5vw,68px);font-weight:900;line-height:1;margin-bottom:16px}
+.features-header h2 em{color:var(--gold);font-style:normal}
+.features-header p{font-size:18px;color:rgba(255,255,255,.5);line-height:1.6}
+
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1100px;margin:0 auto}
+.feat-card{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:14px;padding:28px 26px;
+  transition:all .25s;position:relative;overflow:hidden
+}
+.feat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--gold),transparent);
+  opacity:0;transition:.25s
+}
+.feat-card:hover{background:rgba(255,255,255,.05);border-color:rgba(232,160,32,.3);transform:translateY(-3px)}
+.feat-card:hover::before{opacity:1}
+.feat-icon{font-size:32px;margin-bottom:16px}
+.feat-name{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:#fff;margin-bottom:10px}
+.feat-desc{font-size:14px;color:rgba(255,255,255,.5);line-height:1.65}
+.feat-badge{
+  display:inline-block;margin-top:14px;
+  font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 12px;border-radius:99px;
+  background:rgba(232,160,32,.12);color:var(--gold);border:1px solid rgba(232,160,32,.2)
+}
+
+/* ─── BIG FEATURE CALLOUT ─── */
+.autopilot-callout{
+  margin:0 48px;border-radius:20px;overflow:hidden;
+  background:linear-gradient(135deg,#0d1e36 0%,#07111f 100%);
+  border:1px solid rgba(232,160,32,.2);
+  position:relative
+}
+.autopilot-callout::before{
+  content:'';position:absolute;top:-40%;right:-5%;width:600px;height:600px;
+  background:radial-gradient(ellipse,rgba(232,160,32,.12) 0%,transparent 60%);
+  pointer-events:none
+}
+.ap-inner{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:stretch}
+.ap-left{padding:60px 56px}
+.ap-label{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.ap-left h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(38px,4vw,60px);font-weight:900;line-height:1;margin-bottom:16px}
+.ap-left h2 em{color:var(--gold);font-style:normal}
+.ap-left p{font-size:16px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:36px;max-width:420px}
+.ap-steps{display:flex;flex-direction:column;gap:20px}
+.ap-step{display:flex;align-items:flex-start;gap:16px}
+.ap-num{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--gold);color:var(--navy);
+  font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0
+}
+.ap-step-text{font-size:15px;color:rgba(255,255,255,.7);line-height:1.5;padding-top:5px}
+.ap-step-text strong{color:#fff}
+
+.ap-right{
+  background:rgba(0,0,0,.2);border-left:1px solid rgba(255,255,255,.07);
+  padding:40px 40px;display:flex;flex-direction:column;justify-content:center;gap:16px
+}
+.ap-stat-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;padding:20px 22px;
+  display:flex;align-items:center;gap:20px
+}
+.ap-stat-num{font-family:'Barlow Condensed',sans-serif;font-size:44px;font-weight:900;color:var(--gold);line-height:1;flex-shrink:0}
+.ap-stat-label{font-size:14px;color:rgba(255,255,255,.5);line-height:1.5}
+.ap-stat-label strong{color:#fff;display:block;margin-bottom:2px}
+
+/* ─── TESTIMONIALS ─── */
+.testimonials{padding:100px 48px;background:linear-gradient(180deg,var(--navy) 0%,#0a1828 100%)}
+.testimonials h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(38px,4vw,60px);font-weight:900;text-align:center;margin-bottom:16px}
+.testimonials h2 em{color:var(--gold);font-style:normal}
+.testi-sub{text-align:center;font-size:17px;color:rgba(255,255,255,.4);margin-bottom:60px}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1100px;margin:0 auto}
+.testi-card{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:14px;padding:28px;position:relative
+}
+.testi-quote{
+  font-size:15px;line-height:1.75;color:rgba(255,255,255,.7);
+  font-style:italic;margin-bottom:20px
+}
+.testi-quote::before{content:'"';font-size:60px;font-family:Georgia,serif;color:var(--gold);opacity:.3;position:absolute;top:10px;left:20px;line-height:1}
+.testi-author{font-size:13px;font-weight:700;color:#fff}
+.testi-role{font-size:12px;color:rgba(255,255,255,.35);margin-top:3px}
+.testi-stars{color:var(--gold);font-size:14px;margin-bottom:14px}
+
+/* ─── PRICING ─── */
+.pricing{padding:100px 48px;background:#0a1828}
+.pricing h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(38px,4vw,60px);font-weight:900;text-align:center;margin-bottom:12px}
+.pricing h2 em{color:var(--gold);font-style:normal}
+.pricing-sub{text-align:center;font-size:17px;color:rgba(255,255,255,.4);margin-bottom:60px}
+.pricing-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:24px;max-width:880px;margin:0 auto}
+.plan{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);
+  border-radius:18px;padding:36px;position:relative
+}
+.plan.featured{
+  background:rgba(232,160,32,.05);border-color:rgba(232,160,32,.4);
+  box-shadow:0 0 0 1px rgba(232,160,32,.15),0 24px 64px rgba(232,160,32,.08)
+}
+.plan-tag{
+  position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+  background:var(--gold);color:var(--navy);
+  font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;letter-spacing:.08em;
+  padding:5px 18px;border-radius:99px;white-space:nowrap
+}
+.plan-name{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;margin-bottom:6px}
+.plan.featured .plan-name{color:var(--gold)}
+.plan-price{font-family:'Barlow Condensed',sans-serif;font-size:56px;font-weight:900;line-height:1;margin-bottom:6px}
+.plan-price sup{font-size:24px;vertical-align:super;margin-right:2px;opacity:.6}
+.plan-price sub{font-size:18px;opacity:.5}
+.plan-period{font-size:13px;color:rgba(255,255,255,.35);margin-bottom:28px}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.plan-features li{display:flex;align-items:flex-start;gap:12px;font-size:15px;color:rgba(255,255,255,.6);line-height:1.4}
+.plan-features li .ck{color:var(--green);font-size:14px;flex-shrink:0;margin-top:2px}
+.plan-features li .nx{color:rgba(255,255,255,.2);font-size:14px;flex-shrink:0;margin-top:2px}
+.plan-features li.muted{color:rgba(255,255,255,.25)}
+.plan-btn{
+  width:100%;padding:16px;border-radius:10px;border:none;cursor:pointer;
+  font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;letter-spacing:.5px;
+  transition:all .2s;display:block;text-align:center;text-decoration:none
+}
+.plan-btn-gold{background:var(--gold);color:var(--navy);box-shadow:0 4px 20px rgba(232,160,32,.3)}
+.plan-btn-gold:hover{background:var(--gold2);transform:translateY(-1px)}
+.plan-btn-outline{background:transparent;color:rgba(255,255,255,.6);border:1.5px solid rgba(255,255,255,.15)}
+.plan-btn-outline:hover{border-color:rgba(255,255,255,.35);color:#fff}
+.plan-note{text-align:center;font-size:12px;color:rgba(255,255,255,.3);margin-top:12px}
+
+/* ─── URGENCY STRIP ─── */
+.urgency{
+  background:linear-gradient(90deg,rgba(232,160,32,.12) 0%,rgba(232,160,32,.06) 100%);
+  border-top:1px solid rgba(232,160,32,.2);border-bottom:1px solid rgba(232,160,32,.2);
+  padding:20px 48px;text-align:center
+}
+.urgency-text{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:#fff}
+.urgency-text em{color:var(--gold);font-style:normal}
+
+/* ─── CTA SECTION ─── */
+.cta-section{
+  padding:100px 48px;text-align:center;
+  background:linear-gradient(180deg,#0a1828 0%,var(--navy) 100%);
+  position:relative;overflow:hidden
+}
+.cta-section::before{
+  content:'';position:absolute;top:-50%;left:50%;transform:translateX(-50%);
+  width:800px;height:800px;
+  background:radial-gradient(ellipse,rgba(232,160,32,.1) 0%,transparent 60%);
+  pointer-events:none
+}
+.cta-section h2{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(48px,7vw,90px);font-weight:900;line-height:.95;
+  margin-bottom:24px;position:relative;z-index:1
+}
+.cta-section h2 em{color:var(--gold);font-style:normal}
+.cta-section p{font-size:18px;color:rgba(255,255,255,.5);max-width:540px;margin:0 auto 48px;line-height:1.6;position:relative;z-index:1}
+.cta-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
+.guarantee{margin-top:28px;font-size:14px;color:rgba(255,255,255,.35);position:relative;z-index:1}
+.guarantee span{color:var(--green);margin-right:6px}
+
+/* ─── FOOTER ─── */
+footer{
+  padding:40px 48px;border-top:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--navy)
+}
+.footer-logo{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:#fff}
+.footer-logo em{color:var(--gold);font-style:normal}
+.footer-copy{font-size:13px;color:rgba(255,255,255,.25)}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:900px){
+  nav{padding:16px 24px}
+  .hero{padding:100px 24px 60px}
+  .problem,.features,.testimonials,.pricing,.cta-section{padding:70px 24px}
+  .problem-layout,.ap-inner,.testi-grid,.pricing-grid{grid-template-columns:1fr}
+  .features-grid{grid-template-columns:1fr 1fr}
+  .autopilot-callout{margin:0 24px}
+  .ap-right{border-left:none;border-top:1px solid rgba(255,255,255,.07)}
+  footer{flex-direction:column;gap:12px;text-align:center;padding:32px 24px}
+  .hero-proof{gap:20px}
+}
+@media(max-width:600px){
+  .features-grid{grid-template-columns:1fr}
+  .hero h1{font-size:52px}
+}
+
+/* ─── PULSE ANIMATION ON CTA ─── */
+@keyframes pulse{
+  0%,100%{box-shadow:0 8px 32px rgba(232,160,32,.35)}
+  50%{box-shadow:0 8px 48px rgba(232,160,32,.6)}
+}
+.btn-hero-primary,.plan-btn-gold{animation:pulse 2.5s ease-in-out infinite}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Recruit<em>Pro</em></div>
+  <a href="./app.html" style="margin-right:10px;font-family:'Barlow',sans-serif;font-size:14px;color:rgba(255,255,255,.6);text-decoration:none">Already a member? Login →</a>
+  <a href="https://maxwellboyatt.gumroad.com/l/giewkh" target="_blank" class="nav-cta">Start Free Trial</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-bg"></div>
+  <div class="hero-lines">
+    <svg viewBox="0 0 1400 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M700 600 L0 0" stroke="white" stroke-width="1.5"/>
+      <path d="M700 600 L1400 0" stroke="white" stroke-width="1.5"/>
+      <path d="M700 600 L200 0" stroke="white" stroke-width="1"/>
+      <path d="M700 600 L1200 0" stroke="white" stroke-width="1"/>
+      <path d="M700 600 L400 0" stroke="white" stroke-width=".5"/>
+      <path d="M700 600 L1000 0" stroke="white" stroke-width=".5"/>
+      <ellipse cx="700" cy="600" rx="500" ry="80" stroke="white" stroke-width="1"/>
+      <ellipse cx="700" cy="600" rx="300" ry="50" stroke="white" stroke-width=".7"/>
+      <ellipse cx="700" cy="600" rx="100" ry="20" stroke="white" stroke-width=".5"/>
+    </svg>
+  </div>
+  <div style="position:relative;z-index:1">
+    <div class="hero-eyebrow">⚾ Baseball Recruiting Platform</div>
+    <h1>
+      <div>Your Son Is</div>
+      <div class="line2">Too Good</div>
+      <div class="line3">To Go Unrecruited.</div>
+    </h1>
+    <p class="hero-sub">373+ college programs. Real coach emails. AI-written outreach. Stop letting other families beat you to the inbox.</p>
+    <div class="hero-ctas">
+      <a href="https://maxwellboyatt.gumroad.com/l/giewkh" target="_blank" class="btn-hero-primary">Try Free for 7 Days →</a>
+      <a href="#features" class="btn-hero-ghost">See How It Works</a>
+    </div>
+    <div class="hero-proof">
+      <div class="proof-stat">
+        <div class="proof-num">373+</div>
+        <div class="proof-label">Programs in database</div>
+      </div>
+      <div class="proof-stat">
+        <div class="proof-num">30s</div>
+        <div class="proof-label">Per personalized email</div>
+      </div>
+      <div class="proof-stat">
+        <div class="proof-num">4x</div>
+        <div class="proof-label">More coach responses</div>
+      </div>
+      <div class="proof-stat">
+        <div class="proof-num">$9.99</div>
+        <div class="proof-label">Less than one showcase</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- URGENCY STRIP -->
+<div class="urgency reveal">
+  <div class="urgency-text">⚡ Recruiting windows close fast. <em>Coaches stop responding after spring rosters fill.</em> Start your outreach now.</div>
+</div>
+
+<!-- PROBLEM -->
+<section class="problem">
+  <div class="problem-layout">
+    <div class="reveal">
+      <div class="section-label">The Reality</div>
+      <h2>Recruiting Is a <em>Business.</em> Most Families Treat It Like a Hobby.</h2>
+      <p class="problem-body">Coaches receive hundreds of emails from prospects. The families that get noticed have an organized, consistent, professional approach. Most don't — and their sons miss out on scholarships that should've been theirs.</p>
+    </div>
+    <div class="pain-list reveal">
+      <div class="pain-item">
+        <div class="pain-x">✗</div>
+        <div class="pain-text"><strong>No idea which coaches to contact</strong> — manually searching school websites and guessing email formats</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-x">✗</div>
+        <div class="pain-text"><strong>Generic copy-paste emails</strong> that coaches spot immediately and ignore</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-x">✗</div>
+        <div class="pain-text"><strong>Spreadsheet chaos</strong> — tracking 20 schools across notes, texts, and memory</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-x">✗</div>
+        <div class="pain-text"><strong>Comparing offers blindly</strong> — accepting a D1 offer that actually costs $34,000 more than the D2 full ride</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-x">✗</div>
+        <div class="pain-text"><strong>Missing follow-ups</strong> — silence after the first email because nobody remembered to check back in</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="features-header reveal">
+    <div class="section-label">The Platform</div>
+    <h2>Everything a Recruiting <em>Campaign</em> Needs</h2>
+    <p>Built specifically for baseball families who are serious about finding the right program — not just hoping a coach notices.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feat-card reveal">
+      <div class="feat-icon">🗂️</div>
+      <div class="feat-name">Coach Database</div>
+      <div class="feat-desc">373+ programs with real, verified coach emails, direct phone numbers, and Twitter handles. D1, D2, D3, JUCO, and NAIA — all in one searchable database.</div>
+      <div class="feat-badge">373+ Programs</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon">✦</div>
+      <div class="feat-name">AI Email Writer</div>
+      <div class="feat-desc">Generates personalized coach emails in 30 seconds. Each one is tailored to the program, the coach's name, and your son's stats. Coaches actually respond to these.</div>
+      <div class="feat-badge">AI-Powered</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon">📋</div>
+      <div class="feat-name">School Tracker</div>
+      <div class="feat-desc">Your full recruiting pipeline in one view. Track status, notes, follow-up dates, and communication history for every school. Replace the spreadsheet forever.</div>
+      <div class="feat-badge">Pipeline View</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon">🧮</div>
+      <div class="feat-name">Scholarship Calculator</div>
+      <div class="feat-desc">Compare real 4-year costs side by side. Tuition, room, board, fees, scholarship amounts — see the actual out-of-pocket number before you make a decision worth $100K+.</div>
+      <div class="feat-badge">True Cost Comparison</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon">🏆</div>
+      <div class="feat-name">Offer Tracker</div>
+      <div class="feat-desc">Log verbal offers, official offers, and committed status. Track scholarship percentages, annual values, and decision deadlines all in one place.</div>
+      <div class="feat-badge">Never Miss a Deadline</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon">📅</div>
+      <div class="feat-name">Recruiting Calendar</div>
+      <div class="feat-desc">Campus visits, showcase registrations, follow-up dates, and offer deadlines on a single calendar. No more missed opportunities because of a missed reminder.</div>
+      <div class="feat-badge">All Dates Tracked</div>
+    </div>
+  </div>
+</section>
+
+<!-- AUTOPILOT CALLOUT -->
+<div class="autopilot-callout reveal" style="margin-bottom:0;padding-bottom:0">
+  <div class="ap-inner">
+    <div class="ap-left">
+      <div class="ap-label">⚡ Autopilot — $24.99/mo</div>
+      <h2>Set It.<br><em>Forget It.</em><br>Watch Replies Come In.</h2>
+      <p>Autopilot scans the database, matches programs to your player's profile, and generates personalized emails for all of them at once. You review, approve, and send. That's it.</p>
+      <div class="ap-steps">
+        <div class="ap-step">
+          <div class="ap-num">1</div>
+          <div class="ap-step-text"><strong>Set your player profile</strong> — position, stats, GPA, target divisions and states</div>
+        </div>
+        <div class="ap-step">
+          <div class="ap-num">2</div>
+          <div class="ap-step-text"><strong>Autopilot finds matching programs</strong> from all 373+ in the database</div>
+        </div>
+        <div class="ap-step">
+          <div class="ap-num">3</div>
+          <div class="ap-step-text"><strong>12+ personalized emails generated</strong> in 30 seconds, each tailored to that coach</div>
+        </div>
+        <div class="ap-step">
+          <div class="ap-num" style="background:var(--green);color:#fff">✓</div>
+          <div class="ap-step-text"><strong>Review, approve, and send.</strong> Auto follow-up after 14 days if no reply.</div>
+        </div>
+      </div>
+    </div>
+    <div class="ap-right">
+      <div class="ap-stat-card">
+        <div class="ap-stat-num">12+</div>
+        <div class="ap-stat-label"><strong>Emails in one session</strong>Each one personalized per program. Not a blast. Not a template.</div>
+      </div>
+      <div class="ap-stat-card">
+        <div class="ap-stat-num">30s</div>
+        <div class="ap-stat-label"><strong>Per personalized email</strong>What used to take hours now happens while your son is at practice.</div>
+      </div>
+      <div class="ap-stat-card">
+        <div class="ap-stat-num">14d</div>
+        <div class="ap-stat-label"><strong>Auto follow-up built in</strong>If a coach doesn't reply, Autopilot follows up for you automatically.</div>
+      </div>
+      <div class="ap-stat-card" style="border-color:rgba(232,160,32,.2)">
+        <div class="ap-stat-num" style="color:var(--green)">0</div>
+        <div class="ap-stat-label"><strong>Emails sent without your approval</strong>Everything goes in a review queue. You're always in control.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <h2 class="reveal">Families Who <em>Got Offers</em></h2>
+  <p class="testi-sub reveal">Real results from baseball families using RecruitPro</p>
+  <div class="testi-grid">
+    <div class="testi-card reveal">
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-quote">My son sent 8 coach emails in one night using the AI writer. He heard back from 4 coaches. He never would have done that on his own.</div>
+      <div class="testi-author">Sarah M. — Florida</div>
+      <div class="testi-role">Mom of RHP, Class of 2026</div>
+    </div>
+    <div class="testi-card reveal">
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-quote">The scholarship calculator showed us the D1 offer actually cost $34,000 more per year than the D2 full ride. We almost made a $136K mistake.</div>
+      <div class="testi-author">Mike T. — Georgia</div>
+      <div class="testi-role">Dad of 3B, Class of 2027</div>
+    </div>
+    <div class="testi-card reveal">
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-quote">We were tracking 14 schools in a spreadsheet nobody could read. RecruitPro organized everything in 20 minutes. I wish we had this two years ago.</div>
+      <div class="testi-author">Jennifer R. — Alabama</div>
+      <div class="testi-role">Mom of CF, Class of 2026</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <h2 class="reveal">Simple <em>Pricing.</em> Real Results.</h2>
+  <p class="pricing-sub reveal">7-day free trial on both plans. No credit card required.</p>
+  <div class="pricing-grid">
+    <div class="plan reveal">
+      <div class="plan-name">Basic</div>
+      <div class="plan-price"><sup>$</sup>9<sub>.99/mo</sub></div>
+      <div class="plan-period">Everything to run your recruiting manually</div>
+      <ul class="plan-features">
+        <li><span class="ck">✓</span> Coach Database (373+ programs)</li>
+        <li><span class="ck">✓</span> School Tracker</li>
+        <li><span class="ck">✓</span> AI Email Writer (one at a time)</li>
+        <li><span class="ck">✓</span> Scholarship Calculator</li>
+        <li><span class="ck">✓</span> Offer Tracker</li>
+        <li><span class="ck">✓</span> Showcase Finder</li>
+        <li><span class="ck">✓</span> Recruiting Calendar</li>
+        <li><span class="ck">✓</span> Email History & Follow-up Tracker</li>
+        <li class="muted"><span class="nx">–</span> Autopilot campaign engine</li>
+        <li class="muted"><span class="nx">–</span> Bulk email generation (12+ at once)</li>
+        <li class="muted"><span class="nx">–</span> Auto follow-up sequences</li>
+      </ul>
+      <a href="https://maxwellboyatt.gumroad.com/l/giewkh" target="_blank" class="plan-btn plan-btn-outline">Start Free Trial</a>
+      <div class="plan-note">7 days free · Cancel anytime</div>
+    </div>
+    <div class="plan featured reveal">
+      <div class="plan-tag">⚡ MOST POPULAR</div>
+      <div class="plan-name">Autopilot</div>
+      <div class="plan-price"><sup>$</sup>24<sub>.99/mo</sub></div>
+      <div class="plan-period">Full campaign automation — coaches come to you</div>
+      <ul class="plan-features">
+        <li><span class="ck">✓</span> <strong>Everything in Basic</strong></li>
+        <li><span class="ck">✓</span> Autopilot campaign engine</li>
+        <li><span class="ck">✓</span> AI generates 12+ emails at once</li>
+        <li><span class="ck">✓</span> Each email personalized per program</li>
+        <li><span class="ck">✓</span> Auto follow-up after 14 days</li>
+        <li><span class="ck">✓</span> Auto-add contacted schools to tracker</li>
+        <li><span class="ck">✓</span> Review & approve before anything sends</li>
+        <li><span class="ck">✓</span> Bulk contact info copying</li>
+        <li><span class="ck">✓</span> Priority email support</li>
+        <li><span class="ck">✓</span> Early access to new features</li>
+        <li><span class="ck">✓</span> Refer & Earn ($4/mo per referral)</li>
+      </ul>
+      <a href="https://maxwellboyatt.gumroad.com/l/giewkh" target="_blank" class="plan-btn plan-btn-gold">Upgrade to Autopilot →</a>
+      <div class="plan-note">7 days free · Cancel anytime</div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-section">
+  <h2 class="reveal">Your Son's<br><em>Window Is Open.</em><br>For Now.</h2>
+  <p class="reveal">Rosters fill. Coaches stop responding. The families who move first — win. Try RecruitPro free for 7 days and run a real recruiting campaign, not a hope campaign.</p>
+  <div class="cta-btns reveal">
+    <a href="https://maxwellboyatt.gumroad.com/l/giewkh" target="_blank" class="btn-hero-primary">Start Free — No Card Needed</a>
+    <a href="https://maxwellboyatt.gumroad.com/l/giewkh" target="_blank" class="btn-hero-ghost">Go Autopilot →</a>
+  </div>
+  <div class="guarantee reveal"><span>✓</span> 7-day free trial &nbsp;·&nbsp; <span>✓</span> Cancel anytime &nbsp;·&nbsp; <span>✓</span> No contracts</div>
+</section>
+
+<footer>
+  <div class="footer-logo">Recruit<em>Pro</em></div>
+  <div class="footer-copy">Baseball Recruiting Platform · Built for families who are serious.</div>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting) {
+      e.target.classList.add('visible');
+      // Stagger children if needed
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

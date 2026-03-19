@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>RecruitPro — TikTok Ad</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+:root{--navy:#07111f;--navy2:#0d1f35;--gold:#e8a020;--gold2:#f5c040;--green:#22c55e;--red:#ef4444}
+html,body{width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:'Barlow',sans-serif}
+.phone{width:390px;height:844px;background:var(--navy);border-radius:50px;overflow:hidden;position:relative;box-shadow:0 0 0 10px #111,0 0 0 12px #2a2a2a,0 60px 120px rgba(0,0,0,.9)}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#111;border-radius:0 0 20px 20px;z-index:200}
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:52px 24px 80px;opacity:0;pointer-events:none;transition:opacity .5s ease}
+.scene.active{opacity:1;pointer-events:all}
+.progress-dots{position:absolute;top:42px;left:16px;right:16px;display:flex;gap:4px;z-index:100}
+.dot{flex:1;height:3px;background:rgba(255,255,255,.2);border-radius:2px;overflow:hidden}
+.dot-fill{height:100%;width:0%;background:var(--gold);border-radius:2px}
+.scene-nav{position:absolute;bottom:20px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:12px;z-index:100}
+.nav-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:99px;padding:8px 20px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:rgba(255,255,255,.5);cursor:pointer;letter-spacing:.05em}
+.nav-btn.gold{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.feat-tag{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;text-align:center;width:100%}
+.feat-h{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:#fff;margin-bottom:4px;text-align:center;width:100%}
+.feat-sub{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:14px;text-align:center;width:100%}
+#s1{background:radial-gradient(ellipse 80% 60% at 50% 30%,rgba(232,160,32,.15) 0%,transparent 70%),var(--navy);text-align:center}
+.hook-ball{font-size:64px;margin-bottom:16px;display:block;animation:float 3s ease infinite}
+.hook-eyebrow{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.hook-h1{font-family:'Barlow Condensed',sans-serif;font-size:62px;font-weight:900;line-height:.88;color:#fff;letter-spacing:-1px;margin-bottom:16px}
+.hook-h1 em{color:var(--gold);font-style:italic;display:block}
+.hook-sub{font-size:15px;color:rgba(255,255,255,.5);line-height:1.65;margin-bottom:28px;max-width:280px}
+.hook-price{background:rgba(232,160,32,.1);border:1.5px solid rgba(232,160,32,.3);border-radius:99px;padding:8px 20px;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:var(--gold)}
+#s2{background:#0d0808;text-align:center}
+.prob-title{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:#fff;margin-bottom:18px}
+.prob-items{display:flex;flex-direction:column;gap:9px;width:100%}
+.prob-item{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.18);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;text-align:left}
+.prob-x{color:var(--red);font-weight:900;font-size:15px;flex-shrink:0}
+.prob-text{font-size:13px;color:rgba(255,255,255,.65);line-height:1.4}
+.db-cards{display:flex;flex-direction:column;gap:8px;width:100%}
+.db-card{background:#0d1f35;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:11px 13px;display:flex;align-items:center;justify-content:space-between}
+.db-school{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px}
+.db-tags{display:flex;gap:5px}
+.db-tag{background:rgba(232,160,32,.1);border:1px solid rgba(232,160,32,.2);border-radius:99px;padding:2px 7px;font-size:10px;font-weight:600;color:var(--gold)}
+.db-tag.g{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.2);color:var(--green)}
+.db-btn{background:var(--navy);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 9px;font-size:11px;font-weight:700;color:rgba(255,255,255,.55)}
+.db-stat-row{display:flex;gap:20px;margin-top:12px;justify-content:center}
+.db-stat{text-align:center}
+.db-stat-num{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:var(--gold);line-height:1}
+.db-stat-label{font-size:10px;color:rgba(255,255,255,.3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.email-demo{width:100%;background:#0d1f35;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px;margin-top:10px}
+.email-to{font-size:11px;color:rgba(255,255,255,.3);font-weight:600;margin-bottom:6px}
+.email-subject{font-size:12px;font-weight:700;color:#fff;margin-bottom:10px;padding-bottom:9px;border-bottom:1px solid rgba(255,255,255,.06)}
+.email-body{font-size:12px;color:rgba(255,255,255,.55);line-height:1.7}
+.cursor{display:inline-block;width:2px;height:12px;background:var(--gold);animation:blink .7s infinite;vertical-align:middle;margin-left:1px}
+.ai-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--green);margin-bottom:10px}
+.gen-btn-demo{width:100%;background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;margin-top:12px;letter-spacing:.3px}
+.ap-box{width:100%;background:#0d1f35;border:1px solid rgba(232,160,32,.2);border-radius:12px;padding:14px;margin-top:10px}
+.ap-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.ap-step{display:flex;align-items:flex-start;gap:10px}
+.ap-num{width:24px;height:24px;border-radius:50%;background:var(--gold);color:var(--navy);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.ap-step strong{display:block;font-size:13px;font-weight:700;color:#fff;margin-bottom:1px}
+.ap-step span{font-size:11px;color:rgba(255,255,255,.4)}
+.ap-stats{display:flex;gap:8px}
+.ap-stat{flex:1;background:rgba(232,160,32,.07);border:1px solid rgba(232,160,32,.15);border-radius:8px;padding:9px;text-align:center}
+.ap-stat-num{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:var(--gold)}
+.ap-stat-label{font-size:9px;color:rgba(255,255,255,.3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+.calc-demo{width:100%;margin-top:10px}
+.calc-schools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.calc-card{background:#0d1f35;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:11px}
+.calc-card.winner{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.04)}
+.calc-school{font-size:12px;font-weight:700;color:#fff;margin-bottom:6px}
+.calc-cost{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--red);line-height:1}
+.calc-card.winner .calc-cost{color:var(--green)}
+.calc-lbl{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px}
+.calc-bar-wrap{background:#0d1f35;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px}
+.calc-bar{height:8px;background:rgba(255,255,255,.06);border-radius:4px;margin-bottom:6px;overflow:hidden}
+.calc-bar-fill{height:100%;border-radius:4px}
+.calc-bar-lbl{font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px}
+.calc-diff{font-size:13px;font-weight:700;color:var(--green);text-align:center;margin-top:8px}
+.tracker-list{display:flex;flex-direction:column;gap:8px;width:100%;margin-top:10px}
+.tracker-card{background:#0d1f35;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:11px 13px;display:flex;align-items:center;justify-content:space-between}
+.tc-school{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px}
+.tc-div{font-size:11px;color:rgba(255,255,255,.35)}
+.tc-status{font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px}
+.offer{background:rgba(34,197,94,.12);color:var(--green)}
+.contacted{background:rgba(59,130,246,.12);color:#60a5fa}
+.interested{background:rgba(232,160,32,.12);color:var(--gold)}
+.tracking{background:rgba(255,255,255,.06);color:rgba(255,255,255,.4)}
+#s8{background:var(--navy);text-align:center}
+.pricing-demo{width:100%;background:linear-gradient(135deg,rgba(232,160,32,.12),rgba(232,160,32,.03));border:2px solid rgba(232,160,32,.4);border-radius:18px;padding:24px 18px;position:relative;overflow:hidden}
+.pricing-demo::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.p-tag{display:inline-block;background:var(--gold);color:var(--navy);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:900;padding:3px 12px;border-radius:99px;margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em}
+.p-price{font-family:'Barlow Condensed',sans-serif;font-size:64px;font-weight:900;color:var(--gold);line-height:1;margin-bottom:4px}
+.p-price sup{font-size:24px;vertical-align:super;opacity:.7}
+.p-price sub{font-size:16px;opacity:.5}
+.p-compare{font-size:11px;color:rgba(255,255,255,.3);margin-bottom:14px}
+.p-compare s{color:rgba(239,68,68,.5)}
+.p-list{list-style:none;text-align:left;display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.p-list li{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.7)}
+.p-list li::before{content:'✓';color:var(--green);font-weight:900;flex-shrink:0}
+.p-cta{width:100%;background:var(--gold);color:var(--navy);border:none;border-radius:10px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;letter-spacing:.3px;animation:pulse-gold 2s infinite}
+#s9{background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(232,160,32,.12) 0%,transparent 70%),var(--navy);text-align:center}
+.cta-h{font-family:'Barlow Condensed',sans-serif;font-size:58px;font-weight:900;line-height:.88;color:#fff;margin-bottom:16px}
+.cta-h em{color:var(--gold);font-style:italic;display:block}
+.cta-link{font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px}
+.cta-link span{background:rgba(232,160,32,.1);border:1px solid rgba(232,160,32,.3);border-radius:8px;padding:7px 14px;display:inline-block}
+.cta-arrow{font-size:36px;animation:bounceDown 1s ease infinite;margin:6px 0}
+.cta-note{font-size:12px;color:rgba(255,255,255,.3)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes bounceDown{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+@keyframes pulse-gold{0%,100%{box-shadow:0 0 0 0 rgba(232,160,32,.4)}70%{box-shadow:0 0 0 10px rgba(232,160,32,0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:translateX(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+.a0{animation:fadeUp .5s ease both}
+.a1{animation:fadeUp .5s ease both .12s;opacity:0}
+.a2{animation:fadeUp .5s ease both .24s;opacity:0}
+.a3{animation:fadeUp .5s ease both .38s;opacity:0}
+.a4{animation:fadeUp .5s ease both .52s;opacity:0}
+.b1{animation:slideIn .4s ease both .2s;opacity:0}
+.b2{animation:slideIn .4s ease both .34s;opacity:0}
+.b3{animation:slideIn .4s ease both .48s;opacity:0}
+.b4{animation:slideIn .4s ease both .62s;opacity:0}
+.sc{animation:scaleIn .5s ease both .2s;opacity:0}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="notch"></div>
+  <div class="progress-dots" id="dots"></div>
+
+  <!-- S1: HOOK -->
+  <div class="scene active" id="s1">
+    <span class="hook-ball">⚾</span>
+    <div class="hook-eyebrow a0">Attention Baseball Families</div>
+    <div class="hook-h1 a1">Your Son<br><em>Deserves</em><br>To Play.</div>
+    <div class="hook-sub a2">If your son wants to play college baseball, this app will change everything.</div>
+    <div class="hook-price a3">$20/mo — Everything Included</div>
+  </div>
+
+  <!-- S2: PROBLEM -->
+  <div class="scene" id="s2">
+    <div class="prob-title a0">Sound Familiar? 😤</div>
+    <div class="prob-items">
+      <div class="prob-item b1"><div class="prob-x">✗</div><div class="prob-text">Spending hours Googling coach emails that don't exist</div></div>
+      <div class="prob-item b2"><div class="prob-x">✗</div><div class="prob-text">Sending generic emails coaches completely ignore</div></div>
+      <div class="prob-item b3"><div class="prob-x">✗</div><div class="prob-text">Paying $300/mo for a "recruiting service"</div></div>
+      <div class="prob-item b4"><div class="prob-x">✗</div><div class="prob-text">Missing deadlines because nothing is tracked</div></div>
+    </div>
+  </div>
+
+  <!-- S3: COACH DB -->
+  <div class="scene" id="s3">
+    <div class="feat-tag a0">Feature 1 of 6</div>
+    <div class="feat-h a1">Coach Database</div>
+    <div class="feat-sub a2">370+ real coach emails, phones & Twitter handles</div>
+    <div class="db-cards">
+      <div class="db-card b1"><div><div class="db-school">University of Florida</div><div class="db-tags"><span class="db-tag">D1 · SEC</span><span class="db-tag g">✓ Verified</span></div></div><div class="db-btn">✉ Email</div></div>
+      <div class="db-card b2"><div><div class="db-school">Chipola College</div><div class="db-tags"><span class="db-tag">JUCO D1</span><span class="db-tag g">✓ Verified</span></div></div><div class="db-btn">✉ Email</div></div>
+      <div class="db-card b3"><div><div class="db-school">Florida State University</div><div class="db-tags"><span class="db-tag">D1 · ACC</span><span class="db-tag g">✓ Verified</span></div></div><div class="db-btn">✉ Email</div></div>
+      <div class="db-card b4"><div><div class="db-school">Vanderbilt University</div><div class="db-tags"><span class="db-tag">D1 · SEC</span><span class="db-tag g">✓ Verified</span></div></div><div class="db-btn">✉ Email</div></div>
+    </div>
+    <div class="db-stat-row sc">
+      <div class="db-stat"><div class="db-stat-num">370+</div><div class="db-stat-label">Programs</div></div>
+      <div class="db-stat"><div class="db-stat-num">D1–JUCO</div><div class="db-stat-label">Every Level</div></div>
+    </div>
+  </div>
+
+  <!-- S4: EMAIL WRITER -->
+  <div class="scene" id="s4">
+    <div class="feat-tag a0">Feature 2 of 6</div>
+    <div class="feat-h a1">AI Email Writer</div>
+    <div class="feat-sub a2">Personalized coach email in 30 seconds</div>
+    <div class="ai-badge a3">✦ AI Generated — Not a Template</div>
+    <div class="email-demo sc">
+      <div class="email-to">To: kosullivan@ufl.edu · Kevin O'Sullivan</div>
+      <div class="email-subject">RHP Interested in Florida Baseball — Class of 2026</div>
+      <div class="email-body">Coach O'Sullivan,<br><br>My name is Jake Martinez, a 6'2" RHP from Marianna, FL throwing 90 mph with a 3.8 GPA. I've followed Florida's program closely — your pitching development speaks for itself.<br><br>Would you be open to a quick call this spring? Film attached.<br><br>Thank you,<br>Jake Martinez<span class="cursor"></span></div>
+    </div>
+    <button class="gen-btn-demo a4">✦ Generate Email</button>
+  </div>
+
+  <!-- S5: AUTOPILOT -->
+  <div class="scene" id="s5">
+    <div class="feat-tag a0">Feature 3 of 6 — The Big One</div>
+    <div class="feat-h a1">Recruiting Autopilot</div>
+    <div class="feat-sub a2">AI runs your entire campaign automatically</div>
+    <div class="ap-box sc">
+      <div class="ap-steps">
+        <div class="ap-step"><div class="ap-num">1</div><div><strong>Set your filters</strong><span>Division, position, state, GPA</span></div></div>
+        <div class="ap-step"><div class="ap-num">2</div><div><strong>AI finds every match</strong><span>Identifies all fitting programs</span></div></div>
+        <div class="ap-step"><div class="ap-num">3</div><div><strong>AI writes every email</strong><span>Personalized to each coach</span></div></div>
+        <div class="ap-step"><div class="ap-num">4</div><div><strong>You review and approve</strong><span>Nothing sends without you</span></div></div>
+      </div>
+      <div class="ap-stats">
+        <div class="ap-stat"><div class="ap-stat-num">12</div><div class="ap-stat-label">Emails Made</div></div>
+        <div class="ap-stat"><div class="ap-stat-num">~1hr</div><div class="ap-stat-label">Campaign</div></div>
+        <div class="ap-stat"><div class="ap-stat-num">$0</div><div class="ap-stat-label">Extra Cost</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S6: SCHOLARSHIP CALC -->
+  <div class="scene" id="s6">
+    <div class="feat-tag a0">Feature 4 of 6</div>
+    <div class="feat-h a1">Scholarship Calculator</div>
+    <div class="feat-sub a2">Compare real 4-year costs side by side</div>
+    <div class="calc-demo sc">
+      <div class="calc-schools">
+        <div class="calc-card"><div class="calc-school">Florida State</div><div class="calc-cost">$89,200</div><div class="calc-lbl">4-year cost</div></div>
+        <div class="calc-card winner"><div class="calc-school">Chipola ✓</div><div class="calc-cost">$24,800</div><div class="calc-lbl">4-year cost</div></div>
+      </div>
+      <div class="calc-bar-wrap">
+        <div class="calc-bar-lbl">Florida State University</div>
+        <div class="calc-bar"><div class="calc-bar-fill" style="width:100%;background:var(--red)"></div></div>
+        <div class="calc-bar-lbl">Chipola College</div>
+        <div class="calc-bar"><div class="calc-bar-fill" style="width:28%;background:var(--green)"></div></div>
+        <div class="calc-diff">💰 Save $64,400 over 4 years</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S7: TRACKER -->
+  <div class="scene" id="s7">
+    <div class="feat-tag a0">Features 5 & 6 of 6</div>
+    <div class="feat-h a1">Schools + Offer Tracker</div>
+    <div class="feat-sub a2">Every school, every offer, every deadline — tracked</div>
+    <div class="tracker-list">
+      <div class="tracker-card b1"><div><div class="tc-school">Chipola College</div><div class="tc-div">JUCO D1 · Florida</div></div><div class="tc-status offer">Offer Received</div></div>
+      <div class="tracker-card b2"><div><div class="tc-school">University of Florida</div><div class="tc-div">D1 · SEC</div></div><div class="tc-status interested">Interested</div></div>
+      <div class="tracker-card b3"><div><div class="tc-school">Florida State University</div><div class="tc-div">D1 · ACC</div></div><div class="tc-status contacted">Contacted</div></div>
+      <div class="tracker-card b4"><div><div class="tc-school">Vanderbilt University</div><div class="tc-div">D1 · SEC</div></div><div class="tc-status tracking">Tracking</div></div>
+    </div>
+  </div>
+
+  <!-- S8: PRICING -->
+  <div class="scene" id="s8">
+    <div class="pricing-demo sc">
+      <div class="p-tag">Everything Included</div>
+      <div class="p-price"><sup>$</sup>20<sub>/mo</sub></div>
+      <div class="p-compare">Others charge <s>$200–$500/mo</s> for this</div>
+      <ul class="p-list">
+        <li>Recruiting Autopilot</li>
+        <li>AI Email Writer</li>
+        <li>370+ Coach Contacts</li>
+        <li>Scholarship Calculator</li>
+        <li>Schools + Offer Tracker</li>
+        <li>Cancel anytime — no contracts</li>
+      </ul>
+      <button class="p-cta">Get Full Access — $20/mo ⚾</button>
+    </div>
+  </div>
+
+  <!-- S9: CTA -->
+  <div class="scene" id="s9">
+    <span style="font-size:56px;margin-bottom:16px;display:block;animation:float 3s ease infinite">⚾</span>
+    <div class="cta-h a0">Get Your<br>Son<br><em>Recruited.</em></div>
+    <div class="cta-link a1"><span>recruitpro-app.netlify.app</span></div>
+    <div class="cta-arrow a2">👇</div>
+    <div class="cta-note a3">Link in bio · $20/mo · Cancel anytime</div>
+  </div>
+
+  <div class="scene-nav">
+    <button class="nav-btn" onclick="prev()">← Back</button>
+    <button class="nav-btn gold" onclick="next()">Next →</button>
+  </div>
+</div>
+
+<script>
+const N=9, DUR=6000;
+let cur=0, timer;
+const dotsEl=document.getElementById('dots');
+for(let i=0;i<N;i++){const d=document.createElement('div');d.className='dot';d.innerHTML=`<div class="dot-fill" id="df${i}"></div>`;dotsEl.appendChild(d);}
+
+function show(idx){
+  document.querySelectorAll('.scene').forEach((s,i)=>{
+    s.classList.remove('active');
+    if(i===idx){
+      // Reset animations
+      s.querySelectorAll('[class]').forEach(el=>{
+        const c=el.className;
+        if(/\ba\d\b|\bb\d\b|\bsc\b/.test(c)){el.style.animation='none';el.offsetHeight;el.style.animation='';}
+      });
+    }
+  });
+  document.getElementById('s'+(idx+1)).classList.add('active');
+  cur=idx;
+  for(let i=0;i<N;i++){const f=document.getElementById('df'+i);f.style.transition='none';f.style.width=i<idx?'100%':'0%';}
+  setTimeout(()=>{const f=document.getElementById('df'+idx);f.style.transition=`width ${DUR}ms linear`;f.style.width='100%';},50);
+  clearTimeout(timer);timer=setTimeout(next,DUR);
+}
+function next(){show((cur+1)%N);}
+function prev(){show((cur-1+N)%N);}
+document.querySelector('.phone').addEventListener('click',e=>{
+  if(e.target.closest('.scene-nav'))return;
+  const r=document.querySelector('.phone').getBoundingClientRect();
+  e.clientX-r.left>r.width*.6?next():e.clientX-r.left<r.width*.4?prev():null;
+});
+show(0);
+</script>
+</body>
+</html>

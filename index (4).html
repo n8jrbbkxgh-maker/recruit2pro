@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="RecruitPro — The #1 baseball recruiting platform. AI-powered emails, 370+ coach contacts, scholarship calculator. Get your son recruited.">
+<title>RecruitPro — Get Your Son Recruited</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#07111f;
+  --navy2:#0d1f35;
+  --navy3:#1a3a5c;
+  --gold:#e8a020;
+  --gold2:#f5c040;
+  --white:#ffffff;
+  --text:rgba(255,255,255,.9);
+  --text2:rgba(255,255,255,.55);
+  --text3:rgba(255,255,255,.35);
+  --green:#22c55e;
+  --r:14px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--navy);color:var(--text);font-family:'Barlow',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 5%;height:72px;display:flex;align-items:center;justify-content:space-between;background:rgba(7,17,31,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(232,160,32,.12)}
+.nav-logo-text{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:#fff;letter-spacing:-.3px}
+.nav-logo-text span{color:var(--gold)}
+.nav-cta{background:var(--gold);color:var(--navy);padding:10px 22px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;text-decoration:none;letter-spacing:.3px;transition:.2s}
+.nav-cta:hover{background:var(--gold2);transform:translateY(-1px)}
+.nav-login{font-size:14px;color:var(--text2);text-decoration:none;margin-right:16px;font-weight:600;transition:.2s}
+.nav-login:hover{color:#fff}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 5% 80px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(232,160,32,.13) 0%,transparent 70%),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(26,58,92,.5) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(232,160,32,.1);border:1px solid rgba(232,160,32,.3);border-radius:99px;padding:7px 16px;font-size:13px;font-weight:700;color:var(--gold);letter-spacing:.04em;margin-bottom:28px;animation:fadeUp .6s ease both}
+h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(52px,9vw,110px);font-weight:900;line-height:.92;letter-spacing:-1px;margin-bottom:28px;animation:fadeUp .6s ease both .1s}
+h1 em{color:var(--gold);font-style:normal}
+.hero-sub{font-size:clamp(17px,2.5vw,21px);color:var(--text2);max-width:600px;line-height:1.65;margin-bottom:44px;animation:fadeUp .6s ease both .2s}
+.hero-sub strong{color:var(--text);font-weight:600}
+.hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:60px;animation:fadeUp .6s ease both .3s}
+.btn-primary{background:var(--gold);color:var(--navy);padding:16px 36px;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;text-decoration:none;letter-spacing:.3px;transition:.25s;display:inline-flex;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(232,160,32,.3)}
+.btn-primary:hover{background:var(--gold2);transform:translateY(-2px);box-shadow:0 12px 40px rgba(232,160,32,.4)}
+.btn-ghost{background:rgba(255,255,255,.07);color:#fff;padding:16px 36px;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;text-decoration:none;letter-spacing:.3px;transition:.25s;border:1px solid rgba(255,255,255,.12)}
+.btn-ghost:hover{background:rgba(255,255,255,.12);transform:translateY(-2px)}
+.hero-proof{display:flex;gap:40px;justify-content:center;flex-wrap:wrap;animation:fadeUp .6s ease both .4s}
+.proof-stat{text-align:center}
+.proof-num{font-family:'Barlow Condensed',sans-serif;font-size:42px;font-weight:900;color:var(--gold);line-height:1}
+.proof-label{font-size:12px;color:var(--text3);margin-top:4px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.hero-divider{width:1px;height:50px;background:rgba(255,255,255,.1);align-self:center}
+.section-label{font-size:12px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.problem{padding:100px 5%;background:var(--navy2)}
+.problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;max-width:1100px;margin:0 auto}
+.problem-text h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(38px,4vw,58px);font-weight:900;line-height:1.05;margin-bottom:20px}
+.problem-text h2 em{color:var(--gold);font-style:normal}
+.problem-text p{font-size:17px;color:var(--text2);line-height:1.7;margin-bottom:16px}
+.problem-list{list-style:none;display:flex;flex-direction:column;gap:14px;margin-top:28px}
+.problem-list li{display:flex;align-items:flex-start;gap:14px;font-size:16px;color:var(--text2);line-height:1.5}
+.problem-list li::before{content:'✗';color:#ef4444;font-weight:900;font-size:14px;margin-top:2px;flex-shrink:0}
+.problem-visual{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:16px}
+.problem-card{background:rgba(7,17,31,.6);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:18px 20px}
+.problem-card-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.problem-card-val{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;color:#fff}
+.problem-card-val.red{color:#ef4444}
+.problem-card-sub{font-size:13px;color:var(--text3);margin-top:4px}
+.features{padding:100px 5%}
+.features-header{text-align:center;max-width:700px;margin:0 auto 70px}
+.features-header h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(38px,5vw,68px);font-weight:900;line-height:1;margin-bottom:16px}
+.features-header h2 em{color:var(--gold);font-style:normal}
+.features-header p{font-size:18px;color:var(--text2);line-height:1.6}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1100px;margin:0 auto}
+.feature-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:32px 28px;transition:.3s;position:relative;overflow:hidden}
+.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;transition:.3s}
+.feature-card:hover{background:rgba(255,255,255,.055);border-color:rgba(232,160,32,.2);transform:translateY(-4px)}
+.feature-card:hover::before{opacity:1}
+.feature-icon{font-size:36px;margin-bottom:20px;display:block}
+.feature-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:#fff;margin-bottom:10px}
+.feature-desc{font-size:14px;color:var(--text2);line-height:1.65}
+.feature-card.hero-card{background:linear-gradient(135deg,rgba(232,160,32,.1),rgba(232,160,32,.04));border-color:rgba(232,160,32,.25)}
+.autopilot-section{padding:100px 5%;background:linear-gradient(180deg,var(--navy) 0%,var(--navy2) 100%)}
+.autopilot-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.autopilot-text h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(38px,4vw,58px);font-weight:900;line-height:1.05;margin-bottom:20px}
+.autopilot-text h2 em{color:var(--gold);font-style:normal}
+.autopilot-text p{font-size:17px;color:var(--text2);line-height:1.7;margin-bottom:24px}
+.autopilot-steps{display:flex;flex-direction:column;gap:20px}
+.autopilot-step{display:flex;align-items:flex-start;gap:16px}
+.step-num{width:36px;height:36px;border-radius:50%;background:var(--gold);color:var(--navy);font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-text strong{display:block;font-size:16px;font-weight:700;color:#fff;margin-bottom:4px}
+.step-text span{font-size:14px;color:var(--text2);line-height:1.5}
+.autopilot-visual{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:14px}
+.email-preview{background:rgba(7,17,31,.7);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:20px}
+.email-preview-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.email-preview-to{font-size:12px;color:var(--text3);font-weight:600}
+.email-preview-badge{background:rgba(34,197,94,.15);color:#22c55e;font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px}
+.email-preview-subject{font-size:14px;font-weight:700;color:#fff;margin-bottom:10px}
+.email-preview-body{font-size:13px;color:var(--text2);line-height:1.65}
+.testimonials{padding:100px 5%;background:var(--navy2)}
+.testimonials h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(38px,4vw,60px);font-weight:900;text-align:center;margin-bottom:12px}
+.testimonials h2 em{color:var(--gold);font-style:normal}
+.testi-sub{text-align:center;font-size:17px;color:var(--text2);margin-bottom:60px}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1100px;margin:0 auto}
+.testi-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:28px}
+.testi-stars{color:var(--gold);font-size:16px;margin-bottom:16px;letter-spacing:2px}
+.testi-text{font-size:15px;color:var(--text2);line-height:1.7;margin-bottom:20px;font-style:italic}
+.testi-author{display:flex;align-items:center;gap:12px}
+.testi-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--navy3),var(--gold));display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:#fff;flex-shrink:0}
+.testi-name{font-size:14px;font-weight:700;color:#fff}
+.testi-role{font-size:12px;color:var(--text3)}
+.pricing{padding:100px 5%}
+.pricing-header{text-align:center;max-width:600px;margin:0 auto 60px}
+.pricing-header h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(38px,5vw,68px);font-weight:900;line-height:1;margin-bottom:12px}
+.pricing-header h2 em{color:var(--gold);font-style:normal}
+.pricing-header p{font-size:18px;color:var(--text2)}
+.pricing-card{max-width:520px;margin:0 auto;background:linear-gradient(135deg,rgba(232,160,32,.1),rgba(232,160,32,.03));border:2px solid rgba(232,160,32,.4);border-radius:20px;padding:48px;text-align:center;position:relative;overflow:hidden}
+.pricing-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.pricing-tag{display:inline-block;background:var(--gold);color:var(--navy);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;letter-spacing:.08em;padding:5px 14px;border-radius:99px;margin-bottom:20px;text-transform:uppercase}
+.pricing-name{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:#fff;margin-bottom:8px}
+.pricing-price{font-family:'Barlow Condensed',sans-serif;font-size:80px;font-weight:900;line-height:1;color:var(--gold);margin-bottom:4px}
+.pricing-price sup{font-size:32px;vertical-align:super;margin-right:4px;opacity:.7}
+.pricing-price sub{font-size:22px;opacity:.5}
+.pricing-desc{font-size:16px;color:var(--text2);margin-bottom:36px}
+.pricing-features{list-style:none;text-align:left;display:flex;flex-direction:column;gap:14px;margin-bottom:40px}
+.pricing-features li{display:flex;align-items:center;gap:12px;font-size:16px;color:rgba(255,255,255,.75)}
+.pricing-features li .ck{color:var(--green);font-weight:900;font-size:16px;flex-shrink:0}
+.pricing-btn{display:block;width:100%;padding:18px;background:var(--gold);color:var(--navy);border:none;border-radius:12px;font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;cursor:pointer;letter-spacing:.3px;transition:.25s;text-decoration:none;box-shadow:0 8px 32px rgba(232,160,32,.3)}
+.pricing-btn:hover{background:var(--gold2);transform:translateY(-2px);box-shadow:0 12px 40px rgba(232,160,32,.4)}
+.pricing-note{font-size:13px;color:var(--text3);margin-top:16px}
+.faq{padding:100px 5%;background:var(--navy2)}
+.faq h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(38px,4vw,56px);font-weight:900;text-align:center;margin-bottom:60px}
+.faq h2 em{color:var(--gold);font-style:normal}
+.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1000px;margin:0 auto}
+.faq-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:24px 28px}
+.faq-q{font-size:16px;font-weight:700;color:#fff;margin-bottom:10px}
+.faq-a{font-size:14px;color:var(--text2);line-height:1.7}
+.final-cta{padding:120px 5%;text-align:center;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(232,160,32,.1) 0%,transparent 70%)}
+.final-cta h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(42px,6vw,80px);font-weight:900;line-height:1;margin-bottom:20px}
+.final-cta h2 em{color:var(--gold);font-style:normal}
+.final-cta p{font-size:18px;color:var(--text2);max-width:520px;margin:0 auto 44px;line-height:1.65}
+.final-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+footer{padding:32px 5%;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-logo{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:rgba(255,255,255,.4)}
+.footer-logo span{color:var(--gold)}
+.footer-copy{font-size:13px;color:var(--text3)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+@media(max-width:900px){.features-grid{grid-template-columns:repeat(2,1fr)}.testi-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){.problem-grid,.autopilot-inner{grid-template-columns:1fr;gap:48px}}
+@media(max-width:600px){.hero{padding:90px 5% 60px}.btn-primary,.btn-ghost{padding:14px 24px;font-size:18px}.hero-divider{display:none}.pricing-card{padding:32px 24px}.features-grid,.testi-grid,.faq-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo-text">RECRUIT<span>PRO</span></div>
+  <div style="display:flex;align-items:center">
+    <a href="./app.html" class="nav-login">Already a member? →</a>
+    <a href="https://buy.stripe.com/8x200l8aK1C00EvcdVdMI00" target="_blank" class="nav-cta">Get Started — $20/mo</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-badge">⚾ The #1 Baseball Recruiting App</div>
+  <h1>Your Son Gets<br><em>Recruited.</em></h1>
+  <p class="hero-sub">Most families spend months cold-emailing coaches with zero response. RecruitPro gives you <strong>real coach contacts, AI-written emails, and a full recruiting system</strong> — all in one app.</p>
+  <div class="hero-ctas">
+    <a href="https://buy.stripe.com/8x200l8aK1C00EvcdVdMI00" target="_blank" class="btn-primary">Get Full Access — $20/mo ⚾</a>
+    <a href="#features" class="btn-ghost">See How It Works</a>
+  </div>
+  <div class="hero-proof">
+    <div class="proof-stat"><div class="proof-num">370+</div><div class="proof-label">Coach Contacts</div></div>
+    <div class="hero-divider"></div>
+    <div class="proof-stat"><div class="proof-num">AI</div><div class="proof-label">Email Writer</div></div>
+    <div class="hero-divider"></div>
+    <div class="proof-stat"><div class="proof-num">$20</div><div class="proof-label">Per Month</div></div>
+    <div class="hero-divider"></div>
+    <div class="proof-stat"><div class="proof-num">100%</div><div class="proof-label">Everything Included</div></div>
+  </div>
+</section>
+
+<section class="problem reveal">
+  <div class="problem-grid">
+    <div class="problem-text">
+      <div class="section-label">The Reality</div>
+      <h2>Most Families Are<br><em>Flying Blind.</em></h2>
+      <p>The recruiting process is broken. Coaches get hundreds of emails. Most families don't even know who to contact, what to say, or how to stand out.</p>
+      <ul class="problem-list">
+        <li>Spending hours Googling coach emails that don't exist</li>
+        <li>Sending generic emails coaches ignore</li>
+        <li>Missing scholarship deadlines because nothing is tracked</li>
+        <li>Paying $200+/mo for recruiting services that do the same thing</li>
+      </ul>
+    </div>
+    <div class="problem-visual">
+      <div class="problem-card">
+        <div class="problem-card-label">Average families spend</div>
+        <div class="problem-card-val red">6+ Months</div>
+        <div class="problem-card-sub">just trying to get a coach's attention</div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-card-label">Other recruiting services cost</div>
+        <div class="problem-card-val red">$200–$500/mo</div>
+        <div class="problem-card-sub">for the same tools RecruitPro gives you for $20</div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-card-label">RecruitPro users get responses in</div>
+        <div class="problem-card-val" style="color:var(--green)">Days, Not Months</div>
+        <div class="problem-card-sub">with AI-personalized emails to real coaches</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="features-header reveal">
+    <div class="section-label">Everything You Need</div>
+    <h2>One App.<br><em>Every Tool.</em></h2>
+    <p>Stop piecing together spreadsheets, random websites, and guesswork. RecruitPro is the complete recruiting system built for baseball families.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card hero-card reveal">
+      <span class="feature-icon">🤖</span>
+      <div class="feature-title">Recruiting Autopilot</div>
+      <div class="feature-desc">Set your position, division, and location. RecruitPro finds matching programs, writes a personalized email to every coach, and runs your entire campaign automatically.</div>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">✦</span>
+      <div class="feature-title">AI Email Writer</div>
+      <div class="feature-desc">Generate a personalized, professional coach email in 30 seconds. Not a template — a real email that sounds like your son wrote it. Coaches actually respond.</div>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">🗂️</span>
+      <div class="feature-title">Coach Database</div>
+      <div class="feature-desc">370+ programs with verified coach emails, phone numbers, and Twitter handles. JUCO, D1, D2, D3 — every level covered.</div>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">💰</span>
+      <div class="feature-title">Scholarship Calculator</div>
+      <div class="feature-desc">Compare real 4-year costs side by side. Don't make a $140K mistake without seeing the actual numbers.</div>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">🏫</span>
+      <div class="feature-title">My Schools Tracker</div>
+      <div class="feature-desc">Track every school in your pipeline. Log contacts, notes, visit dates, and follow-up status. Never lose track of any program.</div>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">🏆</span>
+      <div class="feature-title">Offer Tracker</div>
+      <div class="feature-desc">Log verbal and official offers, track scholarship amounts, and compare packages. Know exactly what's on the table.</div>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">📄</span>
+      <div class="feature-title">Player Profile</div>
+      <div class="feature-desc">Build a complete recruiting profile with stats, GPA, and film link. Auto-fills into every email so you never re-enter info.</div>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">📆</span>
+      <div class="feature-title">Recruiting Calendar</div>
+      <div class="feature-desc">Keep every visit, showcase, and deadline in one place. Never miss a critical date during the busiest season of your son's life.</div>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">⚾</span>
+      <div class="feature-title">Showcase Finder</div>
+      <div class="feature-desc">Find Perfect Game, WWBA, and top showcases by location and date. Get in front of the coaches who matter most.</div>
+    </div>
+  </div>
+</section>
+
+<section class="autopilot-section">
+  <div class="autopilot-inner">
+    <div class="autopilot-text reveal">
+      <div class="section-label">The Game Changer</div>
+      <h2>Recruiting on<br><em>Autopilot.</em></h2>
+      <p>Stop manually emailing coaches one by one. RecruitPro's Autopilot finds every matching program and writes a personalized email to each coach — while your son focuses on playing ball.</p>
+      <div class="autopilot-steps">
+        <div class="autopilot-step">
+          <div class="step-num">1</div>
+          <div class="step-text"><strong>Set your filters</strong><span>Choose division, position, state, and GPA. RecruitPro finds every matching program.</span></div>
+        </div>
+        <div class="autopilot-step">
+          <div class="step-num">2</div>
+          <div class="step-text"><strong>AI writes every email</strong><span>Each email is personalized to that specific program and coach. Not a template.</span></div>
+        </div>
+        <div class="autopilot-step">
+          <div class="step-num">3</div>
+          <div class="step-text"><strong>Review and send</strong><span>Approve each email, copy with one tap, and send. Your whole campaign done in an hour.</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="autopilot-visual reveal">
+      <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">AI-Generated Email Preview</div>
+      <div class="email-preview">
+        <div class="email-preview-header">
+          <div class="email-preview-to">To: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="33505c52505b1d595c5b5d405c5d73505b5a435c5f521d565746">[email&#160;protected]</a></div>
+          <div class="email-preview-badge">✓ AI Generated</div>
+        </div>
+        <div class="email-preview-subject">Subject: RHP Interested in Chipola Baseball — Class of 2026</div>
+        <div class="email-preview-body">Coach Johnson,<br><br>My name is Jake Martinez and I'm a 6'2" RHP from Marianna, FL with a 90 MPH fastball and 3.8 GPA. I've followed Chipola's program and love the development your pitchers show.<br><br>Would you be open to a quick call this spring?<br><br>Thank you,<br>Jake Martinez</div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <div style="flex:1;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:#22c55e">12</div>
+          <div style="font-size:11px;color:var(--text3);font-weight:600;margin-top:2px">EMAILS GENERATED</div>
+        </div>
+        <div style="flex:1;background:rgba(232,160,32,.1);border:1px solid rgba(232,160,32,.2);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--gold)">~1hr</div>
+          <div style="font-size:11px;color:var(--text3);font-weight:600;margin-top:2px">CAMPAIGN TIME</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials">
+  <h2>Families Who <em>Got Results.</em></h2>
+  <p class="testi-sub">Real families using RecruitPro to navigate the recruiting process.</p>
+  <div class="testi-grid">
+    <div class="testi-card reveal">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"My son went from zero responses to 4 coaches reaching out in two weeks. The AI emails sound nothing like a template — coaches actually respond."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">DM</div>
+        <div><div class="testi-name">David M.</div><div class="testi-role">Dad of 2026 RHP, Florida</div></div>
+      </div>
+    </div>
+    <div class="testi-card reveal">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"We were paying $300/mo for a recruiting service doing the exact same thing. RecruitPro is $20 and honestly better. The coach database alone is worth it."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">SL</div>
+        <div><div class="testi-name">Sandra L.</div><div class="testi-role">Mom of 2025 Catcher, Georgia</div></div>
+      </div>
+    </div>
+    <div class="testi-card reveal">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"The scholarship calculator showed us a $60K difference between two offers we were comparing. That alone saved us from making a huge mistake."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">TR</div>
+        <div><div class="testi-name">Tom R.</div><div class="testi-role">Dad of 2026 SS, Alabama</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="pricing-header reveal">
+    <div class="section-label">Simple Pricing</div>
+    <h2>One Price.<br><em>Everything Included.</em></h2>
+    <p>No tiers. No upsells. No hidden fees. $20/month gets you every single feature.</p>
+  </div>
+  <div class="pricing-card reveal">
+    <div class="pricing-tag">Everything Included</div>
+    <div class="pricing-name">RecruitPro Full Access</div>
+    <div class="pricing-price"><sup>$</sup>20<sub>/mo</sub></div>
+    <div class="pricing-desc">Cancel anytime. Instant access after purchase.</div>
+    <ul class="pricing-features">
+      <li><span class="ck">✓</span> Recruiting Autopilot — AI runs your whole campaign</li>
+      <li><span class="ck">✓</span> AI Email Writer — personalized emails in 30 seconds</li>
+      <li><span class="ck">✓</span> Coach Database — 370+ verified contacts</li>
+      <li><span class="ck">✓</span> Scholarship Calculator — compare real 4-year costs</li>
+      <li><span class="ck">✓</span> My Schools Tracker — manage your full pipeline</li>
+      <li><span class="ck">✓</span> Offer Tracker — log and compare every offer</li>
+      <li><span class="ck">✓</span> Player Profile — auto-fills into every email</li>
+      <li><span class="ck">✓</span> Recruiting Calendar — never miss a deadline</li>
+      <li><span class="ck">✓</span> Showcase Finder — Perfect Game, WWBA & more</li>
+      <li><span class="ck">✓</span> Email History — track every coach you've contacted</li>
+    </ul>
+    <a href="https://buy.stripe.com/8x200l8aK1C00EvcdVdMI00" target="_blank" class="pricing-btn">Get Full Access — $20/mo ⚾</a>
+    <div class="pricing-note">Cancel anytime. No contracts. Instant access after purchase.</div>
+  </div>
+</section>
+
+<section class="faq">
+  <h2>Got <em>Questions?</em></h2>
+  <div class="faq-grid">
+    <div class="faq-item reveal">
+      <div class="faq-q">How do I get access after purchasing?</div>
+      <div class="faq-a">After purchasing on Gumroad you'll get a receipt email with your access code and the app link. Enter the code and you're in instantly.</div>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">What divisions does the coach database cover?</div>
+      <div class="faq-a">JUCO (D1 & D2), NCAA D1, D2, and D3. Over 370 programs with verified coach emails, phone numbers, and social handles.</div>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">How does the AI email writer work?</div>
+      <div class="faq-a">Fill in your son's info once in his player profile. Select a coach, hit Generate — the AI writes a personalized email in under 30 seconds. Edit before sending.</div>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">Can I cancel anytime?</div>
+      <div class="faq-a">Yes. No contracts. Cancel anytime through Gumroad. You keep access until the end of your billing period.</div>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">Does it work on mobile?</div>
+      <div class="faq-a">Yes. RecruitPro is fully mobile-optimized. Add it to your home screen on iOS or Android for app-like access anywhere.</div>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">Is this better than a recruiting service?</div>
+      <div class="faq-a">Most recruiting services charge $200–$500/month for the same tools. RecruitPro is $20/month with everything included and no middleman.</div>
+    </div>
+  </div>
+</section>
+
+<section class="final-cta">
+  <h2>Stop Waiting.<br><em>Start Recruiting.</em></h2>
+  <p>Every day you wait is a day another player is emailing the coaches your son should be talking to.</p>
+  <div class="final-btns">
+    <a href="https://buy.stripe.com/8x200l8aK1C00EvcdVdMI00" target="_blank" class="btn-primary">Get Full Access — $20/mo ⚾</a>
+    <a href="./app.html" class="btn-ghost">Already a member →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">RECRUIT<span>PRO</span></div>
+  <div class="footer-copy">© 2026 RecruitPro. Built by a Chipola JC pitcher for baseball families.</div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const observer = new IntersectionObserver((entries) => {
+  entries.f

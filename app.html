@@ -2513,8 +2513,42 @@ async function generateEmail() {
   const finalCoach = coachName || dbCoach || '';
   const coachGreeting = finalCoach ? finalCoach.split(' ').pop() : 'Coach'; // Use last name
   
-  const prompt=`Write a professional college baseball recruiting email. Type: ${emailType}. Player: ${name}, ${pos}. Stats: ${stats||'not provided'}. Target school: ${schoolName}. Coach last name: ${coachGreeting}. Hometown: ${hometown||'Florida'}. ${notes?'Extra context: '+notes:''}
-Write a complete email with subject line, greeting (use "Coach ${coachGreeting},"), concise body (under 150 words), and sign-off. Coaches prefer SHORT emails — get to the point fast. Format: start with "Subject: ..." then blank line, then the email. No brackets or placeholders — write it completely ready to send.`;
+  const TYPE_INSTRUCTIONS = {
+    'First Contact': `FIRST CONTACT: Open immediately with the player's name, position, and single best stat — no warm-up sentence. The second sentence must reference something SPECIFIC about ${schoolName}'s program (their conference, division level, a known strength, or recent success — not a generic compliment). Include stats and film link if available. End with one clear ask (film review, call, or visit). Body under 130 words.`,
+    'Follow Up': `FOLLOW-UP: Open by briefly referencing the earlier email — do NOT apologize for following up. Lead immediately with something NEW: a recent tournament result, updated stat, offer received, or camp attended. Body under 80 words. End with a specific ask — a call date, camp registration, or campus visit.`,
+    'Thank You': `THANK YOU: Thank Coach ${coachGreeting} for a specific thing (the call, campus visit, camp evaluation, or offer). Mention one concrete detail from that interaction that stood out. Briefly restate strong interest. Body under 100 words. Warm but efficient.`,
+    'Showcase Invite': `SHOWCASE INVITE: Lead with the specific event name, date, and location. State position and jersey number or team name so the coach can find the player easily. Mention one standout stat. Body under 100 words. Make it easy to put on a calendar.`
+  };
+
+  const SYSTEM_ROLE = `You are a college baseball recruiting email specialist. Write in the authentic voice of a high school athlete — direct, confident, and specific.
+
+NEVER use these phrases or anything similar:
+- "I have always dreamed of playing at"
+- "I believe I would be a great fit"
+- "I am reaching out because"
+- "I hope this email finds you well"
+- "I would love the opportunity to"
+- "I am passionate about"
+- "I feel that I could"
+- "I am confident that"
+
+Every email MUST include something specific about the target program — not a generic compliment. Sound like a real athlete, not a recruiting consultant.`;
+
+  const prompt = `${SYSTEM_ROLE}
+
+${TYPE_INSTRUCTIONS[emailType] || TYPE_INSTRUCTIONS['First Contact']}
+
+Player:
+- Name: ${name}
+- Position: ${pos}
+- Stats: ${stats || 'not yet provided — write around this naturally'}
+- Hometown: ${hometown || 'Florida'}
+${notes ? '- Additional context: ' + notes : ''}
+
+Target program: ${schoolName}
+Greeting: Coach ${coachGreeting}
+
+Format: "Subject: " (specific subject line, not generic), blank line, then the complete email. No brackets. No placeholders. Ready to send.`;
   try {
     const res = await fetch('/.netlify/functions/ai-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     const data = await res.json();
@@ -2661,13 +2695,22 @@ async function runAutopilot() {
     const email = hc?.email || '';
 
     try {
-      const prompt = `Write a short, professional college baseball recruiting email from a player to a coach. Keep it under 130 words in the body.
-Player: ${name}, ${pos}, Class of ${year}. Stats: ${stats}. GPA: ${gpa}. Hometown: Marianna, FL.
-Target: ${program.name} (${program.div}, ${program.conf}) — ${coachName}.
-${film ? 'Highlight film: ' + film : ''}
-Program notes: ${program.notes || 'competitive program'}.
+      const prompt = `You are a college baseball recruiting email specialist. Write in the authentic voice of a high school athlete — direct, confident, and specific.
 
-Write ONLY the email. Start with "Subject: " then blank line then email. No brackets or placeholders. Sound genuine, not like a template.`;
+NEVER use: "I have always dreamed", "I believe I would be a great fit", "I am reaching out", "I hope this email finds you well", "I would love the opportunity", "I am passionate", "I feel that", "I am confident that".
+
+FIRST CONTACT EMAIL for ${program.name} (${program.div}, ${program.conf}).
+
+Open immediately with the player's name, position, and best stat — no warm-up sentence. The second sentence must reference something SPECIFIC about ${program.name}: their ${program.conf} conference, ${program.div} competition level, or this program detail: "${program.notes || 'competitive baseball program'}". Include stats and film link. End with one clear ask.
+
+Player: ${name}, ${pos}, Class of ${year}
+Stats: ${stats || 'strong recent season'}
+GPA: ${gpa}
+Hometown: ${playerProfile.hometown || 'Florida'}
+${film ? 'Highlight film: ' + film : ''}
+Coach: ${coachName}
+
+Body under 120 words. Format: "Subject: " then blank line then email. No brackets or placeholders.`;
 
       const res = await fetch('/.netlify/functions/ai-proxy', {
         method: 'POST',
@@ -2735,7 +2778,11 @@ Write ONLY the email. Start with "Subject: " then blank line then email. No brac
 }
 
 function generateFallbackEmail(name, pos, year, stats, program, coachName) {
-  return `Subject: ${pos} Interested in ${program.name} Baseball — Class of ${year}\n\n${coachName},\n\nMy name is ${name} and I'm a ${pos} from Marianna, FL graduating in ${year}. I've followed ${program.name} baseball closely and believe your program would be a great fit for my development.\n\nThis past season: ${stats}. I'm a competitive, coachable player who brings intensity every game.\n\nI'd love the opportunity to discuss how I might contribute. Would you be open to a call or unofficial visit?\n\nI've attached my recruiting profile and highlight film below.\n\nThank you,\n${name}`;
+  const lastName = coachName.split(' ').pop();
+  const statsLine = stats ? `This past season: ${stats}.` : '';
+  const confDetail = program.conf ? ` competing in the ${program.conf}` : '';
+  const hometown = playerProfile.hometown || 'Florida';
+  return `Subject: ${pos} Prospect — ${name} — Class of ${year}\n\nCoach ${lastName},\n\nMy name is ${name}, a ${pos} from ${hometown} graduating in ${year}. I've been tracking ${program.name}${confDetail} and your program is at the top of my list.\n\n${statsLine} I play with a high motor and compete hard every inning.\n\nI want to get on your radar. Can we schedule a call, or can I send film your way?\n\nThank you,\n${name}`;
 }
 
 function renderCampaign() {

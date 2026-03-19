@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RecruitPro — TikTok Ad</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#07111f;
+  --navy2:#0d1f35;
+  --gold:#e8a020;
+  --gold2:#f5c040;
+  --green:#22c55e;
+  --red:#ef4444;
+  --white:#fff;
+}
+body{
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  font-family:'Barlow',sans-serif;
+}
+
+/* Phone frame — 9:16 TikTok ratio */
+.phone{
+  width:390px;
+  height:844px;
+  background:var(--navy);
+  border-radius:48px;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 0 0 10px #1a1a1a, 0 0 0 12px #333, 0 40px 100px rgba(0,0,0,.8);
+}
+
+/* Scene system */
+.scene{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:32px 28px;
+  opacity:0;
+  transition:opacity .4s ease;
+  pointer-events:none;
+}
+.scene.active{opacity:1;pointer-events:all}
+
+/* Progress bar */
+.progress-bar{
+  position:absolute;
+  top:0;left:0;right:0;
+  height:3px;
+  background:rgba(255,255,255,.1);
+  z-index:100;
+}
+.progress-fill{
+  height:100%;
+  background:var(--gold);
+  width:0%;
+  transition:width linear;
+}
+
+/* Tap areas */
+.tap-left{position:absolute;left:0;top:0;bottom:0;width:40%;z-index:50;cursor:pointer}
+.tap-right{position:absolute;right:0;top:0;bottom:0;width:40%;z-index:50;cursor:pointer}
+.tap-center{position:absolute;left:40%;right:40%;top:0;bottom:0;z-index:50;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* Scene counter */
+.scene-counter{
+  position:absolute;
+  top:16px;right:20px;
+  font-size:12px;
+  font-weight:700;
+  color:rgba(255,255,255,.3);
+  z-index:100;
+  letter-spacing:.05em;
+}
+
+/* ── SCENE 1: HOOK ── */
+#s1{background:var(--navy);text-align:center}
+.hook-eyebrow{font-size:13px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;animation:fadeUp .5s ease both .1s}
+.hook-headline{font-family:'Barlow Condensed',sans-serif;font-size:58px;font-weight:900;line-height:.88;color:#fff;letter-spacing:-1px;margin-bottom:20px;animation:fadeUp .5s ease both .2s}
+.hook-headline em{color:var(--gold);font-style:italic;display:block}
+.hook-sub{font-size:16px;color:rgba(255,255,255,.5);line-height:1.6;animation:fadeUp .5s ease both .3s;max-width:280px}
+.hook-ball{font-size:72px;margin-bottom:24px;animation:bounce 1s ease infinite}
+.tap-hint{position:absolute;bottom:32px;font-size:12px;color:rgba(255,255,255,.25);letter-spacing:.1em;text-transform:uppercase;animation:pulse 2s ease infinite}
+
+/* ── SCENE 2: PROBLEM ── */
+#s2{background:#0d0a0a;text-align:center}
+.problem-icon{font-size:56px;margin-bottom:20px;animation:shake .5s ease both .2s}
+.problem-title{font-family:'Barlow Condensed',sans-serif;font-size:42px;font-weight:900;color:#fff;margin-bottom:16px;animation:fadeUp .4s ease both .1s}
+.problem-items{display:flex;flex-direction:column;gap:12px;width:100%;animation:fadeUp .4s ease both .3s}
+.problem-item{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:12px;text-align:left}
+.problem-x{color:var(--red);font-weight:900;font-size:16px;flex-shrink:0}
+.problem-text{font-size:14px;color:rgba(255,255,255,.7);line-height:1.4}
+
+/* ── SCENE 3: COACH DATABASE ── */
+#s3{background:var(--navy);padding:24px 20px}
+.feature-label{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;animation:fadeUp .4s ease both}
+.feature-title{font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:#fff;margin-bottom:4px;animation:fadeUp .4s ease both .1s}
+.feature-sub{font-size:14px;color:rgba(255,255,255,.45);margin-bottom:20px;animation:fadeUp .4s ease both .2s}
+.db-card{background:#0d1f35;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;margin-bottom:10px;animation:slideIn .4s ease both}
+.db-card:nth-child(1){animation-delay:.3s}
+.db-card:nth-child(2){animation-delay:.45s}
+.db-card:nth-child(3){animation-delay:.6s}
+.db-card:nth-child(4){animation-delay:.75s}
+.db-school{font-weight:700;color:#fff;font-size:15px;margin-bottom:4px}
+.db-details{display:flex;gap:8px;flex-wrap:wrap}
+.db-tag{background:rgba(232,160,32,.1);border:1px solid rgba(232,160,32,.2);border-radius:99px;padding:2px 8px;font-size:11px;font-weight:600;color:var(--gold)}
+.db-tag.green{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.2);color:var(--green)}
+.db-stat{font-family:'Barlow Condensed',sans-serif;font-size:48px;font-weight:900;color:var(--gold);text-align:center;margin-top:8px;animation:countUp .8s ease both .5s}
+.db-stat-label{text-align:center;font-size:13px;color:rgba(255,255,255,.4);margin-top:4px}
+
+/* ── SCENE 4: AI EMAIL ── */
+#s4{background:var(--navy);padding:24px 20px}
+.email-box{background:#0d1f35;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px;margin-top:12px;animation:fadeUp .5s ease both .3s}
+.email-to{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:8px;font-weight:600}
+.email-subject{font-size:14px;font-weight:700;color:#fff;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:10px}
+.email-body{font-size:13px;color:rgba(255,255,255,.6);line-height:1.7}
+.typing-cursor{display:inline-block;width:2px;height:14px;background:var(--gold);animation:blink .7s ease infinite;vertical-align:middle;margin-left:2px}
+.ai-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--green);margin-bottom:12px;animation:fadeUp .4s ease both .2s}
+.generate-btn{width:100%;background:var(--gold);color:var(--navy);border:none;border-radius:10px;padding:14px;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;margin-top:14px;animation:fadeUp .4s ease both .5s;letter-spacing:.3px}
+
+/* ── SCENE 5: AUTOPILOT ── */
+#s5{background:var(--navy);padding:24px 20px;text-align:center}
+.ap-visual{width:100%;background:#0d1f35;border:1px solid rgba(232,160,32,.2);border-radius:14px;padding:20px;margin-top:12px;animation:fadeUp .5s ease both .3s}
+.ap-steps{display:flex;flex-direction:column;gap:14px;text-align:left;margin-bottom:20px}
+.ap-step{display:flex;align-items:flex-start;gap:12px}
+.ap-num{width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--navy);font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.ap-step-text strong{display:block;font-size:14px;font-weight:700;color:#fff;margin-bottom:2px}
+.ap-step-text span{font-size:12px;color:rgba(255,255,255,.4)}
+.ap-stats{display:flex;gap:12px}
+.ap-stat{flex:1;background:rgba(232,160,32,.08);border:1px solid rgba(232,160,32,.15);border-radius:8px;padding:12px;text-align:center}
+.ap-stat-num{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--gold)}
+.ap-stat-label{font-size:10px;color:rgba(255,255,255,.35);font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-top:2px}
+
+/* ── SCENE 6: MORE FEATURES ── */
+#s6{background:var(--navy);padding:24px 20px}
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.feat-card{background:#0d1f35;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px;animation:scaleIn .4s ease both}
+.feat-card:nth-child(1){animation-delay:.2s}
+.feat-card:nth-child(2){animation-delay:.3s}
+.feat-card:nth-child(3){animation-delay:.4s}
+.feat-card:nth-child(4){animation-delay:.5s}
+.feat-icon{font-size:28px;margin-bottom:8px;display:block}
+.feat-name{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:#fff;margin-bottom:4px}
+.feat-desc{font-size:11px;color:rgba(255,255,255,.4);line-height:1.4}
+
+/* ── SCENE 7: PRICING ── */
+#s7{background:var(--navy);text-align:center}
+.pricing-card{background:linear-gradient(135deg,rgba(232,160,32,.12),rgba(232,160,32,.04));border:2px solid rgba(232,160,32,.4);border-radius:20px;padding:32px 24px;width:100%;position:relative;animation:scaleIn .5s ease both .2s}
+.pricing-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px 2px 0 0}
+.pricing-tag{display:inline-block;background:var(--gold);color:var(--navy);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:900;letter-spacing:.1em;padding:4px 14px;border-radius:99px;margin-bottom:16px;text-transform:uppercase}
+.pricing-price{font-family:'Barlow Condensed',sans-serif;font-size:80px;font-weight:900;line-height:1;color:var(--gold);margin-bottom:4px}
+.pricing-price sup{font-size:32px;vertical-align:super;opacity:.7}
+.pricing-price sub{font-size:20px;opacity:.5}
+.pricing-compare{font-size:13px;color:rgba(255,255,255,.35);margin-bottom:20px}
+.pricing-compare s{color:rgba(239,68,68,.6)}
+.pricing-list{list-style:none;text-align:left;display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.pricing-list li{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,.7)}
+.pricing-list li::before{content:'✓';color:var(--green);font-weight:900;flex-shrink:0}
+.pricing-cta{width:100%;background:var(--gold);color:var(--navy);border:none;border-radius:10px;padding:14px;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:.3px;animation:pulse-gold 2s ease infinite}
+
+/* ── SCENE 8: CTA ── */
+#s8{background:var(--navy);text-align:center}
+.cta-headline{font-family:'Barlow Condensed',sans-serif;font-size:56px;font-weight:900;line-height:.88;color:#fff;margin-bottom:16px;animation:fadeUp .5s ease both .1s}
+.cta-headline em{color:var(--gold);font-style:italic;display:block}
+.cta-link{font-size:18px;font-weight:700;color:var(--gold);margin-bottom:24px;animation:fadeUp .5s ease both .2s}
+.cta-link span{background:rgba(232,160,32,.1);border:1px solid rgba(232,160,32,.3);border-radius:8px;padding:8px 16px;display:inline-block}
+.bio-arrow{font-size:48px;animation:bounceDown 1s ease infinite;margin-top:8px}
+.cta-sub{font-size:14px;color:rgba(255,255,255,.35);margin-top:16px;animation:fadeUp .5s ease both .4s}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes bounceDown{0%,100%{transform:translateY(0)}50%{transform:translateY(10px)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:.8}}
+@keyframes pulse-gold{0%,100%{box-shadow:0 0 0 0 rgba(232,160,32,.4)}70%{box-shadow:0 0 0 12px rgba(232,160,32,0)}}
+@keyframes countUp{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+  <div class="scene-counter" id="counter">1 / 8</div>
+
+  <!-- SCENE 1: HOOK -->
+  <div class="scene active" id="s1">
+    <div class="hook-ball">⚾</div>
+    <div class="hook-eyebrow">Attention Baseball Families</div>
+    <div class="hook-headline">Your Son<br><em>Deserves</em><br>To Play.</div>
+    <div class="hook-sub">If he wants to play college baseball, this app will change everything.</div>
+    <div class="tap-hint">TAP TO CONTINUE →</div>
+  </div>
+
+  <!-- SCENE 2: PROBLEM -->
+  <div class="scene" id="s2">
+    <div class="problem-icon">😤</div>
+    <div class="problem-title">Sound Familiar?</div>
+    <div class="problem-items">
+      <div class="problem-item"><div class="problem-x">✗</div><div class="problem-text">Hours Googling coach emails that don't exist</div></div>
+      <div class="problem-item"><div class="problem-x">✗</div><div class="problem-text">Sending emails that never get a response</div></div>
+      <div class="problem-item"><div class="problem-x">✗</div><div class="problem-text">Paying $300/mo for a "recruiting service"</div></div>
+      <div class="problem-item"><div class="problem-x">✗</div><div class="problem-text">Missing deadlines because nothing is tracked</div></div>
+    </div>
+  </div>
+
+  <!-- SCENE 3: COACH DATABASE -->
+  <div class="scene" id="s3">
+    <div class="feature-label">Feature 1</div>
+    <div class="feature-title">Coach Database</div>
+    <div class="feature-sub">370+ verified contacts — real emails, phone numbers & Twitter</div>
+    <div class="db-card"><div class="db-school">Chipola College</div><div class="db-details"><span class="db-tag">JUCO D1</span><span class="db-tag green">✓ Verified</span><span class="db-tag">Florida</span></div></div>
+    <div class="db-card"><div class="db-school">University of Florida</div><div class="db-details"><span class="db-tag">NCAA D1</span><span class="db-tag green">✓ Verified</span><span class="db-tag">SEC</span></div></div>
+    <div class="db-card"><div class="db-school">Florida State University</div><div class="db-details"><span class="db-tag">NCAA D1</span><span class="db-tag green">✓ Verified</span><span class="db-tag">ACC</span></div></div>
+    <div class="db-stat">370+</div>
+    <div class="db-stat-label">Programs · Every Level · Updated Regularly</div>
+  </div>
+
+  <!-- SCENE 4: AI EMAIL WRITER -->
+  <div class="scene" id="s4">
+    <div class="feature-label">Feature 2</div>
+    <div class="feature-title">AI Email Writer</div>
+    <div class="feature-sub">Personalized coach email in 30 seconds</div>
+    <div class="ai-badge">✦ AI Generated — Not a Template</div>
+    <div class="email-box">
+      <div class="email-to">To: coach.johnson@chipola.edu</div>
+      <div class="email-subject">RHP Interested in Chipola — Class of 2026</div>
+      <div class="email-body">Coach Johnson,<br><br>My name is Jake Martinez, a 6'2" RHP from Marianna, FL with a 90 MPH fastball and 3.8 GPA. I've followed Chipola's program closely and love the development your pitchers show.<br><br>Would you be open to a quick call this spring?<br><br>Thank you,<br>Jake<span class="typing-cursor"></span></div>
+    </div>
+    <button class="generate-btn">✦ Generate Email</button>
+  </div>
+
+  <!-- SCENE 5: AUTOPILOT -->
+  <div class="scene" id="s5">
+    <div class="feature-label">Feature 3 — The Game Changer</div>
+    <div class="feature-title" style="font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:#fff;margin-bottom:4px">Recruiting Autopilot</div>
+    <div class="feature-sub" style="font-size:14px;color:rgba(255,255,255,.45);margin-bottom:12px">AI runs your entire campaign automatically</div>
+    <div class="ap-visual">
+      <div class="ap-steps">
+        <div class="ap-step"><div class="ap-num">1</div><div class="ap-step-text"><strong>Set your filters</strong><span>Division, position, state, GPA</span></div></div>
+        <div class="ap-step"><div class="ap-num">2</div><div class="ap-step-text"><strong>AI finds every match</strong><span>RecruitPro identifies all fitting programs</span></div></div>
+        <div class="ap-step"><div class="ap-num">3</div><div class="ap-step-text"><strong>AI writes every email</strong><span>Personalized to each coach — not a template</span></div></div>
+      </div>
+      <div class="ap-stats">
+        <div class="ap-stat"><div class="ap-stat-num">12</div><div class="ap-stat-label">Emails Generated</div></div>
+        <div class="ap-stat"><div class="ap-stat-num">~1hr</div><div class="ap-stat-label">Full Campaign</div></div>
+        <div class="ap-stat"><div class="ap-stat-num">$0</div><div class="ap-stat-label">Extra Cost</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 6: MORE FEATURES -->
+  <div class="scene" id="s6">
+    <div class="feature-label">And That's Not All</div>
+    <div class="feature-title" style="font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:#fff;margin-bottom:4px">10+ Tools Included</div>
+    <div class="feat-grid">
+      <div class="feat-card"><span class="feat-icon">💰</span><div class="feat-name">Scholarship Calc</div><div class="feat-desc">Compare real 4-year costs</div></div>
+      <div class="feat-card"><span class="feat-icon">🏫</span><div class="feat-name">Schools Tracker</div><div class="feat-desc">Full pipeline management</div></div>
+      <div class="feat-card"><span class="feat-icon">🏆</span><div class="feat-name">Offer Tracker</div><div class="feat-desc">Log every offer</div></div>
+      <div class="feat-card"><span class="feat-icon">📆</span><div class="feat-name">Calendar</div><div class="feat-desc">Never miss a deadline</div></div>
+    </div>
+  </div>
+
+  <!-- SCENE 7: PRICING -->
+  <div class="scene" id="s7">
+    <div class="pricing-card">
+      <div class="pricing-tag">Everything Included</div>
+      <div class="pricing-price"><sup>$</sup>20<sub>/mo</sub></div>
+      <div class="pricing-compare">Others charge <s>$200–$500/mo</s> for this</div>
+      <ul class="pricing-list">
+        <li>Recruiting Autopilot</li>
+        <li>AI Email Writer</li>
+        <li>370+ Coach Contacts</li>
+        <li>Scholarship Calculator</li>
+        <li>Offer Tracker + Calendar</li>
+        <li>Cancel anytime</li>
+      </ul>
+      <button class="pricing-cta">Get Full Access — $20/mo ⚾</button>
+    </div>
+  </div>
+
+  <!-- SCENE 8: FINAL CTA -->
+  <div class="scene" id="s8">
+    <div class="hook-ball" style="font-size:56px;margin-bottom:16px">⚾</div>
+    <div class="cta-headline">Get Your<br>Son<br><em>Recruited.</em></div>
+    <div class="cta-link"><span>recruitpro-app.netlify.app</span></div>
+    <div class="bio-arrow">👇</div>
+    <div class="cta-sub">Link in bio · $20/mo · Cancel anytime</div>
+  </div>
+
+  <!-- Tap zones -->
+  <div class="tap-left" onclick="prevScene()"></div>
+  <div class="tap-right" onclick="nextScene()"></div>
+</div>
+
+<script>
+const scenes = document.querySelectorAll('.scene');
+const progress = document.getElementById('progress');
+const counter = document.getElementById('counter');
+let current = 0;
+const DURATION = 5000; // 5 seconds per scene
+let timer;
+
+function showScene(idx) {
+  scenes.forEach((s,i) => {
+    s.classList.toggle('active', i === idx);
+    // Reset animations by cloning
+    if(i === idx) {
+      const clone = s.cloneNode(true);
+      s.parentNode.replaceChild(clone, s);
+      clone.classList.add('active');
+      scenes[idx] = clone;
+    }
+  });
+  counter.textContent = `${idx+1} / ${scenes.length}`;
+  progress.style.transition = 'none';
+  progress.style.width = '0%';
+  setTimeout(() => {
+    progress.style.transition = `width ${DURATION}ms linear`;
+    progress.style.width = '100%';
+  }, 50);
+  clearTimeout(timer);
+  timer = setTimeout(() => nextScene(), DURATION);
+}
+
+function nextScene() {
+  if(current < scenes.length - 1) {
+    current++;
+    showScene(current);
+  } else {
+    current = 0;
+    showScene(0);
+  }
+}
+
+function prevScene() {
+  if(current > 0) {
+    current--;
+    showScene(current);
+  }
+}
+
+// Re-query after DOM manipulation
+function getScenes() {
+  return document.querySelectorAll('.scene');
+}
+
+// Override tap handlers after potential DOM replacement
+document.querySelector('.tap-left').addEventListener('click', prevScene);
+document.querySelector('.tap-right').addEventListener('click', nextScene);
+
+// Start
+showScene(0);
+</script>
+</body>
+</html>

@@ -2422,8 +2422,8 @@ function selectProgram(id) {
       <div class="coach-top">
         <div><div class="coach-name">${c.name}</div><div class="coach-role">${c.role}${c.replyRate ? ' · <span style="color:var(--green2);font-weight:700;font-size:11px">'+c.replyRate+'% reply rate</span>' : ''}</div></div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="btn btn-green btn-sm" onclick="writeEmailForDB('${selectedProgram.id}','${c.name}','${c.role}')">✉ Email</button>
-          ${c.twitter?`<button class="btn btn-sm" style="background:#000;color:#fff;border:none" onclick="openTwitterDM('${c.twitter}')"><span style="font-size:12px;font-weight:800">𝕏</span> DM</button>`:''}
+          <button class="btn btn-green btn-sm" onclick="writeEmailForDB(${JSON.stringify(selectedProgram.id)},${JSON.stringify(c.name)})">✉ Email</button>
+          ${c.twitter?`<button class="btn btn-sm" style="background:#000;color:#fff;border:none" onclick="openTwitterDM(${JSON.stringify(c.twitter)})"><span style="font-size:12px;font-weight:800">𝕏</span> DM</button>`:''}
         </div>
       </div>
       <div class="coach-contact">
@@ -2471,7 +2471,7 @@ function selectProgram(id) {
     </div>
     <div class="db-actions">
       <button class="btn btn-primary btn-sm" onclick="addDBSchoolToTracker('${selectedProgram.id}')">+ Add to My Schools</button>
-      <button class="btn btn-navy btn-sm" onclick="writeEmailForDB('${selectedProgram.id}','${selectedProgram.coaches[0]?.name||''}','Head Coach')">✉ Write Email to Coach</button>
+      <button class="btn btn-navy btn-sm" onclick="writeEmailForDB(${JSON.stringify(selectedProgram.id)},${JSON.stringify(selectedProgram.coaches[0]?.name||'')})">✉ Write Email to Coach</button>
       <button class="btn btn-ghost btn-sm" onclick="copyText(\`${allContact.replace(/`/g,"'")}\`)" title="Copy all coach contact info">📋 Copy All Contacts</button>
       <button class="btn btn-ghost btn-sm" onclick="openContrib('${selectedProgram.id}')">🤝 Contribute</button>
     </div>
@@ -2975,8 +2975,15 @@ function openGmailDraft() {
   const subjectLine = lines.find(l => l.startsWith('Subject:'));
   const subject = subjectLine ? subjectLine.replace(/^Subject:\s*/,'').trim() : '';
   const bodyLines = lines.slice(lines.indexOf(subjectLine)+1).join('\n').trim();
-  const toEmail = document.getElementById('e-school').value.includes('@') ? '' : '';
-  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines)}`;
+  // Look up coach email from DB based on school field value
+  const schoolFieldVal = document.getElementById('e-school').value.trim();
+  const schoolNameOnly = schoolFieldVal.split('—')[0].trim();
+  const dbMatch = coachDB.find(p => p.name.toLowerCase() === schoolNameOnly.toLowerCase())
+    || coachDB.find(p => schoolNameOnly.toLowerCase().includes(p.name.toLowerCase()))
+    || coachDB.find(p => p.name.toLowerCase().includes(schoolNameOnly.toLowerCase()));
+  const hc = dbMatch?.coaches?.find(c => c.role === 'Head Coach') || dbMatch?.coaches?.[0] || null;
+  const toEmail = hc?.email || '';
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1${toEmail ? '&to='+encodeURIComponent(toEmail) : ''}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines)}`;
   window.open(gmailUrl, '_blank');
 }
 function clearEmail() {
@@ -3185,7 +3192,7 @@ Body under 120 words. Format: "Subject: " then blank line then email. No bracket
   updateCount();
   renderCampaign();
   document.getElementById('ap-stat-sent').textContent = apCampaign.length;
-  document.getElementById('ap-stat-pending').textContent = apCampaign.filter(e => e.status === 'review').length;
+  document.getElementById('ap-stat-pending').textContent = apCampaign.filter(e => !e.approved).length;
   document.getElementById('ap-queue-count').textContent = apCampaign.length + ' emails';
   const btnEnd = document.getElementById('ap-gen-btn');
   if(btnEnd) { btnEnd.innerHTML = '🤖 Generate Campaign'; btnEnd.disabled = false; }
@@ -3193,7 +3200,7 @@ Body under 120 words. Format: "Subject: " then blank line then email. No bracket
 }
 
 function generateFallbackEmail(name, pos, year, stats, program, coachName) {
-  const lastName = coachName.split(' ').pop();
+  const lastName = coachName ? coachName.trim().split(' ').pop() : '';
   const statsLine = stats ? `This past season: ${stats}.` : '';
   const confDetail = program.conf ? ` competing in the ${program.conf}` : '';
   const hometown = playerProfile.hometown || 'Florida';
@@ -3521,10 +3528,6 @@ function addShowcaseToTimeline(name) {
     showToast('Added "' + name + '" to your timeline!');
   }
 }
-
-// ── UPDATE SWITCH VIEW FOR NEW TABS ──────────────────────────
-const _origSwitch = switchView;
-
 
 // ── EMAIL HISTORY ─────────────────────────────────────────────
 let emailHistory = [];
@@ -3974,7 +3977,6 @@ function updateSidebarUser() {
 }
 
 // Intercept nav clicks — called from switchView
-const _originalSwitchView = null;
 function paywallSwitchView(id, el) {
   // Proceed with normal navigation
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));

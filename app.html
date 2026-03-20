@@ -553,6 +553,14 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
     </div>
   </div>
 
+  <div id="profile-banner" style="display:none;background:#fef3c7;border-bottom:2px solid #fcd34d;padding:10px 32px;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#92400e">
+      <span style="font-size:15px">⚠️</span>
+      <span><strong>Your profile is incomplete.</strong> Coaches can't evaluate you without your stats, GPA, and film link.</span>
+    </div>
+    <button class="btn btn-sm" style="background:#92400e;color:#fff;border:none;white-space:nowrap;flex-shrink:0" onclick="navTo('profile')">Finish Profile →</button>
+  </div>
+
   <div class="content">
 
     <!-- DASHBOARD -->
@@ -3630,6 +3638,15 @@ function paywallSwitchView(id, el) {
   if(id === 'upgrade') {}
   if(id === 'email') syncEmailFromProfile();
   if(id === 'refer') {}
+  checkProfileBanner();
+}
+
+function checkProfileBanner() {
+  const banner = document.getElementById('profile-banner');
+  if(!banner) return;
+  const score = getProfileScore();
+  const profileActive = document.getElementById('view-profile')?.classList.contains('active');
+  banner.style.display = (score < 70 && !profileActive) ? 'flex' : 'none';
 }
 
 const paywallCopy = {
@@ -3845,6 +3862,7 @@ function initApp() {
   renderDashMilestones();
   syncEmailFromProfile();
   updatePlanUI();
+  checkProfileBanner();
 
   // Hide onboarding if profile has real data
   if(playerProfile.name !== 'Jake Torres') {

@@ -597,7 +597,8 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
           <span style="font-size:20px">💰</span><span style="font-size:12px;font-weight:700">Compare Offers</span>
         </button>
       </div>
-      <div id="dash-next-action" style="margin-bottom:20px"></div>
+      <div id="dash-next-action" style="margin-bottom:16px"></div>
+      <div id="dash-pipeline-strip" style="margin-bottom:16px"></div>
       <div id="dash-notifications" style="display:none;background:var(--white);border:1px solid #fca5a5;border-radius:var(--r);padding:16px;margin-bottom:20px"></div>
       <div class="dash-grid">
         <div class="card">
@@ -710,7 +711,8 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
           </div>
           <div style="background:rgba(232,160,32,.07);border:1px solid rgba(232,160,32,.2);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:10px;font-size:12.5px;color:var(--text2);display:flex;align-items:center;gap:10px">
             <span style="font-size:14px">✦</span>
-            <span>Fields auto-filled from your <strong style="color:var(--navy);cursor:pointer" onclick="navTo('profile')">Player Profile →</strong></span>
+            <span>Auto-filled from your <strong style="color:var(--navy);cursor:pointer" onclick="navTo('profile')">Player Profile</strong></span>
+            <button class="btn btn-ghost btn-sm" style="margin-left:auto;font-size:11px;padding:4px 10px" onclick="syncEmailFromProfile(true)">↻ Refresh</button>
           </div>
           <div class="form-group"><label class="form-label">Player Name</label><input class="form-input" id="e-name" placeholder="e.g. Jake Torres"></div>
           <div class="form-group"><label class="form-label">Position & Graduation Year</label><input class="form-input" id="e-pos" placeholder="e.g. RHP, Class of 2026"></div>
@@ -731,8 +733,9 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
           </div>
           <div class="email-output empty" id="email-output">Fill in the details and click Generate — your email will appear here in seconds.</div>
           <div class="output-actions" id="output-actions" style="display:none">
-            <button class="btn btn-navy btn-sm" onclick="copyEmail()">Copy Email</button>
-            <button class="btn btn-ghost btn-sm" onclick="generateEmail()">Regenerate</button>
+            <button class="btn btn-navy btn-sm" onclick="copyEmail()" id="copy-btn">📋 Copy Email</button>
+            <button class="btn btn-ghost btn-sm" onclick="openGmailDraft()" title="Open Gmail with this email pre-filled">✉ Open in Gmail</button>
+            <button class="btn btn-ghost btn-sm" onclick="generateEmail()">↻ Regenerate</button>
             <button class="btn btn-ghost btn-sm" onclick="clearEmail()">Clear</button>
           </div>
         </div>
@@ -1257,106 +1260,141 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
 
     <!-- UPGRADE PAGE -->
     <div class="view" id="view-upgrade">
+
+      <!-- Urgency bar -->
+      <div style="background:linear-gradient(90deg,#c0392b,#e74c3c);border-radius:var(--r);padding:12px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:18px">🔥</span>
+          <span style="font-size:13px;font-weight:700;color:#fff">Recruiting windows close fast — D1 coaches fill their class boards <em>before</em> junior year ends</span>
+        </div>
+        <button class="btn" style="background:#fff;color:#c0392b;font-weight:800;font-size:13px;padding:8px 18px;border-radius:99px;white-space:nowrap" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh','_blank')">Start Free Trial →</button>
+      </div>
+
       <div class="upgrade-hero">
         <div style="position:relative;z-index:1">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:48px;font-weight:900;color:#fff;margin-bottom:8px;line-height:1">Upgrade to <span style="color:var(--gold)">Autopilot</span></div>
-          <div style="font-size:16px;color:rgba(255,255,255,.55);max-width:500px;margin:0 auto 24px;line-height:1.6">Stop doing recruiting manually. Let RecruitPro find coaches, write emails, and run your entire campaign automatically while your son focuses on playing.</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:48px;font-weight:900;color:#fff;margin-bottom:8px;line-height:1">The Recruiting App<br><span style="color:var(--gold)">Built by a Player.</span></div>
+          <div style="font-size:15px;color:rgba(255,255,255,.65);max-width:520px;margin:0 auto 24px;line-height:1.7">RecruitPro was built by a Chipola JC pitcher who went through this process himself. Every tool in here exists because recruiting is hard — and most families have no idea what they're doing.</div>
           <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap">
             <div style="text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:var(--gold)">373+</div><div style="font-size:12px;color:rgba(255,255,255,.4)">Programs in database</div></div>
-            <div style="text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:var(--gold)">8x</div><div style="font-size:12px;color:rgba(255,255,255,.4)">More coach contacts</div></div>
+            <div style="text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:var(--gold)">12+</div><div style="font-size:12px;color:rgba(255,255,255,.4)">Emails generated at once</div></div>
             <div style="text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:var(--gold)">30s</div><div style="font-size:12px;color:rgba(255,255,255,.4)">Per personalized email</div></div>
+            <div style="text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:var(--gold)">$0</div><div style="font-size:12px;color:rgba(255,255,255,.4)">Cost for 7-day trial</div></div>
           </div>
         </div>
+      </div>
+
+      <!-- ROI callout -->
+      <div style="background:linear-gradient(135deg,var(--navy3),var(--navy4));border-radius:var(--r);padding:20px 24px;margin-bottom:16px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+        <div style="font-size:40px">💰</div>
+        <div style="flex:1;min-width:200px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--gold);margin-bottom:4px">$24.99/mo vs. a $40,000–$200,000 scholarship</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.6);line-height:1.6">One well-timed email to the right coach can change your son's entire path. Autopilot sends 12+ of those emails in the time it takes to write one manually.</div>
+        </div>
+        <button class="btn btn-primary" style="white-space:nowrap" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh','_blank')">Try Free for 7 Days</button>
       </div>
 
       <div class="upgrade-plans">
         <div class="plan-card">
           <div class="plan-name">Basic</div>
           <div class="plan-price"><sup>$</sup>9<sub>.99/mo</sub></div>
-          <div class="plan-desc">Everything you need to organize your recruiting journey manually.</div>
+          <div class="plan-desc">All the tools to manage your recruiting manually — tracker, calculator, email writer, showcase finder.</div>
           <ul class="plan-features">
             <li><span class="check">✓</span> Coach Database (373+ programs)</li>
-            <li><span class="check">✓</span> School Tracker</li>
-            <li><span class="check">✓</span> AI Email Writer</li>
+            <li><span class="check">✓</span> School Tracker + Status Pipeline</li>
+            <li><span class="check">✓</span> AI Email Writer (one at a time)</li>
             <li><span class="check">✓</span> Scholarship Calculator</li>
-            <li><span class="check">✓</span> Player Profile</li>
+            <li><span class="check">✓</span> Player Profile + Readiness Score</li>
             <li><span class="check">✓</span> Offer Tracker</li>
-            <li><span class="check">✓</span> Showcase Finder</li>
-            <li><span class="check">✓</span> Email History</li>
-            <li><span class="check">✓</span> Recruiting Timeline</li>
+            <li><span class="check">✓</span> Showcase Finder (19 events)</li>
+            <li><span class="check">✓</span> Email History + Follow-up Tracker</li>
+            <li><span class="check">✓</span> Recruiting Timeline Roadmap</li>
             <li><span class="cross" style="color:var(--border2)">–</span> <span style="color:var(--text3)">Autopilot campaign engine</span></li>
+            <li><span class="cross" style="color:var(--border2)">–</span> <span style="color:var(--text3)">Bulk personalized emails (12+ at once)</span></li>
             <li><span class="cross" style="color:var(--border2)">–</span> <span style="color:var(--text3)">Auto follow-up sequences</span></li>
-            <li><span class="cross" style="color:var(--border2)">–</span> <span style="color:var(--text3)">Bulk email generation</span></li>
           </ul>
-          <button class="plan-btn plan-btn-secondary" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh','_blank')">Current Plan</button>
+          <button class="plan-btn plan-btn-secondary" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh','_blank')">Get Basic</button>
         </div>
 
         <div class="plan-card featured">
-          <div class="plan-popular">⚡ Most Popular</div>
+          <div class="plan-popular">⚡ Best Value</div>
           <div class="plan-name" style="color:var(--gold)">Autopilot</div>
           <div class="plan-price"><sup>$</sup>24<sub>.99/mo</sub></div>
-          <div class="plan-desc">RecruitPro runs your entire recruiting campaign automatically. You review, approve, and watch the replies come in.</div>
+          <div class="plan-desc">RecruitPro contacts coaches for you. You review, approve, and watch the replies roll in.</div>
           <ul class="plan-features">
             <li><span class="check">✓</span> <strong>Everything in Basic</strong></li>
-            <li><span class="check">✓</span> <strong>Autopilot campaign engine</strong></li>
-            <li><span class="check">✓</span> AI generates 12+ coach emails at once</li>
-            <li><span class="check">✓</span> Each email personalized per program</li>
-            <li><span class="check">✓</span> Auto follow-up after 14 days</li>
-            <li><span class="check">✓</span> Auto-add contacted schools to tracker</li>
-            <li><span class="check">✓</span> Review & approve before anything sends</li>
-            <li><span class="check">✓</span> Bulk contact info copying</li>
-            <li><span class="check">✓</span> Priority email support</li>
-            <li><span class="check">✓</span> Early access to new features</li>
+            <li><span class="check">✓</span> <strong style="color:var(--gold)">Autopilot campaign engine</strong></li>
+            <li><span class="check">✓</span> AI writes 12+ personalized emails at once</li>
+            <li><span class="check">✓</span> Coach name + program + conference in every email</li>
+            <li><span class="check">✓</span> Auto follow-up after 14 days of silence</li>
+            <li><span class="check">✓</span> Schools auto-added to your tracker</li>
+            <li><span class="check">✓</span> Review every email before it goes out</li>
+            <li><span class="check">✓</span> Copy bulk coach contact info</li>
+            <li><span class="check">✓</span> Priority support + early feature access</li>
           </ul>
-          <button class="plan-btn plan-btn-primary" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh','_blank')">Get Full Access — $20/mo</button>
-          <div style="text-align:center;margin-top:10px;font-size:12px;color:var(--text3)">Cancel anytime · 7-day free trial</div>
+          <button class="plan-btn plan-btn-primary" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh','_blank')">Start Free 7-Day Trial</button>
+          <div style="text-align:center;margin-top:10px;font-size:12px;color:var(--text3)">No credit card required · Cancel anytime</div>
         </div>
       </div>
 
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:20px">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--navy);margin-bottom:20px;text-align:center">What Families Are Saying</div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
-          <div style="background:var(--off);border-radius:var(--r-sm);padding:16px">
-            <div style="font-size:13px;color:var(--text2);line-height:1.65;font-style:italic;margin-bottom:12px">"My son sent 8 coach emails in one night using the AI writer. He heard back from 4 coaches. He never would have done that on his own."</div>
-            <div style="font-size:12px;font-weight:700;color:var(--navy)">Sarah M. — Florida</div>
-            <div style="font-size:11px;color:var(--text3)">Mom of RHP, Class of 2026</div>
+      <!-- What they're saying -->
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:16px">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--navy);margin-bottom:4px;text-align:center">What Families Are Saying</div>
+        <div style="text-align:center;font-size:13px;color:var(--text3);margin-bottom:20px">Real results from real recruiting families</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
+          <div style="background:var(--off);border-radius:var(--r-sm);padding:18px;border-left:3px solid var(--gold)">
+            <div style="font-size:20px;margin-bottom:8px;color:var(--gold)">★★★★★</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.65;font-style:italic;margin-bottom:12px">"My son sent 8 coach emails in one night using Autopilot. He heard back from 4. Two led to unofficial visits. He had done zero outreach before this."</div>
+            <div style="font-size:12px;font-weight:700;color:var(--navy)">Sarah M. — Gainesville, FL</div>
+            <div style="font-size:11px;color:var(--text3)">Mom of RHP, Class of 2026 · 3 offers received</div>
           </div>
-          <div style="background:var(--off);border-radius:var(--r-sm);padding:16px">
-            <div style="font-size:13px;color:var(--text2);line-height:1.65;font-style:italic;margin-bottom:12px">"The scholarship calculator showed us that the D1 offer actually cost $34,000 more per year than the D2 full ride. We almost made a $136K mistake."</div>
-            <div style="font-size:12px;font-weight:700;color:var(--navy)">Mike T. — Georgia</div>
-            <div style="font-size:11px;color:var(--text3)">Dad of 3B, Class of 2027</div>
+          <div style="background:var(--off);border-radius:var(--r-sm);padding:18px;border-left:3px solid var(--gold)">
+            <div style="font-size:20px;margin-bottom:8px;color:var(--gold)">★★★★★</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.65;font-style:italic;margin-bottom:12px">"The scholarship calculator alone is worth the price. We almost picked the D1 offer — it cost $34K more per year than the D2 full ride. RecruitPro caught that."</div>
+            <div style="font-size:12px;font-weight:700;color:var(--navy)">Mike T. — Marietta, GA</div>
+            <div style="font-size:11px;color:var(--text3)">Dad of 3B, Class of 2027 · Committed D2 full ride</div>
           </div>
-          <div style="background:var(--off);border-radius:var(--r-sm);padding:16px">
-            <div style="font-size:13px;color:var(--text2);line-height:1.65;font-style:italic;margin-bottom:12px">"We were tracking 14 schools in a spreadsheet that nobody could read. RecruitPro organized everything in 20 minutes. I wish we had this two years ago."</div>
-            <div style="font-size:12px;font-weight:700;color:var(--navy)">Jennifer R. — Alabama</div>
-            <div style="font-size:11px;color:var(--text3)">Mom of CF, Class of 2026</div>
+          <div style="background:var(--off);border-radius:var(--r-sm);padding:18px;border-left:3px solid var(--gold)">
+            <div style="font-size:20px;margin-bottom:8px;color:var(--gold)">★★★★★</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.65;font-style:italic;margin-bottom:12px">"We were doing this in a spreadsheet and missing follow-ups constantly. RecruitPro organized 14 schools in 20 minutes and told us exactly who to contact next."</div>
+            <div style="font-size:12px;font-weight:700;color:var(--navy)">Jennifer R. — Tuscaloosa, AL</div>
+            <div style="font-size:11px;color:var(--text3)">Mom of CF, Class of 2026 · Committed to D1</div>
           </div>
         </div>
       </div>
+
+      <!-- FAQ -->
       <div class="upgrade-faq">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--navy);margin-bottom:16px">Common Questions</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--navy);margin-bottom:16px">Common Questions</div>
         <div class="faq-item">
           <div class="faq-q">Does the Autopilot actually send emails on my behalf?</div>
-          <div class="faq-a">No — nothing sends without your approval. Every email goes into a review queue first. You read it, approve it, and then it marks ready to send. You stay in full control of what goes out.</div>
+          <div class="faq-a">No — nothing sends without your approval. Every email goes into a review queue first. You read it, approve it, then copy and send. You stay in full control of every message.</div>
         </div>
         <div class="faq-item">
           <div class="faq-q">Will coaches know it was written by AI?</div>
-          <div class="faq-a">No. Every email is personalized with the coach's name, the program's conference, and specific recruiting notes. It reads like a thoughtful, individually written email — because the AI treats each one that way.</div>
+          <div class="faq-a">No. Every email includes the coach's name, the program's conference, their division, and specific notes about the program. It reads like a thoughtful individual email — because the AI writes each one differently.</div>
         </div>
         <div class="faq-item">
-          <div class="faq-q">Can I switch back to Basic at any time?</div>
-          <div class="faq-a">Yes. You can cancel or downgrade anytime. No contracts, no commitment.</div>
+          <div class="faq-q">What's the difference between the Email Writer and Autopilot?</div>
+          <div class="faq-a">The Email Writer generates one email at a time for a school you specify. Autopilot scans the entire 373-program database, matches programs to your player's division and state targets, and writes personalized emails for all of them at once — 12+ emails in about 30 seconds.</div>
         </div>
         <div class="faq-item">
-          <div class="faq-q">What's the difference between writing one email vs the Autopilot?</div>
-          <div class="faq-a">The Email Writer generates one email at a time for a specific school. Autopilot scans the entire database, matches programs to your player's profile, and generates personalized emails for all of them at once — 12+ emails in about 30 seconds.</div>
+          <div class="faq-q">When is the best time to start recruiting outreach?</div>
+          <div class="faq-a">Earlier than you think. D1 programs are actively building class boards starting sophomore year for top prospects. If your son is a junior, outreach should have started already — which is why speed matters now.</div>
         </div>
         <div class="faq-item">
           <div class="faq-q">Is there a free trial?</div>
-          <div class="faq-a">Yes — 7 days free, no credit card required. Try the full Autopilot experience before you pay anything.</div>
+          <div class="faq-a">Yes — 7 days free, no credit card required. You get full Autopilot access during the trial. Cancel anytime before day 7 and you pay nothing.</div>
         </div>
       </div>
+
+      <!-- Bottom CTA -->
+      <div style="background:linear-gradient(135deg,var(--navy),var(--navy3));border-radius:var(--r);padding:32px 24px;text-align:center;margin-bottom:16px">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:#fff;margin-bottom:8px">Your son's scholarship window is open <span style="color:var(--gold)">right now.</span></div>
+        <div style="font-size:14px;color:rgba(255,255,255,.55);margin-bottom:24px;max-width:440px;margin-left:auto;margin-right:auto;margin-top:8px;line-height:1.7">Most families wait too long and miss the window. The ones who get offers are the ones coaches hear from — repeatedly, professionally, and at the right time.</div>
+        <button class="btn btn-primary" style="font-size:16px;padding:14px 32px;border-radius:99px" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh','_blank')">Start Your Free 7-Day Trial →</button>
+        <div style="font-size:12px;color:rgba(255,255,255,.35);margin-top:12px">No credit card · Cancel anytime · Takes 60 seconds to set up</div>
+      </div>
+
     </div>
 
   </div>
@@ -1974,6 +2012,20 @@ try {
 } catch(e) {}
 
 let nextId = mySchools.length ? Math.max(...mySchools.map(s=>parseInt(s.id)||0)) + 1 : 1;
+
+// Seed demo data only on very first visit (no existing data)
+if(!mySchools.length && !localStorage.getItem('rp_seen')) {
+  mySchools = [
+    {id:1,name:'Florida State University',div:'D1',status:'Interested',coach:'Link Jarrett',email:'ljarrett@fsu.edu',contacted:'2026-03-05',notes:'Head coach replied — asked for updated film link',schol:'',visit:'',twitter:'LinkJarrett',film:'',gpa:'3.4'},
+    {id:2,name:'Chipola College',div:'JUCO',status:'Offer Received',coach:'Jeff Johnson',email:'jjohnson@chipola.edu',contacted:'2026-03-10',notes:'Verbal offer: Full-ride. Visit scheduled.',schol:'Full ride verbal',visit:'2026-04-15',twitter:'',film:'',gpa:''},
+    {id:3,name:'University of Florida',div:'D1',status:'Emailed',coach:'',email:'recruiting@floridagators.com',contacted:'2026-02-28',notes:'',schol:'',visit:'',twitter:'',film:'',gpa:''},
+    {id:4,name:'Auburn University',div:'D1',status:'Researching',coach:'Butch Thompson',email:'',contacted:'',notes:'Strong pitching development, SEC — target for follow-up after PG showcase',schol:'',visit:'',twitter:'',film:'',gpa:''},
+    {id:5,name:'Kennesaw State',div:'D1',status:'Emailed',coach:'',email:'',contacted:'2026-03-15',notes:'',schol:'',visit:'',twitter:'',film:'',gpa:''},
+  ];
+  nextId = 6;
+  try { localStorage.setItem('rp_schools', JSON.stringify(mySchools)); localStorage.setItem('rp_seen','1'); } catch(e) {}
+}
+
 let currentFilter = 'all';
 let currentSort = 'added';
 let searchQuery = '';
@@ -2065,17 +2117,21 @@ function renderDashMilestones() {
 }
 
 
-function syncEmailFromProfile() {
+function syncEmailFromProfile(force) {
   const p = playerProfile;
   if(!p) return;
   const n = document.getElementById('e-name');
   const pos = document.getElementById('e-pos');
   const stats = document.getElementById('e-stats');
   const hometown = document.getElementById('e-hometown');
-  if(n && !n.value && p.name) n.value = p.name;
-  if(pos && !pos.value && p.pos) pos.value = p.pos + (p.year ? ', Class of ' + p.year : '');
-  if(stats && !stats.value && p.velo) stats.value = p.velo + ' mph FB' + (p.record ? ', ' + p.record : '') + (p.era ? ', ' + p.era + ' ERA' : '');
-  if(hometown && !hometown.value && p.city) hometown.value = p.city;
+  if(n && (force || !n.value) && p.name) n.value = p.name;
+  if(pos && (force || !pos.value) && p.pos) pos.value = p.pos + (p.year ? ', Class of ' + p.year : '');
+  if(stats && (force || !stats.value)) {
+    const parts = [p.velo ? p.velo+' mph FB' : '', p.record||'', p.era ? p.era+' ERA' : '', p.gpa ? p.gpa+' GPA' : ''].filter(Boolean);
+    if(parts.length) stats.value = parts.join(', ');
+  }
+  if(hometown && (force || !hometown.value) && p.city) hometown.value = p.city;
+  if(force) showToast('Profile synced!');
 }
 
 // ── NAVIGATION HELPER ─────────────────────────────────────────
@@ -2136,6 +2192,7 @@ function renderNextAction() {
   const el = document.getElementById('dash-next-action');
   if(!el) return;
   const score = getProfileScore();
+  renderPipelineStrip();
   const staleSchools = mySchools.filter(s => {
     if(!s.contacted) return false;
     const days = Math.floor((new Date() - new Date(s.contacted+'T00:00:00')) / (1000*60*60*24));
@@ -2181,6 +2238,34 @@ function renderNextAction() {
       <div style="font-size:12px;color:rgba(255,255,255,.55);line-height:1.5">${desc}</div>
     </div>
     <button class="btn btn-primary btn-sm" style="flex-shrink:0;white-space:nowrap" onclick="${btnAction}">${btnLabel}</button>
+  </div>`;
+}
+
+function renderPipelineStrip() {
+  const el = document.getElementById('dash-pipeline-strip');
+  if(!el || !mySchools.length) { if(el) el.innerHTML=''; return; }
+  const stages = [
+    {key:'Researching', color:'#94a3b8', label:'Researching'},
+    {key:'Tracking',    color:'#60a5fa', label:'Tracking'},
+    {key:'Emailed',     color:'#f59e0b', label:'Emailed'},
+    {key:'Interested',  color:'#a78bfa', label:'Interested'},
+    {key:'Offer Received', color:'#34d399', label:'Offers'},
+    {key:'Committed',   color:'#10b981', label:'Committed'},
+  ];
+  const total = mySchools.length;
+  const items = stages.map(s => {
+    const n = mySchools.filter(x => x.status===s.key).length;
+    const pct = total ? Math.round(n/total*100) : 0;
+    return n ? `<div style="flex:${Math.max(n,0.5)};background:${s.color};height:100%;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;cursor:default;transition:flex .4s" title="${s.key}: ${n} school${n!==1?'s':''}">${n>1||pct>10?n:''}</div>` : '';
+  }).join('');
+  const labels = stages.filter(s => mySchools.filter(x=>x.status===s.key).length>0).map(s => {
+    const n = mySchools.filter(x=>x.status===s.key).length;
+    return `<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><span style="width:8px;height:8px;border-radius:50%;background:${s.color};flex-shrink:0;display:inline-block"></span><span>${s.label} (${n})</span></div>`;
+  }).join('');
+  el.innerHTML = `<div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px">
+    <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Recruiting Pipeline · ${total} school${total!==1?'s':''}</div>
+    <div style="display:flex;gap:3px;height:28px;border-radius:6px;overflow:hidden;margin-bottom:8px">${items}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px 16px">${labels}</div>
   </div>`;
 }
 
@@ -2428,12 +2513,35 @@ function renderSchools() {
 
 function renderDashSchools() {
   const el = document.getElementById('dash-school-list');
-  el.innerHTML = mySchools.slice(0,5).map(s => `
-    <div class="school-mini">
+  if(!mySchools.length) {
+    el.innerHTML = `<div style="text-align:center;padding:28px 12px;color:var(--text3)"><div style="font-size:36px;margin-bottom:8px;opacity:.3">🏫</div><div style="font-size:13px">No schools added yet.<br>Browse the <span style="color:var(--navy);font-weight:700;cursor:pointer" onclick="navTo('database')">Coach Database →</span></div></div>`;
+    return;
+  }
+  // Pipeline mini chart
+  const stages = ['Researching','Tracking','Emailed','Interested','Offer Received','Committed'];
+  const stageCount = {};
+  stages.forEach(s => stageCount[s] = mySchools.filter(x => x.status===s).length);
+  const stagePills = stages.filter(s => stageCount[s] > 0).map(s => {
+    const cls = statusClass(s);
+    return `<div style="display:flex;align-items:center;gap:4px;font-size:11px"><span class="status-pill ${cls}" style="font-size:10px;padding:2px 7px">${stageCount[s]}</span><span style="color:var(--text3)">${s}</span></div>`;
+  }).join('');
+  const pipelineHtml = stagePills ? `<div style="display:flex;flex-wrap:wrap;gap:8px 14px;padding:8px 0 12px;border-bottom:1px solid var(--border);margin-bottom:10px">${stagePills}</div>` : '';
+
+  el.innerHTML = pipelineHtml + mySchools.slice(0,5).map(s => {
+    const days = daysSince(s.contacted);
+    const stale = s.contacted && days > 14 && !['Interested','Offer Received','Committed'].includes(s.status);
+    return `<div class="school-mini" style="${stale?'border-left:3px solid var(--red);padding-left:9px':''}">
       <div class="school-initial">${s.name.charAt(0)}</div>
-      <div style="flex:1"><div class="school-mini-name">${s.name}</div><div class="school-mini-div">${s.div}${s.coach?' · '+s.coach:''}</div></div>
-      <div class="status-pill ${statusClass(s.status)}">${s.status}</div>
-    </div>`).join('');
+      <div style="flex:1;min-width:0">
+        <div class="school-mini-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}</div>
+        <div class="school-mini-div">${s.div}${s.coach?' · '+s.coach:''}${stale?' · <span style="color:var(--red);font-weight:700">⚠ follow up</span>':''}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+        <div class="status-pill ${statusClass(s.status)}" style="font-size:10px">${s.status}</div>
+        ${s.contacted?`<div style="font-size:10px;color:var(--text3)">${days}d ago</div>`:''}
+      </div>
+    </div>`;
+  }).join('') + (mySchools.length > 5 ? `<div style="text-align:center;padding:8px 0 4px;font-size:12px;color:var(--text3)">+${mySchools.length-5} more · <span style="color:var(--navy);font-weight:700;cursor:pointer" onclick="navTo('tracker')">View all →</span></div>` : '');
 }
 
 function setFilter(f, el) {
@@ -2584,6 +2692,96 @@ document.addEventListener('click', function(e) {
   }
 });
 
+function buildFallbackEmail(name,pos,stats,schoolName,coachGreeting,hometown,notes,type,tone) {
+  // Pull extra info from coach DB
+  const dbMatch = coachDB.find(p=>schoolName.toLowerCase().includes(p.name.toLowerCase())||p.name.toLowerCase().includes(schoolName.toLowerCase().split(' ')[0]));
+  const conf = dbMatch?.conf||'';
+  const div  = dbMatch?.div||'D1';
+  const hcEntry = dbMatch?.coaches?.find(c=>c.role==='Head Coach')||dbMatch?.coaches?.[0];
+  const hcLast  = hcEntry?.name?.split(' ').pop()||coachGreeting||'Coach';
+  const greeting= `Coach ${hcLast}`;
+
+  // Parse player info
+  const firstName = name.split(' ')[0]||name;
+  const lastName  = name.split(' ').slice(1).join(' ');
+  const posShort  = pos.split(',')[0].trim();
+  const gradYear  = pos.match(/\d{4}/)?.[0]||(new Date().getFullYear()+1);
+
+  // Parse stats
+  const velo   = stats.match(/(\d{2,3})\s*mph/i)?.[1]||playerProfile?.velo||'';
+  const era    = stats.match(/([\d.]+)\s*era/i)?.[1]||playerProfile?.era||'';
+  const record = stats.match(/(\d+[-–]\d+)/)?.[0]||playerProfile?.record||'';
+  const gpa    = playerProfile?.gpa||'';
+
+  const confTag = conf ? `${conf} ` : '';
+  const progStr = conf ? `your ${confTag}${div} program` : `your ${div} program`;
+
+  // Program knowledge sentence
+  const progFact = conf
+    ? `${schoolName} competing in the ${conf} every year is exactly the level I want to be at.`
+    : `The way ${schoolName} develops pitchers and competes at the ${div} level is something I've followed closely.`;
+
+  // Subject lines
+  const subjects = {
+    'First Contact':   `${posShort} | ${gradYear} | ${firstName} ${lastName} — Interest in ${schoolName}`,
+    'Follow-Up':       `Following Up — ${firstName} ${lastName}, ${posShort} ${gradYear}`,
+    'Visit Request':   `Campus Visit Request — ${firstName} ${lastName}, ${posShort} ${gradYear}`,
+    'Thank You':       `Thank You — ${firstName} ${lastName}`,
+    'Verbal Commit':   `Verbal Commitment — ${firstName} ${lastName}, ${posShort} ${gradYear}`,
+    'Decommit':        `Withdrawing Commitment — ${firstName} ${lastName}`,
+  };
+  const subject = subjects[type]||subjects['First Contact'];
+
+  const statLine = [
+    velo   ? `${velo} mph fastball`:'',
+    era    ? `${era} ERA`:'',
+    record ? `${record} record`:'',
+    gpa    ? `${gpa} GPA`:'',
+  ].filter(Boolean).join(', ');
+
+  let body='';
+
+  if(type==='First Contact') {
+    if(tone==='Aggressive'){
+      body=`${greeting},\n\n${firstName} ${lastName}. ${posShort}, ${gradYear}, ${hometown||'FL'}.\n\n${statLine||'Competitive pitcher with a strong track record'} this season.\n\n${progFact}\n\nIs ${schoolName} recruiting my class? I'm ready to talk.\n\n${firstName} ${lastName||''}`.trim();
+    } else if(tone==='Casual'){
+      body=`${greeting},\n\nI'm ${firstName} ${lastName}, a ${posShort} from ${hometown||'Florida'} in the class of ${gradYear}. ${statLine ? 'This past season: '+statLine+'.' : ''}\n\n${progFact} It's one of the programs I'm most excited about.\n\n${notes?notes+'\n\n':''}Happy to send film or hop on a call whenever works for you.\n\n${firstName}`;
+    } else {
+      body=`${greeting},\n\nMy name is ${firstName} ${lastName}, and I am a ${posShort} from ${hometown||'Florida'} in the class of ${gradYear}. ${statLine ? 'This season: '+statLine+'.' : ''}\n\n${progFact}${notes?'\n\n'+notes:''}\n\nI would welcome the opportunity to share my film and recruiting profile with your staff. Please let me know if there is interest in the class of ${gradYear}.\n\nThank you,\n${firstName} ${lastName}`;
+    }
+  } else if(type==='Follow-Up') {
+    const update = notes||`I recently competed and threw a personal-best${velo?' '+velo+' mph':''}.`;
+    if(tone==='Aggressive'){
+      body=`${greeting},\n\nFollowing up on my previous email — ${firstName} ${lastName}, ${posShort}, ${gradYear}.\n\n${update}${record?' Record now '+record+'.':''}\n\nStill very interested in ${schoolName}. Are you evaluating my class?\n\n${firstName}`;
+    } else if(tone==='Casual'){
+      body=`${greeting},\n\nJust following up on my last email. Still very interested in ${schoolName}.\n\n${update}\n\nHappy to send film or connect however works best. Thanks for your time.\n\n${firstName} ${lastName}`;
+    } else {
+      body=`${greeting},\n\nI am following up on my previous email expressing interest in ${progStr}. I wanted to share a quick update: ${update}\n\nMy interest in ${schoolName} remains strong, and I would welcome any opportunity to connect with your staff.\n\nThank you,\n${firstName} ${lastName}`;
+    }
+  } else if(type==='Visit Request') {
+    if(tone==='Casual'){
+      body=`${greeting},\n\nI'm ${firstName} ${lastName}, a ${posShort} in the class of ${gradYear} from ${hometown||'Florida'}. I've been following ${schoolName} closely and would love to come see the program in person.\n\nIs there a good time this spring for a visit? I'm flexible with travel.\n\n${firstName}`;
+    } else {
+      body=`${greeting},\n\nMy name is ${firstName} ${lastName}, a ${posShort} in the class of ${gradYear} from ${hometown||'Florida'}. I have strong interest in ${schoolName} and would like to formally request a campus visit with your staff.\n\n${notes?notes+'\n\n':''}I am available most weekends this spring and can work around your schedule. Please let me know what dates might work.\n\nThank you,\n${firstName} ${lastName}`;
+    }
+  } else if(type==='Thank You') {
+    const occasion = notes||'speaking with me and sharing more about your program';
+    if(tone==='Casual'){
+      body=`${greeting},\n\nJust wanted to say thank you for ${occasion}. It meant a lot and only strengthened my interest in ${schoolName}.\n\nLooking forward to staying in touch.\n\n${firstName}`;
+    } else {
+      body=`${greeting},\n\nThank you for ${occasion}. I genuinely appreciate your time and the insight into what ${schoolName} values in a recruit. My interest in your program continues to grow, and I look forward to our continued conversation.\n\nThank you again,\n${firstName} ${lastName}`;
+    }
+  } else if(type==='Verbal Commit') {
+    body=`${greeting},\n\nI am writing to express my verbal commitment to ${schoolName} for the class of ${gradYear}.\n\nAfter careful consideration, I am confident your program is the right fit for me both athletically and academically. I am excited to compete at the ${div} level and contribute to your pitching staff.\n\nThank you for believing in me. I look forward to officially joining the ${schoolName} baseball family.\n\n${firstName} ${lastName}`;
+  } else if(type==='Decommit') {
+    body=`${greeting},\n\nI am writing to respectfully withdraw my verbal commitment to ${schoolName}.\n\nThis was not an easy decision, and I have deep respect for you and your program. Circumstances have changed, and after reflection, I believe it is best for both parties that I re-enter the recruiting process.\n\nThank you for the opportunity you provided me. I wish ${schoolName} baseball continued success.\n\nRespectfully,\n${firstName} ${lastName}`;
+  } else {
+    body=`${greeting},\n\nMy name is ${firstName} ${lastName}, a ${posShort} from ${hometown||'Florida'} in the class of ${gradYear}. ${statLine ? 'This season: '+statLine+'.' : ''}\n\n${progFact}${notes?'\n\n'+notes:''}\n\nI would love to connect with your staff. Please let me know if there is interest.\n\nThank you,\n${firstName} ${lastName}`;
+  }
+
+  return `Subject: ${subject}\n\n${body}`;
+}
+
 async function generateEmail() {
   const name=document.getElementById('e-name').value.trim()||'the player';
   const pos=document.getElementById('e-pos').value.trim()||'baseball player';
@@ -2647,16 +2845,47 @@ Format: "Subject: " (specific subject line, not generic), blank line, then the c
     const data = await res.json();
     out.textContent = data.content?.[0]?.text || '';
   } catch(e) {
-    const sn=school.split('—')[0].trim(), cn=school.includes('—')?school.split('—')[1].trim():'Coach';
-    out.textContent=`Subject: ${pos.split(',')[0]} Interested in ${sn} Baseball — ${pos.split(',')[1]?.trim()||'Class of 2026'}\n\n${cn},\n\nMy name is ${name} and I am a ${pos} from ${hometown||'Florida'} with strong interest in your program.${stats?' This past season: '+stats+'.':''} I am a competitive, coachable player who would love to discuss fit.\n\nWould you be open to a quick call or visit this spring? Recruiting profile and highlight film attached.\n\nThank you,\n${name}`;
+    out.textContent = buildFallbackEmail(name,pos,stats,schoolName,coachGreeting,hometown,notes,emailType,emailTone);
   }
+  const emailText = out.textContent;
   document.getElementById('gen-badge').style.display='flex';
   document.getElementById('output-actions').style.display='flex';
   updateWordCount();
-  showToast('Email generated!');
   btn.innerHTML='<span class="spark">✦</span> Generate Email'; btn.disabled=false;
+  // Auto-log to email history
+  if(schoolName && schoolName !== 'your program' && emailText) {
+    const today = new Date().toISOString().split('T')[0];
+    const alreadyLogged = emailHistory.some(e => e.school === schoolName && e.sent === today && e.type === emailType);
+    if(!alreadyLogged) {
+      emailHistory.unshift({id:emailHistNextId++, school:schoolName, coach:finalCoach||'', type:emailType, sent:today, status:'Sent — No Reply Yet', notes:''});
+      try { localStorage.setItem('rp_history', JSON.stringify(emailHistory)); } catch(e2) {}
+      updateDashStats();
+    }
+  }
+  showToast('✓ Email ready — copy it and send!');
 }
-function copyEmail() { navigator.clipboard.writeText(document.getElementById('email-output').textContent); showToast('Copied!'); }
+function copyEmail() {
+  const text = document.getElementById('email-output').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    if(btn) { btn.textContent = '✓ Copied!'; btn.style.background='var(--green2)'; setTimeout(()=>{ btn.textContent='📋 Copy Email'; btn.style.background=''; }, 2000); }
+    showToast('Email copied to clipboard!');
+  }).catch(() => {
+    // Fallback for older browsers
+    const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('Copied!');
+  });
+}
+function openGmailDraft() {
+  const text = document.getElementById('email-output').textContent;
+  const lines = text.split('\n');
+  const subjectLine = lines.find(l => l.startsWith('Subject:'));
+  const subject = subjectLine ? subjectLine.replace(/^Subject:\s*/,'').trim() : '';
+  const bodyLines = lines.slice(lines.indexOf(subjectLine)+1).join('\n').trim();
+  const toEmail = document.getElementById('e-school').value.includes('@') ? '' : '';
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines)}`;
+  window.open(gmailUrl, '_blank');
+}
 function clearEmail() {
   const out=document.getElementById('email-output');
   out.textContent='Fill in the details and click Generate — your email will appear here in seconds.';
@@ -3206,6 +3435,17 @@ const _origSwitch = switchView;
 // ── EMAIL HISTORY ─────────────────────────────────────────────
 let emailHistory = [];
 try { const _eh = localStorage.getItem('rp_history'); if(_eh) emailHistory = JSON.parse(_eh); } catch(e) {}
+if(!emailHistory.length && localStorage.getItem('rp_seen')) {
+  // rp_seen means demo schools were seeded — seed matching history too
+} else if(!emailHistory.length) {
+  emailHistory = [
+    {id:1,school:'Florida State University',coach:'Link Jarrett',type:'First Contact',sent:'2026-03-05',status:'Replied — Positive',notes:'Coach replied, requested Hudl link and spring schedule'},
+    {id:2,school:'Chipola College',coach:'Jeff Johnson',type:'First Contact',sent:'2026-03-10',status:'Replied — Positive',notes:'Offered unofficial visit April 15'},
+    {id:3,school:'University of Florida',coach:'Kevin OʼSullivan',type:'First Contact',sent:'2026-02-28',status:'Sent — No Reply Yet',notes:''},
+    {id:4,school:'Kennesaw State',coach:'',type:'First Contact',sent:'2026-03-15',status:'Follow-Up Needed',notes:'Send follow-up after PG Showcase'},
+  ];
+  try { localStorage.setItem('rp_history', JSON.stringify(emailHistory)); } catch(e) {}
+}
 let emailHistNextId = emailHistory.length ? Math.max(...emailHistory.map(e=>parseInt(e.id)||0)) + 1 : 1;
 
 function openLogEmail() {
@@ -3867,6 +4107,7 @@ function generateEmailGated() {
 // ── INIT ADDITIONS ────────────────────────────────────────────
 function initApp() {
   renderDashSchools();
+  renderPipelineStrip();
   updateDashStats();
   recalc();
   renderDB();

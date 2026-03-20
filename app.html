@@ -27,10 +27,10 @@
   --shadow-lg:0 8px 40px rgba(7,17,31,.13);
 }
 html,body{height:100%;overflow:hidden}
-body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);display:flex;height:100vh}
+body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);display:flex;height:100vh;height:100dvh}
 
 /* SIDEBAR */
-.sidebar{width:240px;flex-shrink:0;background:var(--navy);display:flex;flex-direction:column;height:100vh;position:relative;overflow:hidden}
+.sidebar{width:240px;flex-shrink:0;background:var(--navy);display:flex;flex-direction:column;height:100vh;height:100dvh;position:relative;overflow:hidden}
 .sidebar::before{content:'';position:absolute;bottom:-60px;left:-60px;width:280px;height:280px;background:radial-gradient(ellipse,rgba(232,160,32,.1) 0%,transparent 70%);pointer-events:none}
 .sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,.07)}
 .logo-mark{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:#fff;letter-spacing:.3px}
@@ -321,12 +321,69 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
   .sidebar.open{left:0}
   .mobile-overlay.show{display:block}
   .hamburger{display:flex}
-  .stat-row{grid-template-columns:1fr 1fr}
-  .dash-grid,.email-layout,.calc-layout{grid-template-columns:1fr}
-  .content{padding:16px}
-  .topbar{padding:0 16px}
+  /* Dashboard */
+  .stat-row{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+  .stat-card{padding:14px 16px}
+  .stat-num{font-size:34px}
+  .dash-grid{grid-template-columns:1fr;gap:14px}
+  /* Content/topbar */
+  .content{padding:14px 12px}
+  .topbar{padding:0 12px}
+  /* Coach DB */
   .db-layout{height:auto;grid-template-columns:1fr}
-  .db-sidebar{height:300px}
+  .db-sidebar{height:260px}
+  .db-detail-header{padding:16px 18px}
+  .db-detail-body{padding:16px 18px}
+  .db-actions{padding:12px 18px}
+  /* Email writer */
+  .email-layout{grid-template-columns:1fr;height:auto;gap:14px}
+  .email-panel{padding:16px;gap:10px}
+  .output-panel{padding:16px}
+  .output-actions{flex-wrap:wrap;gap:8px}
+  .type-row{grid-template-columns:1fr 1fr}
+  /* Calculator */
+  .calc-layout{grid-template-columns:1fr;gap:14px}
+  .calc-input{width:90px}
+  .bar-label{width:70px;font-size:12px}
+  /* Profile */
+  .profile-layout{grid-template-columns:1fr;gap:14px}
+  .profile-card-preview{position:relative;top:auto}
+  .profile-2col{grid-template-columns:1fr 1fr}
+  .profile-3col{grid-template-columns:1fr 1fr}
+  /* Upgrade */
+  .upgrade-plans{grid-template-columns:1fr;gap:28px}
+  .plan-card.featured{margin-top:14px}
+  /* Autopilot */
+  .ap-grid{grid-template-columns:1fr;gap:14px}
+  .ap-hero{padding:22px 20px}
+  .ap-hero-text h2{font-size:26px}
+  .ap-stats{gap:14px}
+  /* School tracker */
+  .filter-row{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:6px}
+  .school-grid{grid-template-columns:1fr}
+  .school-card{padding:16px}
+  .school-actions{flex-wrap:wrap;gap:6px}
+  /* Showcase */
+  .showcase-grid{grid-template-columns:1fr}
+  .showcase-filters{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:6px}
+  /* Offers */
+  .offer-grid{grid-template-columns:1fr}
+  /* Modal */
+  .modal{width:calc(100vw - 1.5rem);max-width:100%;margin:0}
+  .modal-bg{padding:12px}
+  .modal-body{padding:16px 18px}
+  .modal-header{padding:16px 18px 14px}
+  .modal-footer{padding:12px 18px}
+  /* Calendar */
+  .cal-day{min-height:52px;padding:4px}
+  .cal-event{font-size:9.5px;padding:1px 4px}
+  /* Info grids */
+  .info-grid{grid-template-columns:1fr}
+  .school-details{grid-template-columns:1fr 1fr}
+  /* Upgrade hero */
+  .upgrade-hero{padding:28px 20px}
+  /* School mini in dash */
+  .school-mini-name{font-size:13px}
 }
 
 
@@ -504,6 +561,24 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
 .faq-q{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:6px}
 .faq-a{font-size:14px;color:var(--text3);line-height:1.6}
 
+@media(max-width:520px){
+  #topbar-right .btn-ghost{display:none}
+  #topbar-right .btn-primary{font-size:12px;padding:6px 10px}
+  .profile-banner-text{font-size:11px}
+}
+@media(max-width:400px){
+  .stat-row{grid-template-columns:1fr 1fr;gap:8px}
+  .stat-num{font-size:28px}
+  .stat-card{padding:12px 10px}
+  .profile-2col,.profile-3col{grid-template-columns:1fr}
+  .type-row{grid-template-columns:1fr 1fr}
+  .school-details{grid-template-columns:1fr 1fr}
+  .plan-price{font-size:42px}
+  .topbar-title{font-size:18px}
+  .content{padding:10px 8px}
+  .btn-sm{padding:5px 10px;font-size:12px}
+  .school-actions .btn-sm{font-size:11px;padding:5px 8px}
+}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
@@ -536,8 +611,8 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
   <div class="sidebar-footer">
 
     <div class="user-row">
-      <div class="user-avatar">JT</div>
-      <div><div class="user-name">Jake Torres</div><div class="user-plan">Pro Member ✦</div></div>
+      <div class="user-avatar" id="sidebar-avatar">JT</div>
+      <div><div class="user-name" id="sidebar-name">Jake Torres</div><div class="user-plan" id="sidebar-plan">Pro Member ✦</div></div>
     </div>
   </div>
 </aside>
@@ -546,17 +621,16 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
 <main class="main">
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:12px"><button class="hamburger" onclick="toggleSidebar()">☰</button><div class="topbar-title" id="topbar-title">Dashboard</div></div>
-    <div class="topbar-right">
-      <button class="btn btn-ghost btn-sm" onclick="navTo('database')">🗂️ Coaches</button>
-      <button class="btn btn-primary btn-sm" onclick="navTo('email')">✦ Write Email</button>
-
+    <div class="topbar-right" id="topbar-right">
+      <button class="btn btn-ghost btn-sm" onclick="navTo('database')" style="white-space:nowrap">🗂️ Coaches</button>
+      <button class="btn btn-primary btn-sm" onclick="navTo('email')" style="white-space:nowrap">✦ Write Email</button>
     </div>
   </div>
 
-  <div id="profile-banner" style="display:none;background:#fef3c7;border-bottom:2px solid #fcd34d;padding:10px 32px;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0">
-    <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#92400e">
-      <span style="font-size:15px">⚠️</span>
-      <span><strong>Your profile is incomplete.</strong> Coaches can't evaluate you without your stats, GPA, and film link.</span>
+  <div id="profile-banner" style="display:none;background:#fef3c7;border-bottom:2px solid #fcd34d;padding:10px 16px;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#92400e;flex:1;min-width:0">
+      <span style="font-size:15px;flex-shrink:0">⚠️</span>
+      <span class="profile-banner-text"><strong>Profile incomplete.</strong> Coaches can't evaluate you without stats, GPA, and film.</span>
     </div>
     <button class="btn btn-sm" style="background:#92400e;color:#fff;border:none;white-space:nowrap;flex-shrink:0" onclick="navTo('profile')">Finish Profile →</button>
   </div>
@@ -2161,6 +2235,9 @@ function updateDashStats() {
   document.getElementById('stat-schools').textContent = total;
   document.getElementById('stat-offers').textContent = myOffers ? myOffers.length : 0;
   document.getElementById('stat-emailed').textContent = emailHistory ? emailHistory.length : 0;
+  // Update sidebar badge
+  const schoolBadge = document.getElementById('school-count');
+  if (schoolBadge) schoolBadge.textContent = total;
   const nli = new Date('2026-11-12');
   const diff = Math.ceil((nli - new Date()) / (1000*60*60*24));
   document.getElementById('stat-nli').textContent = diff > 0 ? diff : '—';
@@ -2455,10 +2532,18 @@ function copyText(text) { navigator.clipboard.writeText(text).then(()=>showToast
 
 // ── FIX 1,3,5,6,9: MY SCHOOLS ───────────────────────────────
 function statusClass(s) {
-  return {Interested:'s-interested',Contacted:'s-contacted','Offer Received':'s-offer',Committed:'s-committed',Tracking:'s-tracking'}[s]||'s-tracking';
+  return {
+    Interested:'s-interested',
+    Contacted:'s-contacted',
+    Emailed:'s-contacted',
+    Researching:'s-tracking',
+    Tracking:'s-tracking',
+    'Offer Received':'s-offer',
+    Committed:'s-committed'
+  }[s]||'s-tracking';
 }
 function statusOrder(s) {
-  return {'Offer Received':0,'Committed':1,'Interested':2,'Contacted':3,'Tracking':4}[s]??5;
+  return {'Offer Received':0,'Committed':1,'Interested':2,'Contacted':3,'Emailed':3,'Tracking':4,'Researching':5}[s]??6;
 }
 function daysSince(dateStr) {
   if(!dateStr) return null;
@@ -2663,27 +2748,24 @@ function filterSchoolSuggestions(val) {
   const matches = coachDB.filter(p => p.name.toLowerCase().includes(val.toLowerCase())).slice(0, 10);
   if (!matches.length) { box.style.display = 'none'; return; }
   box.innerHTML = matches.map(p => {
-    const hc = p.coaches && p.coaches[0] ? p.coaches[0] : null;
+    // Prefer head coach, fall back to first coach
+    const hc = (p.coaches && p.coaches.find(c => c.role === 'Head Coach')) || (p.coaches && p.coaches[0]) || null;
     const coachName = hc ? hc.name : '';
-    const display = coachName ? `${p.name} — ${coachName}` : p.name;
-    const hasCoach = coachName ? '' : '<span style="font-size:10px;color:var(--red);margin-left:4px">add coach name</span>';
-    return `<div onclick="selectSchool('${display.replace(/'/g,"\'")}','${coachName.replace(/'/g,"\'")}'); " style="padding:10px 14px;cursor:pointer;font-size:14px;color:var(--navy);border-bottom:1px solid var(--border);transition:.15s" onmouseover="this.style.background='var(--off)'" onmouseout="this.style.background=''">${display}${hasCoach} <span style="font-size:11px;color:var(--text3)">${p.div} · ${p.state||''}</span></div>`;
+    const confTag = p.conf ? ` · ${p.conf}` : '';
+    const coachBadge = coachName
+      ? `<span style="font-size:11px;color:var(--green2);font-weight:700;margin-left:6px">✓ Coach found</span>`
+      : `<span style="font-size:10px;color:var(--text3);margin-left:4px">no coach data</span>`;
+    const coachLine = coachName ? `<div style="font-size:12px;color:var(--text3);margin-top:1px">Coach: ${coachName}</div>` : '';
+    return `<div onclick="selectSchool(${JSON.stringify(p.name)},${JSON.stringify(coachName)})" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:.15s" onmouseover="this.style.background='var(--off)'" onmouseout="this.style.background=''"><div style="font-size:14px;color:var(--navy);font-weight:600">${p.name}${coachBadge}</div>${coachLine}<div style="font-size:11px;color:var(--text3);margin-top:2px">${p.div}${confTag} · ${p.state||''}</div></div>`;
   }).join('');
   box.style.display = 'block';
 }
-function selectSchool(display, coachName) {
+function selectSchool(schoolName, coachName) {
   const input = document.getElementById('e-school');
-  if (!coachName) {
-    // No coach in DB - set school name with dash so user can add coach
-    input.value = display + ' — ';
-    input.focus();
-    // Put cursor at end
-    const len = input.value.length;
-    input.setSelectionRange(len, len);
-  } else {
-    input.value = display;
-  }
+  // Always fill school + coach (if found). If no coach, leave just school name so DB lookup runs in generateEmail
+  input.value = coachName ? `${schoolName} — ${coachName}` : schoolName;
   document.getElementById('school-suggestions').style.display = 'none';
+  input.blur();
 }
 document.addEventListener('click', function(e) {
   if (!e.target.closest('#e-school') && !e.target.closest('#school-suggestions')) {
@@ -2692,14 +2774,11 @@ document.addEventListener('click', function(e) {
   }
 });
 
-function buildFallbackEmail(name,pos,stats,schoolName,coachGreeting,hometown,notes,type,tone) {
-  // Pull extra info from coach DB
-  const dbMatch = coachDB.find(p=>schoolName.toLowerCase().includes(p.name.toLowerCase())||p.name.toLowerCase().includes(schoolName.toLowerCase().split(' ')[0]));
-  const conf = dbMatch?.conf||'';
-  const div  = dbMatch?.div||'D1';
-  const hcEntry = dbMatch?.coaches?.find(c=>c.role==='Head Coach')||dbMatch?.coaches?.[0];
-  const hcLast  = hcEntry?.name?.split(' ').pop()||coachGreeting||'Coach';
-  const greeting= `Coach ${hcLast}`;
+function buildFallbackEmail(name,pos,stats,schoolName,fullCoachName,coachLastName,hometown,notes,conf,div,type,tone) {
+  // coachLastName = last name only (e.g. "Jarrett"), fullCoachName = full name (e.g. "Link Jarrett")
+  // Use last name for greeting; fall back to 'Coach' if nothing
+  const hcLast  = coachLastName || (fullCoachName ? fullCoachName.trim().split(' ').pop() : '') || '';
+  const greeting= hcLast ? `Coach ${hcLast}` : 'Coach';
 
   // Parse player info
   const firstName = name.split(' ')[0]||name;
@@ -2793,20 +2872,29 @@ async function generateEmail() {
   btn.innerHTML='<span class="spinner"></span> Generating...'; btn.disabled=true;
   const out=document.getElementById('email-output');
   out.classList.remove('empty'); out.textContent='';
-  // Extract coach name from school field e.g. "University of Florida — Coach O'Sullivan"
+  // Extract school + coach from field (format: "School Name — Coach Full Name")
   const schoolParts = school.split('—');
   const schoolName = schoolParts[0].trim() || 'your program';
-  const coachName = schoolParts[1] ? schoolParts[1].replace(/^coach\s*/i,'').trim() : '';
-  // Also try to find coach from database
-  const dbMatch = coachDB.find(p => school.toLowerCase().includes(p.name.toLowerCase()));
-  const dbCoach = dbMatch && dbMatch.coaches && dbMatch.coaches[0] ? dbMatch.coaches[0].name : '';
-  const finalCoach = coachName || dbCoach || '';
-  const coachGreeting = finalCoach ? finalCoach.split(' ').pop() : 'Coach'; // Use last name
+  const coachNameFromField = schoolParts[1] ? schoolParts[1].replace(/^coach\s*/i,'').trim() : '';
+  // Look up in DB by exact name match first, then partial
+  const dbMatch = coachDB.find(p => p.name.toLowerCase() === schoolName.toLowerCase())
+    || coachDB.find(p => schoolName.toLowerCase().includes(p.name.toLowerCase()))
+    || coachDB.find(p => p.name.toLowerCase().includes(schoolName.toLowerCase()));
+  const dbConf = dbMatch?.conf || '';
+  const dbDiv  = dbMatch?.div  || '';
+  const dbHC   = dbMatch?.coaches?.find(c => c.role === 'Head Coach') || dbMatch?.coaches?.[0] || null;
+  const dbCoach = dbHC?.name || '';
+  const finalCoach = coachNameFromField || dbCoach || '';
+  // Last name only for greeting — never prepend "Coach" again here
+  const coachLastName = finalCoach ? finalCoach.trim().split(' ').pop() : '';
   
   const TYPE_INSTRUCTIONS = {
-    'First Contact': `FIRST CONTACT: Open immediately with the player's name, position, and single best stat — no warm-up sentence. The second sentence must reference something SPECIFIC about ${schoolName}'s program (their conference, division level, a known strength, or recent success — not a generic compliment). Include stats and film link if available. End with one clear ask (film review, call, or visit). Body under 130 words.`,
-    'Follow Up': `FOLLOW-UP: Open by briefly referencing the earlier email — do NOT apologize for following up. Lead immediately with something NEW: a recent tournament result, updated stat, offer received, or camp attended. Body under 80 words. End with a specific ask — a call date, camp registration, or campus visit.`,
-    'Thank You': `THANK YOU: Thank Coach ${coachGreeting} for a specific thing (the call, campus visit, camp evaluation, or offer). Mention one concrete detail from that interaction that stood out. Briefly restate strong interest. Body under 100 words. Warm but efficient.`,
+    'First Contact': `FIRST CONTACT: Open immediately with the player's name, position, and single best stat — no warm-up sentence. The second sentence must reference something SPECIFIC about ${schoolName}'s program${dbConf ? ' (they compete in the '+dbConf+')' : ''} — a known strength, recruiting style, or recent success. Not a generic compliment. Include stats. End with one clear ask (film review, call, or visit). Body under 130 words.`,
+    'Follow-Up': `FOLLOW-UP: Open by briefly referencing the earlier email — do NOT apologize for following up. Lead immediately with something NEW: a recent tournament result, updated stat, offer received, or camp attended. Body under 80 words. End with a specific ask — a call date, camp registration, or campus visit.`,
+    'Thank You': `THANK YOU: Thank Coach ${coachLastName||'Coach'} for a specific thing (the call, campus visit, camp evaluation, or offer). Mention one concrete detail from that interaction that stood out. Briefly restate strong interest. Body under 100 words. Warm but efficient.`,
+    'Visit Request': `VISIT REQUEST: State clearly you want to visit ${schoolName}'s campus and facilities. Mention your interest in the program. Ask for available dates. Under 100 words.`,
+    'Verbal Commit': `VERBAL COMMIT: Announce the verbal commitment directly and enthusiastically. Reference why ${schoolName} is the right fit. Under 80 words.`,
+    'Decommit': `DECOMMIT: Respectfully withdraw the verbal commitment. Be gracious and professional. Wish the program well. Under 80 words.`,
     'Showcase Invite': `SHOWCASE INVITE: Lead with the specific event name, date, and location. State position and jersey number or team name so the coach can find the player easily. Mention one standout stat. Body under 100 words. Make it easy to put on a calendar.`
   };
 
@@ -2835,17 +2923,22 @@ Player:
 - Hometown: ${hometown || 'Florida'}
 ${notes ? '- Additional context: ' + notes : ''}
 
-Target program: ${schoolName}
-Greeting: Coach ${coachGreeting}
+Target program: ${schoolName}${dbConf ? ' ('+dbConf+', '+dbDiv+')' : dbDiv ? ' ('+dbDiv+')' : ''}
+Head coach: ${finalCoach || 'unknown — address as "Coach" only'}
+Greeting line: ${finalCoach ? 'Coach ' + coachLastName : 'Coach'}
 Tone: ${emailTone === 'Professional' ? 'Formal and respectful. Complete sentences, no slang. Coach-first language.' : emailTone === 'Casual' ? 'Conversational and natural. Write like the player is talking to a coach they met once — warm, genuine, not stiff.' : 'Direct and confident. Short punchy sentences. The player knows their value and is not begging — they are informing the coach of an opportunity. Zero filler.'}
 
 Format: "Subject: " (specific subject line, not generic), blank line, then the complete email. No brackets. No placeholders. Ready to send.`;
   try {
-    const res = await fetch('/.netlify/functions/ai-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+    const res = await fetch('/.netlify/functions/ai-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({max_tokens:1000,messages:[{role:'user',content:prompt}]}),signal:controller.signal});
+    clearTimeout(timeout);
     const data = await res.json();
-    out.textContent = data.content?.[0]?.text || '';
+    const aiText = data.content?.[0]?.text || '';
+    out.textContent = aiText || buildFallbackEmail(name,pos,stats,schoolName,finalCoach,coachLastName,hometown,notes,dbConf,dbDiv,emailType,emailTone);
   } catch(e) {
-    out.textContent = buildFallbackEmail(name,pos,stats,schoolName,coachGreeting,hometown,notes,emailType,emailTone);
+    out.textContent = buildFallbackEmail(name,pos,stats,schoolName,finalCoach,coachLastName,hometown,notes,dbConf,dbDiv,emailType,emailTone);
   }
   const emailText = out.textContent;
   document.getElementById('gen-badge').style.display='flex';
@@ -2857,7 +2950,7 @@ Format: "Subject: " (specific subject line, not generic), blank line, then the c
     const today = new Date().toISOString().split('T')[0];
     const alreadyLogged = emailHistory.some(e => e.school === schoolName && e.sent === today && e.type === emailType);
     if(!alreadyLogged) {
-      emailHistory.unshift({id:emailHistNextId++, school:schoolName, coach:finalCoach||'', type:emailType, sent:today, status:'Sent — No Reply Yet', notes:''});
+      emailHistory.unshift({id:emailHistNextId++, school:schoolName, coach:finalCoach||'', type:emailType, sent:today, status:'Sent — No Reply Yet', notes:'', div:dbDiv, conf:dbConf});
       try { localStorage.setItem('rp_history', JSON.stringify(emailHistory)); } catch(e2) {}
       updateDashStats();
     }
@@ -3246,6 +3339,7 @@ function saveProfile() {
   const apf = document.getElementById('ap-film'); if(apf) apf.value = playerProfile.film;
   const aps = document.getElementById('ap-stats'); if(aps && playerProfile.velo) aps.value = playerProfile.velo + ' mph FB, ' + playerProfile.record + ', ' + playerProfile.era + ' ERA';
   syncEmailFromProfile();
+  updateSidebarUser();
   // Save to localStorage so data persists on refresh
   try { localStorage.setItem('rp_profile', JSON.stringify(playerProfile)); } catch(e) {}
   showToast('✅ Profile saved!');
@@ -3860,11 +3954,23 @@ function canAccess(viewId) {
 
 function updatePlanUI() {
   const plan = getPlan();
-  const planLabel = {free:'Free', basic:'Basic ✦', autopilot:'Autopilot ⚡'}[plan] || 'Free';
-  const el = document.querySelector('.user-plan');
+  const planLabel = {free:'Free', basic:'Basic ✦', autopilot:'Autopilot ⚡'}[plan] || 'Pro Member ✦';
+  const el = document.getElementById('sidebar-plan');
   if (el) el.textContent = planLabel;
-
-  // All features unlocked
+  updateSidebarUser();
+}
+function updateSidebarUser() {
+  const p = playerProfile;
+  if (!p || !p.name) return;
+  const nameEl = document.getElementById('sidebar-name');
+  const avatarEl = document.getElementById('sidebar-avatar');
+  if (nameEl) nameEl.textContent = p.name;
+  if (avatarEl) {
+    const parts = p.name.trim().split(' ');
+    avatarEl.textContent = parts.length >= 2
+      ? parts[0][0].toUpperCase() + parts[parts.length-1][0].toUpperCase()
+      : parts[0].substring(0,2).toUpperCase();
+  }
 }
 
 // Intercept nav clicks — called from switchView

@@ -586,6 +586,7 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
           <span style="font-size:20px">💰</span><span style="font-size:12px;font-weight:700">Compare Offers</span>
         </button>
       </div>
+      <div id="dash-next-action" style="margin-bottom:20px"></div>
       <div id="dash-notifications" style="display:none;background:var(--white);border:1px solid #fca5a5;border-radius:var(--r);padding:16px;margin-bottom:20px"></div>
       <div class="dash-grid">
         <div class="card">
@@ -2096,6 +2097,71 @@ function updateDashStats() {
   }).length;
   const sub = document.getElementById('stat-schools-sub');
   if(sub) sub.textContent = needFollowUp > 0 ? `⚠ ${needFollowUp} need follow-up` : `${mySchools.filter(s=>s.status==='Interested').length} interested`;
+  renderNextAction();
+}
+
+function getProfileScore() {
+  const p = playerProfile;
+  let score = 0;
+  if(p.name && p.pos) score += 20;
+  if(p.velo || p.era) score += 20;
+  if(p.film || p.hudl) score += 25;
+  if(p.gpa) score += 15;
+  if(p.gpa) score = Math.min(score + 5, 100);
+  if(p.film || p.hudl) score = Math.min(score + 5, 100);
+  return score;
+}
+
+function renderNextAction() {
+  const el = document.getElementById('dash-next-action');
+  if(!el) return;
+  const score = getProfileScore();
+  const staleSchools = mySchools.filter(s => {
+    if(!s.contacted) return false;
+    const days = Math.floor((new Date() - new Date(s.contacted+'T00:00:00')) / (1000*60*60*24));
+    return days > 14 && !['Interested','Offer Received','Committed'].includes(s.status);
+  });
+  const contactedCount = mySchools.filter(s => s.contacted).length;
+  const offerCount = myOffers ? myOffers.length : 0;
+
+  let icon, title, desc, btnLabel, btnAction;
+  if(score < 70) {
+    icon='📋'; title='Finish your player profile';
+    desc=`Your profile is ${score}% complete. Coaches can't evaluate a player without stats, GPA, and film.`;
+    btnLabel='Complete Profile →'; btnAction="navTo('profile')";
+  } else if(mySchools.length === 0) {
+    icon='🏫'; title='Add your first target schools';
+    desc='You have no schools in your tracker. Browse the Coach Database and add programs that fit your level.';
+    btnLabel='Browse Coaches →'; btnAction="navTo('database')";
+  } else if(contactedCount === 0) {
+    icon='✉️'; title='Send your first email';
+    desc=`You're tracking ${mySchools.length} school${mySchools.length>1?'s':''} but haven't contacted any coaches yet. Run Autopilot to generate a full campaign.`;
+    btnLabel='Run Autopilot →'; btnAction="navTo('autopilot')";
+  } else if(staleSchools.length > 0) {
+    const s = staleSchools[0];
+    const days = Math.floor((new Date() - new Date(s.contacted+'T00:00:00')) / (1000*60*60*24));
+    icon='⚠️'; title=`Follow up with ${s.name}`;
+    desc=`${days} days since last contact. Coaches recruit the player who follows up — don't go quiet.`;
+    btnLabel='Write Follow-Up →'; btnAction=`writeEmailForSchool(${s.id})`;
+  } else if(offerCount > 0) {
+    icon='💰'; title='Compare your offers';
+    desc=`You have ${offerCount} offer${offerCount>1?'s':''} in your tracker. Run the calculator to find your best financial fit.`;
+    btnLabel='Open Calculator →'; btnAction="navTo('calculator')";
+  } else {
+    icon='🤖'; title='Expand your search with Autopilot';
+    desc='Your profile is solid and you\'re actively contacting schools. Run Autopilot to reach more programs in your target division.';
+    btnLabel='Run Autopilot →'; btnAction="navTo('autopilot')";
+  }
+
+  el.innerHTML=`<div style="background:linear-gradient(135deg,var(--navy) 0%,#0d1e35 100%);border-radius:var(--r);padding:18px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;border-left:4px solid var(--gold)">
+    <div style="font-size:28px;flex-shrink:0">${icon}</div>
+    <div style="flex:1;min-width:180px">
+      <div style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:4px">What to do next</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;color:#fff;margin-bottom:3px">${title}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.55);line-height:1.5">${desc}</div>
+    </div>
+    <button class="btn btn-primary btn-sm" style="flex-shrink:0;white-space:nowrap" onclick="${btnAction}">${btnLabel}</button>
+  </div>`;
 }
 
 // ── FIX 11: STATE FILTER + COACH DATABASE ────────────────────
@@ -2513,8 +2579,42 @@ async function generateEmail() {
   const finalCoach = coachName || dbCoach || '';
   const coachGreeting = finalCoach ? finalCoach.split(' ').pop() : 'Coach'; // Use last name
   
-  const prompt=`Write a professional college baseball recruiting email. Type: ${emailType}. Player: ${name}, ${pos}. Stats: ${stats||'not provided'}. Target school: ${schoolName}. Coach last name: ${coachGreeting}. Hometown: ${hometown||'Florida'}. ${notes?'Extra context: '+notes:''}
-Write a complete email with subject line, greeting (use "Coach ${coachGreeting},"), concise body (under 150 words), and sign-off. Coaches prefer SHORT emails — get to the point fast. Format: start with "Subject: ..." then blank line, then the email. No brackets or placeholders — write it completely ready to send.`;
+  const TYPE_INSTRUCTIONS = {
+    'First Contact': `FIRST CONTACT: Open immediately with the player's name, position, and single best stat — no warm-up sentence. The second sentence must reference something SPECIFIC about ${schoolName}'s program (their conference, division level, a known strength, or recent success — not a generic compliment). Include stats and film link if available. End with one clear ask (film review, call, or visit). Body under 130 words.`,
+    'Follow Up': `FOLLOW-UP: Open by briefly referencing the earlier email — do NOT apologize for following up. Lead immediately with something NEW: a recent tournament result, updated stat, offer received, or camp attended. Body under 80 words. End with a specific ask — a call date, camp registration, or campus visit.`,
+    'Thank You': `THANK YOU: Thank Coach ${coachGreeting} for a specific thing (the call, campus visit, camp evaluation, or offer). Mention one concrete detail from that interaction that stood out. Briefly restate strong interest. Body under 100 words. Warm but efficient.`,
+    'Showcase Invite': `SHOWCASE INVITE: Lead with the specific event name, date, and location. State position and jersey number or team name so the coach can find the player easily. Mention one standout stat. Body under 100 words. Make it easy to put on a calendar.`
+  };
+
+  const SYSTEM_ROLE = `You are a college baseball recruiting email specialist. Write in the authentic voice of a high school athlete — direct, confident, and specific.
+
+NEVER use these phrases or anything similar:
+- "I have always dreamed of playing at"
+- "I believe I would be a great fit"
+- "I am reaching out because"
+- "I hope this email finds you well"
+- "I would love the opportunity to"
+- "I am passionate about"
+- "I feel that I could"
+- "I am confident that"
+
+Every email MUST include something specific about the target program — not a generic compliment. Sound like a real athlete, not a recruiting consultant.`;
+
+  const prompt = `${SYSTEM_ROLE}
+
+${TYPE_INSTRUCTIONS[emailType] || TYPE_INSTRUCTIONS['First Contact']}
+
+Player:
+- Name: ${name}
+- Position: ${pos}
+- Stats: ${stats || 'not yet provided — write around this naturally'}
+- Hometown: ${hometown || 'Florida'}
+${notes ? '- Additional context: ' + notes : ''}
+
+Target program: ${schoolName}
+Greeting: Coach ${coachGreeting}
+
+Format: "Subject: " (specific subject line, not generic), blank line, then the complete email. No brackets. No placeholders. Ready to send.`;
   try {
     const res = await fetch('/.netlify/functions/ai-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     const data = await res.json();
@@ -2661,13 +2761,22 @@ async function runAutopilot() {
     const email = hc?.email || '';
 
     try {
-      const prompt = `Write a short, professional college baseball recruiting email from a player to a coach. Keep it under 130 words in the body.
-Player: ${name}, ${pos}, Class of ${year}. Stats: ${stats}. GPA: ${gpa}. Hometown: Marianna, FL.
-Target: ${program.name} (${program.div}, ${program.conf}) — ${coachName}.
-${film ? 'Highlight film: ' + film : ''}
-Program notes: ${program.notes || 'competitive program'}.
+      const prompt = `You are a college baseball recruiting email specialist. Write in the authentic voice of a high school athlete — direct, confident, and specific.
 
-Write ONLY the email. Start with "Subject: " then blank line then email. No brackets or placeholders. Sound genuine, not like a template.`;
+NEVER use: "I have always dreamed", "I believe I would be a great fit", "I am reaching out", "I hope this email finds you well", "I would love the opportunity", "I am passionate", "I feel that", "I am confident that".
+
+FIRST CONTACT EMAIL for ${program.name} (${program.div}, ${program.conf}).
+
+Open immediately with the player's name, position, and best stat — no warm-up sentence. The second sentence must reference something SPECIFIC about ${program.name}: their ${program.conf} conference, ${program.div} competition level, or this program detail: "${program.notes || 'competitive baseball program'}". Include stats and film link. End with one clear ask.
+
+Player: ${name}, ${pos}, Class of ${year}
+Stats: ${stats || 'strong recent season'}
+GPA: ${gpa}
+Hometown: ${playerProfile.hometown || 'Florida'}
+${film ? 'Highlight film: ' + film : ''}
+Coach: ${coachName}
+
+Body under 120 words. Format: "Subject: " then blank line then email. No brackets or placeholders.`;
 
       const res = await fetch('/.netlify/functions/ai-proxy', {
         method: 'POST',
@@ -2735,7 +2844,11 @@ Write ONLY the email. Start with "Subject: " then blank line then email. No brac
 }
 
 function generateFallbackEmail(name, pos, year, stats, program, coachName) {
-  return `Subject: ${pos} Interested in ${program.name} Baseball — Class of ${year}\n\n${coachName},\n\nMy name is ${name} and I'm a ${pos} from Marianna, FL graduating in ${year}. I've followed ${program.name} baseball closely and believe your program would be a great fit for my development.\n\nThis past season: ${stats}. I'm a competitive, coachable player who brings intensity every game.\n\nI'd love the opportunity to discuss how I might contribute. Would you be open to a call or unofficial visit?\n\nI've attached my recruiting profile and highlight film below.\n\nThank you,\n${name}`;
+  const lastName = coachName.split(' ').pop();
+  const statsLine = stats ? `This past season: ${stats}.` : '';
+  const confDetail = program.conf ? ` competing in the ${program.conf}` : '';
+  const hometown = playerProfile.hometown || 'Florida';
+  return `Subject: ${pos} Prospect — ${name} — Class of ${year}\n\nCoach ${lastName},\n\nMy name is ${name}, a ${pos} from ${hometown} graduating in ${year}. I've been tracking ${program.name}${confDetail} and your program is at the top of my list.\n\n${statsLine} I play with a high motor and compete hard every inning.\n\nI want to get on your radar. Can we schedule a call, or can I send film your way?\n\nThank you,\n${name}`;
 }
 
 function renderCampaign() {

@@ -231,6 +231,9 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
 .type-chip{padding:9px;border-radius:var(--r-sm);border:1.5px solid var(--border);font-size:12.5px;font-weight:600;color:var(--text2);cursor:pointer;transition:.15s;text-align:center;background:var(--white)}
 .type-chip:hover,.type-chip.active{border-color:var(--navy);color:var(--navy);background:var(--off)}
 .type-chip.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.tone-chip{padding:7px 16px;border-radius:99px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border2);color:var(--text2);background:var(--white);transition:.15s;white-space:nowrap}
+.tone-chip:hover{border-color:var(--navy);color:var(--navy)}
+.tone-chip.active{background:var(--navy);color:#fff;border-color:var(--navy)}
 
 /* CALCULATOR */
 .calc-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}
@@ -550,6 +553,14 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
     </div>
   </div>
 
+  <div id="profile-banner" style="display:none;background:#fef3c7;border-bottom:2px solid #fcd34d;padding:10px 32px;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#92400e">
+      <span style="font-size:15px">⚠️</span>
+      <span><strong>Your profile is incomplete.</strong> Coaches can't evaluate you without your stats, GPA, and film link.</span>
+    </div>
+    <button class="btn btn-sm" style="background:#92400e;color:#fff;border:none;white-space:nowrap;flex-shrink:0" onclick="navTo('profile')">Finish Profile →</button>
+  </div>
+
   <div class="content">
 
     <!-- DASHBOARD -->
@@ -687,6 +698,14 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
               <div class="type-chip" onclick="setEmailType(this,'Thank You')">Thank You</div>
               <div class="type-chip" onclick="setEmailType(this,'Verbal Commit')">Verbal Commit</div>
               <div class="type-chip" onclick="setEmailType(this,'Decommit')">Decommit</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tone</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <div class="tone-chip active" onclick="setEmailTone(this,'Professional')" title="Formal, respectful, coach-focused">Professional</div>
+              <div class="tone-chip" onclick="setEmailTone(this,'Casual')" title="Conversational, personable, authentic">Casual</div>
+              <div class="tone-chip" onclick="setEmailTone(this,'Aggressive')" title="Direct, confident, urgent">Aggressive</div>
             </div>
           </div>
           <div style="background:rgba(232,160,32,.07);border:1px solid rgba(232,160,32,.2);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:10px;font-size:12.5px;color:var(--text2);display:flex;align-items:center;gap:10px">
@@ -1954,11 +1973,12 @@ try {
   if (saved) mySchools = JSON.parse(saved);
 } catch(e) {}
 
-let nextId = mySchools.length ? Math.max(...mySchools.map(s=>s.id)) + 1 : 1;
+let nextId = mySchools.length ? Math.max(...mySchools.map(s=>parseInt(s.id)||0)) + 1 : 1;
 let currentFilter = 'all';
 let currentSort = 'added';
 let searchQuery = '';
 let emailType = 'First Contact';
+let emailTone = 'Professional';
 let editingId = null;
 let dbFilter = 'all';
 let dbStateFilter = 'all';
@@ -2381,8 +2401,8 @@ function renderSchools() {
     const days = daysSince(s.contacted);
     const needsFollowUp = s.contacted && days > 14 && !['Interested','Offer Received','Committed'].includes(s.status);
     return `
-    <div class="school-card" style="position:relative">
-      ${needsFollowUp ? `<div style="position:absolute;top:12px;right:12px;background:#fef3c7;border:1px solid #fcd34d;color:#92400e;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:99px;z-index:1">⚠ Follow up</div>` : ''}
+    <div class="school-card" style="position:relative${needsFollowUp?';border-left:3px solid var(--red)':''}">
+      ${needsFollowUp ? `<div style="position:absolute;top:12px;right:12px;background:#fee2e2;border:1px solid var(--red);color:var(--red);font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:99px;z-index:1">⚠ Follow up</div>` : ''}
       <div class="school-card-top">
         <div class="school-initial-lg">${s.name.charAt(0)}</div>
         <div class="status-pill ${statusClass(s.status)}">${s.status}</div>
@@ -2391,7 +2411,7 @@ function renderSchools() {
       <div class="school-division">${s.div}${s.coach?' · '+s.coach:''}</div>
       <div class="school-details">
         <div class="school-detail"><div class="sd-label">Scholarship</div><div class="sd-val">${s.schol||'—'}</div></div>
-        <div class="school-detail"><div class="sd-label">Last Contacted</div><div class="sd-val" style="${needsFollowUp?'color:var(--red)':''}">${days!==null ? days+'d ago' : '—'}</div></div>
+        <div class="school-detail"><div class="sd-label" style="${needsFollowUp?'color:var(--red);font-weight:700':''}">Last Contacted</div><div class="sd-val" style="${needsFollowUp?'color:var(--red);font-weight:700':''}">${needsFollowUp?`⚠ ${days}d ago`:days!==null?days+'d ago':'—'}</div></div>
         <div class="school-detail"><div class="sd-label">Visit</div><div class="sd-val">${s.visit?new Date(s.visit+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—'}</div></div>
         <div class="school-detail"><div class="sd-label">Min GPA</div><div class="sd-val">${s.gpa||'—'}</div></div>
       </div>
@@ -2486,6 +2506,7 @@ function saveSchool() {
   };
   if(editingId) {
     const idx = mySchools.findIndex(s=>s.id===editingId);
+    if(idx === -1) { showToast('School not found'); return; }
     mySchools[idx] = {...mySchools[idx],...data};
     showToast('School updated!');
   } else {
@@ -2514,6 +2535,11 @@ function setEmailType(el, type) {
   document.querySelectorAll('.type-chip').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
   emailType = type;
+}
+function setEmailTone(el, tone) {
+  document.querySelectorAll('.tone-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  emailTone = tone;
 }
 function updateWordCount() {
   const out = document.getElementById('email-output');
@@ -2613,6 +2639,7 @@ ${notes ? '- Additional context: ' + notes : ''}
 
 Target program: ${schoolName}
 Greeting: Coach ${coachGreeting}
+Tone: ${emailTone === 'Professional' ? 'Formal and respectful. Complete sentences, no slang. Coach-first language.' : emailTone === 'Casual' ? 'Conversational and natural. Write like the player is talking to a coach they met once — warm, genuine, not stiff.' : 'Direct and confident. Short punchy sentences. The player knows their value and is not begging — they are informing the coach of an opportunity. Zero filler.'}
 
 Format: "Subject: " (specific subject line, not generic), blank line, then the complete email. No brackets. No placeholders. Ready to send.`;
   try {
@@ -3150,10 +3177,21 @@ function filterShowcases(f, el) {
   renderShowcases();
 }
 function filterShowcasesByState(val) { showcaseState = val; renderShowcases(); }
+function showcaseDateToISO(dateStr) {
+  const months = {January:'01',February:'02',March:'03',April:'04',May:'05',June:'06',July:'07',August:'08',September:'09',October:'10',November:'11',December:'12'};
+  const yearMatch = dateStr.match(/(\d{4})/);
+  const year = yearMatch ? yearMatch[1] : new Date().getFullYear();
+  const monthMatch = dateStr.match(/(January|February|March|April|May|June|July|August|September|October|November|December)/);
+  const month = monthMatch ? months[monthMatch[1]] : '06';
+  const dayMatch = dateStr.match(/(\d{1,2})(?:\s*[-–]\s*\d{1,2})?,/);
+  const day = dayMatch ? dayMatch[1].padStart(2,'0') : '01';
+  return `${year}-${month}-${day}`;
+}
+
 function addShowcaseToTimeline(name) {
   const s = showcases.find(x => x.name === name);
   if(s && s.date) {
-    calEvents.push({id: calNextId++, title: name, date: s.date.split('-')[0] + '-06-14', type: 'showcase', notes: s.location});
+    calEvents.push({id: calNextId++, title: name, date: showcaseDateToISO(s.date), type: 'showcase', notes: s.location});
     showToast('Added to Calendar!');
     renderCalendar();
   } else {
@@ -3167,7 +3205,8 @@ const _origSwitch = switchView;
 
 // ── EMAIL HISTORY ─────────────────────────────────────────────
 let emailHistory = [];
-let emailHistNextId = 1;
+try { const _eh = localStorage.getItem('rp_history'); if(_eh) emailHistory = JSON.parse(_eh); } catch(e) {}
+let emailHistNextId = emailHistory.length ? Math.max(...emailHistory.map(e=>parseInt(e.id)||0)) + 1 : 1;
 
 function openLogEmail() {
   ['le-school','le-email','le-notes'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
@@ -3253,7 +3292,7 @@ let calEvents = [
   {id:2, title:'Follow up — Stetson', date:'2026-03-20', type:'follow', notes:'No response in 2 weeks'},
   {id:3, title:'PG National Showcase', date:'2026-06-14', type:'showcase', notes:'Fort Myers FL'},
 ];
-let calNextId = 4;
+let calNextId = calEvents.length ? Math.max(...calEvents.map(e=>parseInt(e.id)||0)) + 1 : 1;
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
@@ -3594,9 +3633,10 @@ function paywallSwitchView(id, el) {
   // Proceed with normal navigation
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('view-' + id).classList.add('active');
+  const viewEl = document.getElementById('view-' + id);
+  if(viewEl) viewEl.classList.add('active');
   el.classList.add('active');
-  document.getElementById('topbar-title').textContent = titles[id];
+  document.getElementById('topbar-title').textContent = titles[id] || '';
   closeSidebar();
   if(id === 'tracker') renderSchools();
   if(id === 'dashboard') { renderDashSchools(); updateDashStats(); }
@@ -3612,6 +3652,15 @@ function paywallSwitchView(id, el) {
   if(id === 'upgrade') {}
   if(id === 'email') syncEmailFromProfile();
   if(id === 'refer') {}
+  checkProfileBanner();
+}
+
+function checkProfileBanner() {
+  const banner = document.getElementById('profile-banner');
+  if(!banner) return;
+  const score = getProfileScore();
+  const profileActive = document.getElementById('view-profile')?.classList.contains('active');
+  banner.style.display = (score < 70 && !profileActive) ? 'flex' : 'none';
 }
 
 const paywallCopy = {
@@ -3827,6 +3876,7 @@ function initApp() {
   renderDashMilestones();
   syncEmailFromProfile();
   updatePlanUI();
+  checkProfileBanner();
 
   // Hide onboarding if profile has real data
   if(playerProfile.name !== 'Jake Torres') {

@@ -586,6 +586,7 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
           <span style="font-size:20px">💰</span><span style="font-size:12px;font-weight:700">Compare Offers</span>
         </button>
       </div>
+      <div id="dash-next-action" style="margin-bottom:20px"></div>
       <div id="dash-notifications" style="display:none;background:var(--white);border:1px solid #fca5a5;border-radius:var(--r);padding:16px;margin-bottom:20px"></div>
       <div class="dash-grid">
         <div class="card">
@@ -2096,6 +2097,71 @@ function updateDashStats() {
   }).length;
   const sub = document.getElementById('stat-schools-sub');
   if(sub) sub.textContent = needFollowUp > 0 ? `⚠ ${needFollowUp} need follow-up` : `${mySchools.filter(s=>s.status==='Interested').length} interested`;
+  renderNextAction();
+}
+
+function getProfileScore() {
+  const p = playerProfile;
+  let score = 0;
+  if(p.name && p.pos) score += 20;
+  if(p.velo || p.era) score += 20;
+  if(p.film || p.hudl) score += 25;
+  if(p.gpa) score += 15;
+  if(p.gpa) score = Math.min(score + 5, 100);
+  if(p.film || p.hudl) score = Math.min(score + 5, 100);
+  return score;
+}
+
+function renderNextAction() {
+  const el = document.getElementById('dash-next-action');
+  if(!el) return;
+  const score = getProfileScore();
+  const staleSchools = mySchools.filter(s => {
+    if(!s.contacted) return false;
+    const days = Math.floor((new Date() - new Date(s.contacted+'T00:00:00')) / (1000*60*60*24));
+    return days > 14 && !['Interested','Offer Received','Committed'].includes(s.status);
+  });
+  const contactedCount = mySchools.filter(s => s.contacted).length;
+  const offerCount = myOffers ? myOffers.length : 0;
+
+  let icon, title, desc, btnLabel, btnAction;
+  if(score < 70) {
+    icon='📋'; title='Finish your player profile';
+    desc=`Your profile is ${score}% complete. Coaches can't evaluate a player without stats, GPA, and film.`;
+    btnLabel='Complete Profile →'; btnAction="navTo('profile')";
+  } else if(mySchools.length === 0) {
+    icon='🏫'; title='Add your first target schools';
+    desc='You have no schools in your tracker. Browse the Coach Database and add programs that fit your level.';
+    btnLabel='Browse Coaches →'; btnAction="navTo('database')";
+  } else if(contactedCount === 0) {
+    icon='✉️'; title='Send your first email';
+    desc=`You're tracking ${mySchools.length} school${mySchools.length>1?'s':''} but haven't contacted any coaches yet. Run Autopilot to generate a full campaign.`;
+    btnLabel='Run Autopilot →'; btnAction="navTo('autopilot')";
+  } else if(staleSchools.length > 0) {
+    const s = staleSchools[0];
+    const days = Math.floor((new Date() - new Date(s.contacted+'T00:00:00')) / (1000*60*60*24));
+    icon='⚠️'; title=`Follow up with ${s.name}`;
+    desc=`${days} days since last contact. Coaches recruit the player who follows up — don't go quiet.`;
+    btnLabel='Write Follow-Up →'; btnAction=`writeEmailForSchool(${s.id})`;
+  } else if(offerCount > 0) {
+    icon='💰'; title='Compare your offers';
+    desc=`You have ${offerCount} offer${offerCount>1?'s':''} in your tracker. Run the calculator to find your best financial fit.`;
+    btnLabel='Open Calculator →'; btnAction="navTo('calculator')";
+  } else {
+    icon='🤖'; title='Expand your search with Autopilot';
+    desc='Your profile is solid and you\'re actively contacting schools. Run Autopilot to reach more programs in your target division.';
+    btnLabel='Run Autopilot →'; btnAction="navTo('autopilot')";
+  }
+
+  el.innerHTML=`<div style="background:linear-gradient(135deg,var(--navy) 0%,#0d1e35 100%);border-radius:var(--r);padding:18px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;border-left:4px solid var(--gold)">
+    <div style="font-size:28px;flex-shrink:0">${icon}</div>
+    <div style="flex:1;min-width:180px">
+      <div style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:4px">What to do next</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;color:#fff;margin-bottom:3px">${title}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.55);line-height:1.5">${desc}</div>
+    </div>
+    <button class="btn btn-primary btn-sm" style="flex-shrink:0;white-space:nowrap" onclick="${btnAction}">${btnLabel}</button>
+  </div>`;
 }
 
 // ── FIX 11: STATE FILTER + COACH DATABASE ────────────────────

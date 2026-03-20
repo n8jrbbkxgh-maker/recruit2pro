@@ -231,6 +231,9 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
 .type-chip{padding:9px;border-radius:var(--r-sm);border:1.5px solid var(--border);font-size:12.5px;font-weight:600;color:var(--text2);cursor:pointer;transition:.15s;text-align:center;background:var(--white)}
 .type-chip:hover,.type-chip.active{border-color:var(--navy);color:var(--navy);background:var(--off)}
 .type-chip.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.tone-chip{padding:7px 16px;border-radius:99px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border2);color:var(--text2);background:var(--white);transition:.15s;white-space:nowrap}
+.tone-chip:hover{border-color:var(--navy);color:var(--navy)}
+.tone-chip.active{background:var(--navy);color:#fff;border-color:var(--navy)}
 
 /* CALCULATOR */
 .calc-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}
@@ -687,6 +690,14 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
               <div class="type-chip" onclick="setEmailType(this,'Thank You')">Thank You</div>
               <div class="type-chip" onclick="setEmailType(this,'Verbal Commit')">Verbal Commit</div>
               <div class="type-chip" onclick="setEmailType(this,'Decommit')">Decommit</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tone</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <div class="tone-chip active" onclick="setEmailTone(this,'Professional')" title="Formal, respectful, coach-focused">Professional</div>
+              <div class="tone-chip" onclick="setEmailTone(this,'Casual')" title="Conversational, personable, authentic">Casual</div>
+              <div class="tone-chip" onclick="setEmailTone(this,'Aggressive')" title="Direct, confident, urgent">Aggressive</div>
             </div>
           </div>
           <div style="background:rgba(232,160,32,.07);border:1px solid rgba(232,160,32,.2);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:10px;font-size:12.5px;color:var(--text2);display:flex;align-items:center;gap:10px">
@@ -1959,6 +1970,7 @@ let currentFilter = 'all';
 let currentSort = 'added';
 let searchQuery = '';
 let emailType = 'First Contact';
+let emailTone = 'Professional';
 let editingId = null;
 let dbFilter = 'all';
 let dbStateFilter = 'all';
@@ -2515,6 +2527,11 @@ function setEmailType(el, type) {
   el.classList.add('active');
   emailType = type;
 }
+function setEmailTone(el, tone) {
+  document.querySelectorAll('.tone-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  emailTone = tone;
+}
 function updateWordCount() {
   const out = document.getElementById('email-output');
   const wc = document.getElementById('word-count');
@@ -2613,6 +2630,7 @@ ${notes ? '- Additional context: ' + notes : ''}
 
 Target program: ${schoolName}
 Greeting: Coach ${coachGreeting}
+Tone: ${emailTone === 'Professional' ? 'Formal and respectful. Complete sentences, no slang. Coach-first language.' : emailTone === 'Casual' ? 'Conversational and natural. Write like the player is talking to a coach they met once — warm, genuine, not stiff.' : 'Direct and confident. Short punchy sentences. The player knows their value and is not begging — they are informing the coach of an opportunity. Zero filler.'}
 
 Format: "Subject: " (specific subject line, not generic), blank line, then the complete email. No brackets. No placeholders. Ready to send.`;
   try {

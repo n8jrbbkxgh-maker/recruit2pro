@@ -561,6 +561,11 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
 .faq-q{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:6px}
 .faq-a{font-size:14px;color:var(--text3);line-height:1.6}
 
+@media(max-width:700px){
+  .db-layout{grid-template-columns:1fr;grid-template-rows:auto 1fr;height:auto;min-height:0}
+  .db-sidebar{border-right:none;border-bottom:1px solid var(--border);max-height:320px}
+  .db-detail{min-height:400px}
+}
 @media(max-width:520px){
   #topbar-right .btn-ghost{display:none}
   #topbar-right .btn-primary{font-size:12px;padding:6px 10px}
@@ -892,6 +897,14 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
               <div class="db-filter" onclick="setDBFilter('NAIA',this)">NAIA</div>
             </div>
             <div class="db-filters" id="db-state-row" style="margin-top:4px"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px">
+              <div style="font-size:12px;color:var(--text3)" id="db-results-bar">— programs</div>
+              <select onchange="setDBSort(this.value)" style="font-size:12px;padding:3px 7px;border:1.5px solid var(--border);border-radius:var(--r-sm);color:var(--text2);background:var(--white);outline:none;cursor:pointer">
+                <option value="alpha">A–Z</option>
+                <option value="verified">Verified first</option>
+                <option value="coaches">Most coaches</option>
+              </select>
+            </div>
           </div>
           <div class="db-list" id="db-list"></div>
         </div>
@@ -2279,6 +2292,7 @@ let editingId = null;
 let dbFilter = 'all';
 let dbStateFilter = 'all';
 let dbSearch = '';
+let dbSort = 'alpha';
 let selectedProgram = null;
 let contribProgramId = null;
 let communityContribs = {};
@@ -2530,39 +2544,74 @@ function getFilteredDB() {
 }
 
 function renderDB() {
-  // Populate state filter dynamically
-  const stateRow = document.getElementById('db-state-row');
-  if(stateRow && !stateRow.hasAttribute('data-populated')) {
-    stateRow.setAttribute('data-populated','1');
-    const states = [...new Set(coachDB.map(p => p.state))].sort();
-    stateRow.innerHTML = `<div class="db-filter active" onclick="setDBState('all',this)">All States</div>` +
-      states.map(s => `<div class="db-filter" onclick="setDBState('${s}',this)">${s}</div>`).join('');
+  // Division count badges
+  const divRow = document.getElementById('db-div-row');
+  if(divRow) {
+    const divs = ['all','D1','D2','D3','JUCO','NAIA'];
+    const labels = {all:'All', D1:'D1', D2:'D2', D3:'D3', JUCO:'JUCO', NAIA:'NAIA'};
+    divRow.querySelectorAll('.db-filter').forEach(btn => {
+      const f = btn.getAttribute('data-div') || (btn.textContent.trim() === 'All' ? 'all' : btn.textContent.trim());
+      btn.setAttribute('data-div', f);
+      const count = f === 'all' ? coachDB.length : coachDB.filter(p => p.div === f).length;
+      btn.textContent = labels[f] + (count ? ' '+count : '');
+      btn.classList.toggle('active', f === dbFilter);
+    });
   }
+
+  // Populate state filter dynamically (rebuild when division changes)
+  const stateRow = document.getElementById('db-state-row');
+  if(stateRow) {
+    const poolForStates = dbFilter === 'all' ? coachDB : coachDB.filter(p => p.div === dbFilter);
+    const states = [...new Set(poolForStates.map(p => p.state))].sort();
+    stateRow.innerHTML = `<div class="db-filter${dbStateFilter==='all'?' active':''}" onclick="setDBState('all',this)">All States</div>` +
+      states.map(s => `<div class="db-filter${dbStateFilter===s?' active':''}" onclick="setDBState('${s}',this)">${s}</div>`).join('');
+  }
+
   const list = document.getElementById('db-list');
-  const filtered = getFilteredDB();
+  let filtered = getFilteredDB();
+
+  // Sort
+  if(dbSort === 'verified') filtered = filtered.sort((a,b) => (b.verified?1:0)-(a.verified?1:0) || (b.contributions||0)-(a.contributions||0));
+  else if(dbSort === 'coaches') filtered = filtered.sort((a,b) => b.coaches.length - a.coaches.length);
+  else filtered = filtered.sort((a,b) => a.name.localeCompare(b.name));
+
+  const trackedNames = new Set(mySchools.map(s => s.name));
+
+  const resultsBar = document.getElementById('db-results-bar');
+  if(resultsBar) resultsBar.textContent = `${filtered.length} program${filtered.length!==1?'s':''}`;
+
   if(!filtered.length) {
     list.innerHTML = `<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">No programs found.</div>`;
     return;
   }
-  list.innerHTML = filtered.map(p => `
+  list.innerHTML = filtered.map(p => {
+    const inTracker = trackedNames.has(p.name);
+    const bestReply = p.coaches.reduce((max,c) => c.replyRate && c.replyRate > max ? c.replyRate : max, 0);
+    return `
     <div class="db-program ${selectedProgram && selectedProgram.id === p.id ? 'active' : ''}" onclick="selectProgram('${p.id}')">
-      <div class="db-prog-name">${p.name}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:6px">
+        <div class="db-prog-name" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</div>
+        ${inTracker ? `<span title="In My Schools" style="color:var(--green2);font-size:14px;flex-shrink:0">✓</span>` : ''}
+      </div>
       <div class="db-prog-meta">
         <span class="db-prog-conf">${p.div}</span>
         <span>${p.conf}</span>
         <span>${p.state}</span>
-        ${p.verified ? `<span class="verified-dot"></span>` : `<span class="community-dot"></span>`}
+        ${p.verified ? `<span class="verified-dot" title="Verified"></span>` : `<span class="community-dot" title="Community data"></span>`}
+        ${bestReply ? `<span style="font-size:10px;color:var(--green2);font-weight:700">${bestReply}% reply</span>` : ''}
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 function setDBFilter(f, el) {
   dbFilter = f;
+  dbStateFilter = 'all'; // reset state when division changes
   document.querySelectorAll('#db-div-row .db-filter').forEach(x => x.classList.remove('active'));
   el.classList.add('active');
   renderDB();
 }
+function setDBSort(val) { dbSort = val; renderDB(); }
 function setDBState(s, el) {
   dbStateFilter = s;
   document.querySelectorAll('#db-state-row .db-filter').forEach(x => x.classList.remove('active'));
@@ -2658,7 +2707,9 @@ function addDBSchoolToTracker(programId) {
     coach:hc?.name||'', email:hc?.email||'', twitter:hc?.twitter||'',
     schol:'', visit:'', contacted:'', gpa:'', film:'', notes:p.notes||''
   });
-  updateCount(); showToast(`${p.name} added to My Schools!`);
+  try { localStorage.setItem('rp_schools', JSON.stringify(mySchools)); } catch(e) {}
+  updateCount(); renderSchools(); renderDashSchools(); renderPipelineStrip(); renderDB();
+  showToast(`✅ ${p.name} added to My Schools!`);
 }
 function writeEmailForDB(programId, coachName) {
   const p = coachDB.find(x => x.id === programId);

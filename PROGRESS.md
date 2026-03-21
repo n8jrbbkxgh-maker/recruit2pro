@@ -1,6 +1,6 @@
 # RecruitPro — Project Memory
 
-## Status: PHASE 1 COMPLETE
+## Status: PHASE 2 COMPLETE
 Last Updated: 2026-03-21
 
 ---
@@ -13,6 +13,12 @@ Last Updated: 2026-03-21
 - [x] **Phase 1: 3-step onboarding wizard** (name/pos/year → stats → division picker + live email preview)
 - [x] **Phase 1: Calendar defaults to current month** (was hardcoded March 2026)
 - [x] **Phase 1: Dashboard readiness score sync** (uses getProfileScore() live, updates on save, color-coded ring)
+- [x] **Phase 2: Coach DB bug fix** — addDBSchoolToTracker now saves to localStorage + re-renders (schools were lost on refresh)
+- [x] **Phase 2: Division count badges** — filter pills now show program count (D1 48, D2 31, etc.)
+- [x] **Phase 2: Already-tracked indicator** — green ✓ in list on programs already in My Schools
+- [x] **Phase 2: Sort + results count** — A-Z / Verified first / Most coaches sort; "23 programs" counter
+- [x] **Phase 2: State filter reset** — switching division resets state filter to All States
+- [x] **Phase 2: Mobile stack layout** — Coach Database stacks to single column on ≤700px screens
 
 ---
 
@@ -21,7 +27,7 @@ Last Updated: 2026-03-21
 | Phase | Name | Status |
 |-------|------|--------|
 | 1 | Foundation (Onboarding, Core UI, Data sync) | ✅ Complete |
-| 2 | Coach Database + Search | Pending |
+| 2 | Coach Database + Search | ✅ Complete |
 | 3 | AI Email Generator | Pending |
 | 4 | Athlete Dashboard + Tracking | Pending |
 | 5 | Monetization, Polish & Launch | Pending |

@@ -582,6 +582,41 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+
+/* ── ONBOARDING WIZARD ── */
+#onboarding-wizard{position:fixed;inset:0;background:rgba(5,15,35,.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+#onboarding-wizard.hidden{display:none}
+.wiz-box{background:var(--white);border-radius:var(--r-lg);width:100%;max-width:540px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.4)}
+.wiz-header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy3) 100%);padding:28px 32px 24px}
+.wiz-step-dots{display:flex;gap:6px;margin-bottom:16px}
+.wiz-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);transition:.2s}
+.wiz-dot.active{background:var(--gold);width:24px;border-radius:4px}
+.wiz-dot.done{background:rgba(255,255,255,.55)}
+.wiz-eyebrow{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.wiz-title{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:#fff;line-height:1.15}
+.wiz-sub{font-size:13px;color:rgba(255,255,255,.5);margin-top:6px}
+.wiz-body{padding:28px 32px}
+.wiz-field{margin-bottom:18px}
+.wiz-label{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.wiz-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:15px;font-family:'Barlow',sans-serif;color:var(--text);outline:none;transition:.15s;box-sizing:border-box}
+.wiz-input:focus{border-color:var(--navy3)}
+.wiz-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.wiz-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.wiz-footer{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;border-top:1px solid var(--border);gap:12px}
+.wiz-skip{font-size:13px;color:var(--text3);cursor:pointer;text-decoration:underline;background:none;border:none;padding:0}
+.wiz-skip:hover{color:var(--text2)}
+.wiz-email-preview{background:var(--off);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:16px;font-size:13px;color:var(--text2);line-height:1.65;white-space:pre-wrap;max-height:200px;overflow-y:auto;font-family:'Barlow',sans-serif}
+.wiz-email-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green2);margin-bottom:8px}
+.wiz-div-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.wiz-div-btn{padding:10px 6px;border:2px solid var(--border);border-radius:var(--r-sm);font-size:13px;font-weight:700;color:var(--text2);background:var(--white);cursor:pointer;text-align:center;transition:.15s}
+.wiz-div-btn.active{border-color:var(--navy);background:var(--navy);color:#fff}
+@media(max-width:520px){
+  .wiz-header{padding:22px 20px 18px}
+  .wiz-body{padding:20px 20px}
+  .wiz-footer{padding:16px 20px}
+  .wiz-row,.wiz-row3{grid-template-columns:1fr}
+  .wiz-div-grid{grid-template-columns:repeat(2,1fr)}
+}
 </style>
 </head>
 <body>
@@ -616,6 +651,141 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
     </div>
   </div>
 </aside>
+
+<!-- ONBOARDING WIZARD -->
+<div id="onboarding-wizard" class="hidden">
+  <div class="wiz-box">
+    <!-- Step 1 -->
+    <div id="wiz-step-1">
+      <div class="wiz-header">
+        <div class="wiz-step-dots">
+          <div class="wiz-dot active" id="wdot-1"></div>
+          <div class="wiz-dot" id="wdot-2"></div>
+          <div class="wiz-dot" id="wdot-3"></div>
+        </div>
+        <div class="wiz-eyebrow">Step 1 of 3</div>
+        <div class="wiz-title">Welcome to RecruitPro ⚾</div>
+        <div class="wiz-sub">Let's set up your recruiting profile — takes 60 seconds.</div>
+      </div>
+      <div class="wiz-body">
+        <div class="wiz-row">
+          <div class="wiz-field">
+            <div class="wiz-label">Player Name</div>
+            <input class="wiz-input" id="w-name" type="text" placeholder="First Last" autocomplete="name">
+          </div>
+          <div class="wiz-field">
+            <div class="wiz-label">Grad Year</div>
+            <select class="wiz-input" id="w-year">
+              <option value="">Select…</option>
+              <option>2025</option><option>2026</option><option>2027</option><option>2028</option><option>2029</option>
+            </select>
+          </div>
+        </div>
+        <div class="wiz-field">
+          <div class="wiz-label">Primary Position</div>
+          <select class="wiz-input" id="w-pos">
+            <option value="">Select position…</option>
+            <option>RHP</option><option>LHP</option><option>C</option><option>1B</option><option>2B</option>
+            <option>3B</option><option>SS</option><option>OF</option><option>UTIL</option><option>DH</option>
+          </select>
+        </div>
+        <div class="wiz-row">
+          <div class="wiz-field">
+            <div class="wiz-label">Hometown / State</div>
+            <input class="wiz-input" id="w-city" type="text" placeholder="e.g. Tampa, FL">
+          </div>
+          <div class="wiz-field">
+            <div class="wiz-label">High School</div>
+            <input class="wiz-input" id="w-hs" type="text" placeholder="School name">
+          </div>
+        </div>
+      </div>
+      <div class="wiz-footer">
+        <button class="wiz-skip" onclick="skipOnboarding()">Skip setup</button>
+        <button class="btn btn-primary" onclick="wizNext1()">Next: Your Stats →</button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div id="wiz-step-2" style="display:none">
+      <div class="wiz-header">
+        <div class="wiz-step-dots">
+          <div class="wiz-dot done" id="wdot2-1"></div>
+          <div class="wiz-dot active" id="wdot2-2"></div>
+          <div class="wiz-dot" id="wdot2-3"></div>
+        </div>
+        <div class="wiz-eyebrow">Step 2 of 3</div>
+        <div class="wiz-title">Your Stats & Academics</div>
+        <div class="wiz-sub">Coaches open emails that lead with real numbers. Add what you have.</div>
+      </div>
+      <div class="wiz-body">
+        <div class="wiz-row3">
+          <div class="wiz-field">
+            <div class="wiz-label">Fastball (mph)</div>
+            <input class="wiz-input" id="w-velo" type="text" placeholder="e.g. 88">
+          </div>
+          <div class="wiz-field">
+            <div class="wiz-label">ERA</div>
+            <input class="wiz-input" id="w-era" type="text" placeholder="e.g. 2.14">
+          </div>
+          <div class="wiz-field">
+            <div class="wiz-label">W-L Record</div>
+            <input class="wiz-input" id="w-record" type="text" placeholder="e.g. 7-2">
+          </div>
+        </div>
+        <div class="wiz-row">
+          <div class="wiz-field">
+            <div class="wiz-label">GPA</div>
+            <input class="wiz-input" id="w-gpa" type="text" placeholder="e.g. 3.6">
+          </div>
+          <div class="wiz-field">
+            <div class="wiz-label">Highlight Film URL</div>
+            <input class="wiz-input" id="w-film" type="url" placeholder="Hudl / YouTube link">
+          </div>
+        </div>
+      </div>
+      <div class="wiz-footer">
+        <button class="wiz-skip" onclick="wizBack1()">← Back</button>
+        <button class="btn btn-primary" onclick="wizNext2()">Next: Target Schools →</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div id="wiz-step-3" style="display:none">
+      <div class="wiz-header">
+        <div class="wiz-step-dots">
+          <div class="wiz-dot done"></div>
+          <div class="wiz-dot done"></div>
+          <div class="wiz-dot active"></div>
+        </div>
+        <div class="wiz-eyebrow">Step 3 of 3</div>
+        <div class="wiz-title">Pick Your Target Level</div>
+        <div class="wiz-sub">We'll generate your first recruiting email instantly.</div>
+      </div>
+      <div class="wiz-body">
+        <div class="wiz-field">
+          <div class="wiz-label">Target Division(s)</div>
+          <div class="wiz-div-grid" id="wiz-div-grid">
+            <div class="wiz-div-btn" onclick="wizToggleDiv(this,'D1')">D1</div>
+            <div class="wiz-div-btn" onclick="wizToggleDiv(this,'D2')">D2</div>
+            <div class="wiz-div-btn" onclick="wizToggleDiv(this,'D3')">D3</div>
+            <div class="wiz-div-btn" onclick="wizToggleDiv(this,'NAIA')">NAIA</div>
+            <div class="wiz-div-btn" onclick="wizToggleDiv(this,'JUCO')">JUCO</div>
+            <div class="wiz-div-btn" onclick="wizToggleDiv(this,'Any')">Any Level</div>
+          </div>
+        </div>
+        <div id="wiz-preview-wrap" style="display:none">
+          <div class="wiz-email-label">✦ Sample Email — Ready to Send</div>
+          <div class="wiz-email-preview" id="wiz-email-preview"></div>
+        </div>
+      </div>
+      <div class="wiz-footer">
+        <button class="wiz-skip" onclick="wizBack2()">← Back</button>
+        <button class="btn btn-primary" id="wiz-finish-btn" onclick="finishOnboarding()">Launch My Dashboard →</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- MAIN -->
 <main class="main">
@@ -3351,6 +3521,8 @@ function saveProfile() {
   try { localStorage.setItem('rp_profile', JSON.stringify(playerProfile)); } catch(e) {}
   showToast('✅ Profile saved!');
   calcReadinessScore();
+  updateDashReadiness();
+  renderNextAction();
 }
 
 function shareProfile() {
@@ -3605,25 +3777,29 @@ function shareIG() { showToast('Copy the link and paste it in your Instagram sto
 
 // ── DASHBOARD UPGRADE — add recruiting score card ─────────────
 function updateDashReadiness() {
-  const scoreEl = document.getElementById('rr-score');
-  if(scoreEl) {
-    const score = parseInt(scoreEl.textContent) || 0;
-    const dashScore = document.getElementById('dash-rr-score');
-    if(dashScore) dashScore.textContent = score;
-    const dashLabel = document.getElementById('dash-rr-label');
-    if(dashLabel) {
-      if(score>=90) dashLabel.textContent='Excellent';
-      else if(score>=70) dashLabel.textContent='Good';
-      else if(score>=50) dashLabel.textContent='Fair';
-      else dashLabel.textContent='Needs Work';
-    }
+  const score = getProfileScore();
+  const dashScore = document.getElementById('dash-rr-score');
+  if(dashScore) dashScore.textContent = score;
+  const dashLabel = document.getElementById('dash-rr-label');
+  if(dashLabel) {
+    if(score>=90) { dashLabel.textContent='Excellent'; dashLabel.style.color='var(--green2)'; }
+    else if(score>=70) { dashLabel.textContent='Good'; dashLabel.style.color='var(--gold)'; }
+    else if(score>=50) { dashLabel.textContent='Fair'; dashLabel.style.color='#fb923c'; }
+    else { dashLabel.textContent='Needs Work'; dashLabel.style.color='var(--red)'; }
+  }
+  // Also update the ring color
+  const ring = dashScore?.closest('[style*="border:4px solid"]');
+  if(ring) {
+    const col = score>=90?'var(--green2)':score>=70?'var(--gold)':score>=50?'#fb923c':'var(--red)';
+    ring.style.borderColor = col;
+    if(dashScore) dashScore.style.color = col;
   }
 }
 
 
 // ── RECRUITING CALENDAR ───────────────────────────────────────
-let calYear = 2026;
-let calMonth = 2; // 0-indexed, so 2 = March
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth(); // 0-indexed, current month
 let calEvents = [
   {id:1, title:'FSU Unofficial Visit', date:'2026-04-15', type:'visit', notes:''},
   {id:2, title:'Follow up — Stetson', date:'2026-03-20', type:'follow', notes:'No response in 2 weeks'},
@@ -4220,6 +4396,7 @@ function initApp() {
   recalc();
   renderDB();
   calcReadinessScore();
+  updateDashReadiness();
   renderCalendar();
   buildDashNotifications();
   renderDashMilestones();
@@ -4234,8 +4411,145 @@ function initApp() {
   }
 }
 
+// ── ONBOARDING WIZARD ────────────────────────────────────────
+let wizSelectedDivs = new Set();
+
+function showOnboardingWizard() {
+  document.getElementById('onboarding-wizard').classList.remove('hidden');
+}
+function hideOnboardingWizard() {
+  document.getElementById('onboarding-wizard').classList.add('hidden');
+}
+
+function wizNext1() {
+  const name = document.getElementById('w-name').value.trim();
+  const year = document.getElementById('w-year').value;
+  const pos  = document.getElementById('w-pos').value;
+  if(!name) { document.getElementById('w-name').focus(); showToast('Enter your name to continue'); return; }
+  if(!pos)  { document.getElementById('w-pos').focus();  showToast('Select your position'); return; }
+  document.getElementById('wiz-step-1').style.display = 'none';
+  document.getElementById('wiz-step-2').style.display = '';
+}
+function wizBack1() {
+  document.getElementById('wiz-step-2').style.display = 'none';
+  document.getElementById('wiz-step-1').style.display = '';
+}
+function wizNext2() {
+  document.getElementById('wiz-step-2').style.display = 'none';
+  document.getElementById('wiz-step-3').style.display = '';
+  wizGeneratePreview();
+}
+function wizBack2() {
+  document.getElementById('wiz-step-3').style.display = 'none';
+  document.getElementById('wiz-step-2').style.display = '';
+}
+
+function wizToggleDiv(el, div) {
+  if(div === 'Any') {
+    wizSelectedDivs.clear();
+    document.querySelectorAll('.wiz-div-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    wizSelectedDivs.add('Any');
+  } else {
+    document.querySelector('.wiz-div-btn[onclick*="Any"]')?.classList.remove('active');
+    wizSelectedDivs.delete('Any');
+    el.classList.toggle('active');
+    if(el.classList.contains('active')) wizSelectedDivs.add(div);
+    else wizSelectedDivs.delete(div);
+  }
+  wizGeneratePreview();
+}
+
+function wizGeneratePreview() {
+  const name  = document.getElementById('w-name').value.trim() || 'Athlete';
+  const pos   = document.getElementById('w-pos').value  || 'pitcher';
+  const year  = document.getElementById('w-year').value || '2026';
+  const velo  = document.getElementById('w-velo').value.trim();
+  const era   = document.getElementById('w-era').value.trim();
+  const record= document.getElementById('w-record').value.trim();
+  const gpa   = document.getElementById('w-gpa').value.trim();
+  const city  = document.getElementById('w-city').value.trim() || 'Florida';
+
+  // Pick a sample program matching selected division
+  const targetDiv = [...wizSelectedDivs].filter(d => d !== 'Any')[0] || 'D1';
+  const sample = coachDB.find(p => p.div === targetDiv) || coachDB[0];
+  if(!sample) return;
+
+  const hc = sample.coaches?.find(c => c.role === 'Head Coach') || sample.coaches?.[0];
+  const coachLast = hc?.name ? hc.name.trim().split(' ').pop() : 'Coach';
+  const statLine = [velo ? velo+' mph FB' : '', era ? era+' ERA' : '', record || ''].filter(Boolean).join(', ');
+
+  const firstName = name.split(' ')[0];
+  const lastName  = name.split(' ').slice(1).join(' ');
+  const preview = `Subject: ${pos} Prospect — ${name} — Class of ${year}
+
+Coach ${coachLast},
+
+My name is ${firstName} ${lastName}, a ${pos} from ${city} in the class of ${year}.${statLine ? ' This season: ' + statLine + '.' : ''}${gpa ? ' GPA: ' + gpa + '.' : ''}
+
+I've been following ${sample.name}${sample.conf ? ' ('+sample.conf+')' : ''} closely — your program is at the top of my list.
+
+Can we set up a call, or can I send film your way?
+
+Thank you,
+${firstName} ${lastName || ''}`.trim();
+
+  document.getElementById('wiz-email-preview').textContent = preview;
+  document.getElementById('wiz-preview-wrap').style.display = '';
+}
+
+function finishOnboarding() {
+  // Save all wizard data into the real profile
+  const name   = document.getElementById('w-name').value.trim();
+  const year   = document.getElementById('w-year').value;
+  const pos    = document.getElementById('w-pos').value;
+  const city   = document.getElementById('w-city').value.trim();
+  const hs     = document.getElementById('w-hs').value.trim();
+  const velo   = document.getElementById('w-velo').value.trim();
+  const era    = document.getElementById('w-era').value.trim();
+  const record = document.getElementById('w-record').value.trim();
+  const gpa    = document.getElementById('w-gpa').value.trim();
+  const film   = document.getElementById('w-film').value.trim();
+  const divs   = wizSelectedDivs.size ? [...wizSelectedDivs].join(', ') : '';
+
+  if(!name) { wizBack1(); showToast('Enter your name first'); return; }
+
+  // Fill the real profile form fields
+  const set = (id, val) => { const el = document.getElementById(id); if(el && val) el.value = val; };
+  set('pf-name', name); set('pf-year', year); set('pf-pos', pos);
+  set('pf-city', city); set('pf-hs', hs);   set('pf-gpa', gpa);
+  set('pf-velo', velo); set('pf-era', era);  set('pf-record', record);
+  set('pf-film', film); set('pf-divs', divs);
+
+  // Save profile
+  saveProfile();
+
+  // Mark onboarding complete
+  try { localStorage.setItem('rp_onboarded', '1'); } catch(e) {}
+
+  // Hide wizard and banner, refresh dashboard
+  hideOnboardingWizard();
+  const banner = document.getElementById('onboarding-banner');
+  if(banner) banner.style.display = 'none';
+  updateDashStats();
+  renderNextAction();
+  calcReadinessScore();
+
+  showToast('✅ Profile saved! Welcome to RecruitPro.');
+}
+
+function skipOnboarding() {
+  try { localStorage.setItem('rp_onboarded', '1'); } catch(e) {}
+  hideOnboardingWizard();
+}
+
 // ── INIT ─────────────────────────────────────────────────────
 initApp();
+
+// Show onboarding wizard on first visit (no saved profile)
+if(!localStorage.getItem('rp_onboarded') && !localStorage.getItem('rp_profile')) {
+  showOnboardingWizard();
+}
 
 </script>
 <script>

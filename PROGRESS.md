@@ -1,6 +1,6 @@
 # RecruitPro — Project Memory
 
-## Status: PLANNING PHASE
+## Status: PHASE 1 COMPLETE
 Last Updated: 2026-03-21
 
 ---
@@ -10,7 +10,9 @@ Last Updated: 2026-03-21
 - [x] Architecture & Roadmap drafted
 - [x] Database schema designed
 - [x] UI/UX strategy drafted
-- [ ] Awaiting clarifying answers before Phase 1 begins
+- [x] **Phase 1: 3-step onboarding wizard** (name/pos/year → stats → division picker + live email preview)
+- [x] **Phase 1: Calendar defaults to current month** (was hardcoded March 2026)
+- [x] **Phase 1: Dashboard readiness score sync** (uses getProfileScore() live, updates on save, color-coded ring)
 
 ---
 
@@ -18,7 +20,7 @@ Last Updated: 2026-03-21
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 1 | Foundation (Auth, DB, Core UI shell) | Pending |
+| 1 | Foundation (Onboarding, Core UI, Data sync) | ✅ Complete |
 | 2 | Coach Database + Search | Pending |
 | 3 | AI Email Generator | Pending |
 | 4 | Athlete Dashboard + Tracking | Pending |

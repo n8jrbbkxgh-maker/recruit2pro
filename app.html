@@ -12,6 +12,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RecruitPro — Baseball Recruiting Platform</title>
+<meta name="description" content="The baseball recruiting app built by a player. AI emails, 370+ coach contacts, scholarship calculator, and full recruiting tracker — free trial.">
+<meta property="og:title" content="RecruitPro — Baseball Recruiting Platform">
+<meta property="og:description" content="AI recruiting emails, 370+ coach contacts, and a full scholarship tracker. Built by a Chipola JC pitcher for baseball families.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://recruitpro.netlify.app">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RecruitPro — Baseball Recruiting Platform">
+<meta name="twitter:description" content="AI recruiting emails, 370+ coach contacts, and a full scholarship tracker. Free trial — no credit card.">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -561,6 +569,11 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
 .faq-q{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:6px}
 .faq-a{font-size:14px;color:var(--text3);line-height:1.6}
 
+@media(max-width:700px){
+  .db-layout{grid-template-columns:1fr;grid-template-rows:auto 1fr;height:auto;min-height:0}
+  .db-sidebar{border-right:none;border-bottom:1px solid var(--border);max-height:320px}
+  .db-detail{min-height:400px}
+}
 @media(max-width:520px){
   #topbar-right .btn-ghost{display:none}
   #topbar-right .btn-primary{font-size:12px;padding:6px 10px}
@@ -579,9 +592,47 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
   .btn-sm{padding:5px 10px;font-size:12px}
   .school-actions .btn-sm{font-size:11px;padding:5px 8px}
 }
+/* Upgrade nav pulse */
+@keyframes upgradePulse{0%,100%{box-shadow:0 0 0 0 rgba(232,160,32,.5)}50%{box-shadow:0 0 0 6px rgba(232,160,32,0)}}
+.nav-upgrade-pulse{animation:upgradePulse 2.4s ease-in-out infinite}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+
+/* ── ONBOARDING WIZARD ── */
+#onboarding-wizard{position:fixed;inset:0;background:rgba(5,15,35,.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+#onboarding-wizard.hidden{display:none}
+.wiz-box{background:var(--white);border-radius:var(--r-lg);width:100%;max-width:540px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.4)}
+.wiz-header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy3) 100%);padding:28px 32px 24px}
+.wiz-step-dots{display:flex;gap:6px;margin-bottom:16px}
+.wiz-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);transition:.2s}
+.wiz-dot.active{background:var(--gold);width:24px;border-radius:4px}
+.wiz-dot.done{background:rgba(255,255,255,.55)}
+.wiz-eyebrow{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.wiz-title{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:#fff;line-height:1.15}
+.wiz-sub{font-size:13px;color:rgba(255,255,255,.5);margin-top:6px}
+.wiz-body{padding:28px 32px}
+.wiz-field{margin-bottom:18px}
+.wiz-label{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.wiz-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:15px;font-family:'Barlow',sans-serif;color:var(--text);outline:none;transition:.15s;box-sizing:border-box}
+.wiz-input:focus{border-color:var(--navy3)}
+.wiz-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.wiz-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.wiz-footer{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;border-top:1px solid var(--border);gap:12px}
+.wiz-skip{font-size:13px;color:var(--text3);cursor:pointer;text-decoration:underline;background:none;border:none;padding:0}
+.wiz-skip:hover{color:var(--text2)}
+.wiz-email-preview{background:var(--off);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:16px;font-size:13px;color:var(--text2);line-height:1.65;white-space:pre-wrap;max-height:200px;overflow-y:auto;font-family:'Barlow',sans-serif}
+.wiz-email-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green2);margin-bottom:8px}
+.wiz-div-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.wiz-div-btn{padding:10px 6px;border:2px solid var(--border);border-radius:var(--r-sm);font-size:13px;font-weight:700;color:var(--text2);background:var(--white);cursor:pointer;text-align:center;transition:.15s}
+.wiz-div-btn.active{border-color:var(--navy);background:var(--navy);color:#fff}
+@media(max-width:520px){
+  .wiz-header{padding:22px 20px 18px}
+  .wiz-body{padding:20px 20px}
+  .wiz-footer{padding:16px 20px}
+  .wiz-row,.wiz-row3{grid-template-columns:1fr}
+  .wiz-div-grid{grid-template-columns:repeat(2,1fr)}
+}
 </style>
 </head>
 <body>
@@ -606,7 +657,7 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
     <div class="nav-item" onclick="switchView('history',this)"><span class="nav-icon">📬</span> Email History</div>
     <div class="nav-item" onclick="switchView('calendar',this)" style="position:relative"><span class="nav-icon">📆</span> Calendar <span class="nav-badge" id="cal-notif-badge" style="display:none;background:var(--red);color:#fff">0</span></div>
     <div class="nav-item" onclick="switchView('refer',this)" style="margin-top:8px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2)"><span class="nav-icon">🎁</span> Refer & Earn</div>
-    <div class="nav-item" onclick="switchView('upgrade',this)" style="margin-top:4px;background:rgba(232,160,32,.1);border:1px solid rgba(232,160,32,.3)"><span class="nav-icon">⚡</span> Upgrade to Pro</div>
+    <div class="nav-item nav-upgrade-pulse" onclick="switchView('upgrade',this)" style="margin-top:4px;background:rgba(232,160,32,.12);border:1px solid rgba(232,160,32,.4)"><span class="nav-icon">⚡</span> Upgrade to Pro</div>
   </nav>
   <div class="sidebar-footer">
 
@@ -616,6 +667,141 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
     </div>
   </div>
 </aside>
+
+<!-- ONBOARDING WIZARD -->
+<div id="onboarding-wizard" class="hidden">
+  <div class="wiz-box">
+    <!-- Step 1 -->
+    <div id="wiz-step-1">
+      <div class="wiz-header">
+        <div class="wiz-step-dots">
+          <div class="wiz-dot active" id="wdot-1"></div>
+          <div class="wiz-dot" id="wdot-2"></div>
+          <div class="wiz-dot" id="wdot-3"></div>
+        </div>
+        <div class="wiz-eyebrow">Step 1 of 3</div>
+        <div class="wiz-title">Welcome to RecruitPro ⚾</div>
+        <div class="wiz-sub">Let's set up your recruiting profile — takes 60 seconds.</div>
+      </div>
+      <div class="wiz-body">
+        <div class="wiz-row">
+          <div class="wiz-field">
+            <div class="wiz-label">Player Name</div>
+            <input class="wiz-input" id="w-name" type="text" placeholder="First Last" autocomplete="name">
+          </div>
+          <div class="wiz-field">
+            <div class="wiz-label">Grad Year</div>
+            <select class="wiz-input" id="w-year">
+              <option value="">Select…</option>
+              <option>2025</option><option>2026</option><option>2027</option><option>2028</option><option>2029</option>
+            </select>
+          </div>
+        </div>
+        <div class="wiz-field">
+          <div class="wiz-label">Primary Position</div>
+          <select class="wiz-input" id="w-pos">
+            <option value="">Select position…</option>
+            <option>RHP</option><option>LHP</option><option>C</option><option>1B</option><option>2B</option>
+            <option>3B</option><option>SS</option><option>OF</option><option>UTIL</option><option>DH</option>
+          </select>
+        </div>
+        <div class="wiz-row">
+          <div class="wiz-field">
+            <div class="wiz-label">Hometown / State</div>
+            <input class="wiz-input" id="w-city" type="text" placeholder="e.g. Tampa, FL">
+          </div>
+          <div class="wiz-field">
+            <div class="wiz-label">High School</div>
+            <input class="wiz-input" id="w-hs" type="text" placeholder="School name">
+          </div>
+        </div>
+      </div>
+      <div class="wiz-footer">
+        <button class="wiz-skip" onclick="skipOnboarding()">Skip setup</button>
+        <button class="btn btn-primary" onclick="wizNext1()">Next: Your Stats →</button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div id="wiz-step-2" style="display:none">
+      <div class="wiz-header">
+        <div class="wiz-step-dots">
+          <div class="wiz-dot done" id="wdot2-1"></div>
+          <div class="wiz-dot active" id="wdot2-2"></div>
+          <div class="wiz-dot" id="wdot2-3"></div>
+        </div>
+        <div class="wiz-eyebrow">Step 2 of 3</div>
+        <div class="wiz-title">Your Stats & Academics</div>
+        <div class="wiz-sub">Coaches open emails that lead with real numbers. Add what you have.</div>
+      </div>
+      <div class="wiz-body">
+        <div class="wiz-row3">
+          <div class="wiz-field">
+            <div class="wiz-label">Fastball (mph)</div>
+            <input class="wiz-input" id="w-velo" type="text" placeholder="e.g. 88">
+          </div>
+          <div class="wiz-field">
+            <div class="wiz-label">ERA</div>
+            <input class="wiz-input" id="w-era" type="text" placeholder="e.g. 2.14">
+          </div>
+          <div class="wiz-field">
+            <div class="wiz-label">W-L Record</div>
+            <input class="wiz-input" id="w-record" type="text" placeholder="e.g. 7-2">
+          </div>
+        </div>
+        <div class="wiz-row">
+          <div class="wiz-field">
+            <div class="wiz-label">GPA</div>
+            <input class="wiz-input" id="w-gpa" type="text" placeholder="e.g. 3.6">
+          </div>
+          <div class="wiz-field">
+            <div class="wiz-label">Highlight Film URL</div>
+            <input class="wiz-input" id="w-film" type="url" placeholder="Hudl / YouTube link">
+          </div>
+        </div>
+      </div>
+      <div class="wiz-footer">
+        <button class="wiz-skip" onclick="wizBack1()">← Back</button>
+        <button class="btn btn-primary" onclick="wizNext2()">Next: Target Schools →</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div id="wiz-step-3" style="display:none">
+      <div class="wiz-header">
+        <div class="wiz-step-dots">
+          <div class="wiz-dot done"></div>
+          <div class="wiz-dot done"></div>
+          <div class="wiz-dot active"></div>
+        </div>
+        <div class="wiz-eyebrow">Step 3 of 3</div>
+        <div class="wiz-title">Pick Your Target Level</div>
+        <div class="wiz-sub">We'll generate your first recruiting email instantly.</div>
+      </div>
+      <div class="wiz-body">
+        <div class="wiz-field">
+          <div class="wiz-label">Target Division(s)</div>
+          <div class="wiz-div-grid" id="wiz-div-grid">
+            <div class="wiz-div-btn" onclick="wizToggleDiv(this,'D1')">D1</div>
+            <div class="wiz-div-btn" onclick="wizToggleDiv(this,'D2')">D2</div>
+            <div class="wiz-div-btn" onclick="wizToggleDiv(this,'D3')">D3</div>
+            <div class="wiz-div-btn" onclick="wizToggleDiv(this,'NAIA')">NAIA</div>
+            <div class="wiz-div-btn" onclick="wizToggleDiv(this,'JUCO')">JUCO</div>
+            <div class="wiz-div-btn" onclick="wizToggleDiv(this,'Any')">Any Level</div>
+          </div>
+        </div>
+        <div id="wiz-preview-wrap" style="display:none">
+          <div class="wiz-email-label">✦ Sample Email — Ready to Send</div>
+          <div class="wiz-email-preview" id="wiz-email-preview"></div>
+        </div>
+      </div>
+      <div class="wiz-footer">
+        <button class="wiz-skip" onclick="wizBack2()">← Back</button>
+        <button class="btn btn-primary" id="wiz-finish-btn" onclick="finishOnboarding()">Launch My Dashboard →</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- MAIN -->
 <main class="main">
@@ -722,6 +908,14 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
               <div class="db-filter" onclick="setDBFilter('NAIA',this)">NAIA</div>
             </div>
             <div class="db-filters" id="db-state-row" style="margin-top:4px"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px">
+              <div style="font-size:12px;color:var(--text3)" id="db-results-bar">— programs</div>
+              <select onchange="setDBSort(this.value)" style="font-size:12px;padding:3px 7px;border:1.5px solid var(--border);border-radius:var(--r-sm);color:var(--text2);background:var(--white);outline:none;cursor:pointer">
+                <option value="alpha">A–Z</option>
+                <option value="verified">Verified first</option>
+                <option value="coaches">Most coaches</option>
+              </select>
+            </div>
           </div>
           <div class="db-list" id="db-list"></div>
         </div>
@@ -771,6 +965,7 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
               <div class="type-chip" onclick="setEmailType(this,'Follow-Up')">Follow-Up</div>
               <div class="type-chip" onclick="setEmailType(this,'Visit Request')">Visit Request</div>
               <div class="type-chip" onclick="setEmailType(this,'Thank You')">Thank You</div>
+              <div class="type-chip" onclick="setEmailType(this,'Showcase Invite')">Showcase Invite</div>
               <div class="type-chip" onclick="setEmailType(this,'Verbal Commit')">Verbal Commit</div>
               <div class="type-chip" onclick="setEmailType(this,'Decommit')">Decommit</div>
             </div>
@@ -805,9 +1000,19 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
             <div class="output-label">Generated Email</div>
             <div style="display:flex;align-items:center;gap:10px"><span id="word-count" style="font-size:12px;color:var(--text3)"></span><div class="gen-badge" id="gen-badge" style="display:none">✓ Ready to send</div></div>
           </div>
+          <div id="email-subject-strip" style="display:none;background:var(--off);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:8px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:3px">Subject Line</div>
+                <div style="font-size:13.5px;font-weight:600;color:var(--navy)" id="email-subject-text"></div>
+              </div>
+              <button class="btn btn-ghost btn-sm" style="flex-shrink:0;font-size:11px;padding:4px 10px" onclick="copySubject()">📋 Copy Subject</button>
+            </div>
+          </div>
           <div class="email-output empty" id="email-output">Fill in the details and click Generate — your email will appear here in seconds.</div>
           <div class="output-actions" id="output-actions" style="display:none">
-            <button class="btn btn-navy btn-sm" onclick="copyEmail()" id="copy-btn">📋 Copy Email</button>
+            <button class="btn btn-navy btn-sm" onclick="copyEmail()" id="copy-btn">📋 Copy All</button>
+            <button class="btn btn-ghost btn-sm" onclick="copyBodyOnly()">📝 Copy Body</button>
             <button class="btn btn-ghost btn-sm" onclick="openGmailDraft()" title="Open Gmail with this email pre-filled">✉ Open in Gmail</button>
             <button class="btn btn-ghost btn-sm" onclick="generateEmail()">↻ Regenerate</button>
             <button class="btn btn-ghost btn-sm" onclick="clearEmail()">Clear</button>
@@ -1111,6 +1316,16 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
           <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:16px;padding:14px" onclick="saveProfile()">Save Profile</button>
         </div>
       </div>
+
+      <!-- Data Backup -->
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-top:20px">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--navy);margin-bottom:6px">Data Backup</div>
+        <div style="font-size:13px;color:var(--text3);margin-bottom:14px">Export all your data to a file so you never lose it if you clear your browser or switch devices.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇ Export Backup</button>
+          <label class="btn btn-ghost btn-sm" style="cursor:pointer">⬆ Import Backup<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
+        </div>
+      </div>
     </div>
 
     <!-- OFFER TRACKER -->
@@ -1251,7 +1466,7 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
         <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:24px">
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:var(--navy);margin-bottom:16px">Your Referral Link</div>
-          <div style="background:var(--off);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:13px;color:var(--navy3);font-family:monospace;margin-bottom:12px;word-break:break-all" id="ref-link">recruitpro-app.netlify.app?ref=JAKE32</div>
+          <div style="background:var(--off);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:13px;color:var(--navy3);font-family:monospace;margin-bottom:12px;word-break:break-all" id="ref-link"></div>
           <button class="btn btn-primary btn-sm" style="width:100%;justify-content:center" onclick="copyRefLink()">Copy Referral Link</button>
           <div style="margin-top:16px">
             <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:10px">Share directly</div>
@@ -1289,12 +1504,12 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
           <div style="background:var(--off);border-radius:var(--r-sm);padding:16px">
             <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Text Message</div>
-            <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px" id="ref-text-msg">Hey — my son went through recruiting and it was overwhelming. Found this app called RecruitPro that organizes everything, writes coach emails with AI, and compares scholarship offers. $20/month, free trial here: recruitpro-app.netlify.app?ref=JAKE32</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px" id="ref-text-msg"></div>
             <button class="btn btn-ghost btn-sm" onclick="copyRefMsg('text')">Copy Text</button>
           </div>
           <div style="background:var(--off);border-radius:var(--r-sm);padding:16px">
             <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Social Post</div>
-            <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px" id="ref-social-msg">If your son is going through baseball recruiting right now — this app is a game changer. School tracker, AI email writer, scholarship calculator. Built by a Chipola JC pitcher who went through it himself. Free trial ➜ recruitpro-app.netlify.app?ref=JAKE32 #baseballrecruiting #collegebaseball</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px" id="ref-social-msg"></div>
             <button class="btn btn-ghost btn-sm" onclick="copyRefMsg('social')">Copy Post</button>
           </div>
         </div>
@@ -1341,7 +1556,7 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
           <span style="font-size:18px">🔥</span>
           <span style="font-size:13px;font-weight:700;color:#fff">Recruiting windows close fast — D1 coaches fill their class boards <em>before</em> junior year ends</span>
         </div>
-        <button class="btn" style="background:#fff;color:#c0392b;font-weight:800;font-size:13px;padding:8px 18px;border-radius:99px;white-space:nowrap" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh','_blank')">Start Free Trial →</button>
+        <button class="btn" style="background:#fff;color:#c0392b;font-weight:800;font-size:13px;padding:8px 18px;border-radius:99px;white-space:nowrap" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh?utm_source=recruitpro&utm_medium=app&utm_campaign=upgrade','_blank')">Start Free Trial →</button>
       </div>
 
       <div class="upgrade-hero">
@@ -1364,7 +1579,7 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--gold);margin-bottom:4px">$24.99/mo vs. a $40,000–$200,000 scholarship</div>
           <div style="font-size:13px;color:rgba(255,255,255,.6);line-height:1.6">One well-timed email to the right coach can change your son's entire path. Autopilot sends 12+ of those emails in the time it takes to write one manually.</div>
         </div>
-        <button class="btn btn-primary" style="white-space:nowrap" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh','_blank')">Try Free for 7 Days</button>
+        <button class="btn btn-primary" style="white-space:nowrap" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh?utm_source=recruitpro&utm_medium=app&utm_campaign=upgrade','_blank')">Try Free for 7 Days</button>
       </div>
 
       <div class="upgrade-plans">
@@ -1386,7 +1601,7 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
             <li><span class="cross" style="color:var(--border2)">–</span> <span style="color:var(--text3)">Bulk personalized emails (12+ at once)</span></li>
             <li><span class="cross" style="color:var(--border2)">–</span> <span style="color:var(--text3)">Auto follow-up sequences</span></li>
           </ul>
-          <button class="plan-btn plan-btn-secondary" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh','_blank')">Get Basic</button>
+          <button class="plan-btn plan-btn-secondary" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh?utm_source=recruitpro&utm_medium=app&utm_campaign=upgrade','_blank')">Get Basic</button>
         </div>
 
         <div class="plan-card featured">
@@ -1405,7 +1620,7 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
             <li><span class="check">✓</span> Copy bulk coach contact info</li>
             <li><span class="check">✓</span> Priority support + early feature access</li>
           </ul>
-          <button class="plan-btn plan-btn-primary" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh','_blank')">Start Free 7-Day Trial</button>
+          <button class="plan-btn plan-btn-primary" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh?utm_source=recruitpro&utm_medium=app&utm_campaign=upgrade','_blank')">Start Free 7-Day Trial</button>
           <div style="text-align:center;margin-top:10px;font-size:12px;color:var(--text3)">No credit card required · Cancel anytime</div>
         </div>
       </div>
@@ -1465,8 +1680,18 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
       <div style="background:linear-gradient(135deg,var(--navy),var(--navy3));border-radius:var(--r);padding:32px 24px;text-align:center;margin-bottom:16px">
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:#fff;margin-bottom:8px">Your son's scholarship window is open <span style="color:var(--gold)">right now.</span></div>
         <div style="font-size:14px;color:rgba(255,255,255,.55);margin-bottom:24px;max-width:440px;margin-left:auto;margin-right:auto;margin-top:8px;line-height:1.7">Most families wait too long and miss the window. The ones who get offers are the ones coaches hear from — repeatedly, professionally, and at the right time.</div>
-        <button class="btn btn-primary" style="font-size:16px;padding:14px 32px;border-radius:99px" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh','_blank')">Start Your Free 7-Day Trial →</button>
+        <button class="btn btn-primary" style="font-size:16px;padding:14px 32px;border-radius:99px" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh?utm_source=recruitpro&utm_medium=app&utm_campaign=upgrade','_blank')">Start Your Free 7-Day Trial →</button>
         <div style="font-size:12px;color:rgba(255,255,255,.35);margin-top:12px">No credit card · Cancel anytime · Takes 60 seconds to set up</div>
+      </div>
+
+      <!-- License key input for existing customers -->
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px 24px;margin-bottom:16px">
+        <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:4px">Already purchased?</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:14px">Enter the license key from your Gumroad receipt to unlock full access.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <input id="license-key-input" type="text" placeholder="XXXXXXXX-XXXXXXXX" style="flex:1;min-width:180px;padding:9px 13px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:14px;font-family:'Barlow',sans-serif;outline:none;color:var(--text)">
+          <button class="btn btn-primary btn-sm" onclick="validateGumroadKey(document.getElementById('license-key-input').value.trim())">Unlock Access</button>
+        </div>
       </div>
 
     </div>
@@ -2109,10 +2334,12 @@ let editingId = null;
 let dbFilter = 'all';
 let dbStateFilter = 'all';
 let dbSearch = '';
+let dbSort = 'alpha';
 let selectedProgram = null;
 let contribProgramId = null;
 let communityContribs = {};
 let milestoneState = {};
+try { const _ms = localStorage.getItem('rp_milestones'); if(_ms) milestoneState = JSON.parse(_ms); } catch(e) {}
 
 // ── MOBILE ───────────────────────────────────────────────────
 function toggleSidebar() {
@@ -2360,39 +2587,74 @@ function getFilteredDB() {
 }
 
 function renderDB() {
-  // Populate state filter dynamically
-  const stateRow = document.getElementById('db-state-row');
-  if(stateRow && !stateRow.hasAttribute('data-populated')) {
-    stateRow.setAttribute('data-populated','1');
-    const states = [...new Set(coachDB.map(p => p.state))].sort();
-    stateRow.innerHTML = `<div class="db-filter active" onclick="setDBState('all',this)">All States</div>` +
-      states.map(s => `<div class="db-filter" onclick="setDBState('${s}',this)">${s}</div>`).join('');
+  // Division count badges
+  const divRow = document.getElementById('db-div-row');
+  if(divRow) {
+    const divs = ['all','D1','D2','D3','JUCO','NAIA'];
+    const labels = {all:'All', D1:'D1', D2:'D2', D3:'D3', JUCO:'JUCO', NAIA:'NAIA'};
+    divRow.querySelectorAll('.db-filter').forEach(btn => {
+      const f = btn.getAttribute('data-div') || (btn.textContent.trim() === 'All' ? 'all' : btn.textContent.trim());
+      btn.setAttribute('data-div', f);
+      const count = f === 'all' ? coachDB.length : coachDB.filter(p => p.div === f).length;
+      btn.textContent = labels[f] + (count ? ' '+count : '');
+      btn.classList.toggle('active', f === dbFilter);
+    });
   }
+
+  // Populate state filter dynamically (rebuild when division changes)
+  const stateRow = document.getElementById('db-state-row');
+  if(stateRow) {
+    const poolForStates = dbFilter === 'all' ? coachDB : coachDB.filter(p => p.div === dbFilter);
+    const states = [...new Set(poolForStates.map(p => p.state))].sort();
+    stateRow.innerHTML = `<div class="db-filter${dbStateFilter==='all'?' active':''}" onclick="setDBState('all',this)">All States</div>` +
+      states.map(s => `<div class="db-filter${dbStateFilter===s?' active':''}" onclick="setDBState('${s}',this)">${s}</div>`).join('');
+  }
+
   const list = document.getElementById('db-list');
-  const filtered = getFilteredDB();
+  let filtered = getFilteredDB();
+
+  // Sort
+  if(dbSort === 'verified') filtered = filtered.sort((a,b) => (b.verified?1:0)-(a.verified?1:0) || (b.contributions||0)-(a.contributions||0));
+  else if(dbSort === 'coaches') filtered = filtered.sort((a,b) => b.coaches.length - a.coaches.length);
+  else filtered = filtered.sort((a,b) => a.name.localeCompare(b.name));
+
+  const trackedNames = new Set(mySchools.map(s => s.name));
+
+  const resultsBar = document.getElementById('db-results-bar');
+  if(resultsBar) resultsBar.textContent = `${filtered.length} program${filtered.length!==1?'s':''}`;
+
   if(!filtered.length) {
     list.innerHTML = `<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">No programs found.</div>`;
     return;
   }
-  list.innerHTML = filtered.map(p => `
+  list.innerHTML = filtered.map(p => {
+    const inTracker = trackedNames.has(p.name);
+    const bestReply = p.coaches.reduce((max,c) => c.replyRate && c.replyRate > max ? c.replyRate : max, 0);
+    return `
     <div class="db-program ${selectedProgram && selectedProgram.id === p.id ? 'active' : ''}" onclick="selectProgram('${p.id}')">
-      <div class="db-prog-name">${p.name}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:6px">
+        <div class="db-prog-name" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</div>
+        ${inTracker ? `<span title="In My Schools" style="color:var(--green2);font-size:14px;flex-shrink:0">✓</span>` : ''}
+      </div>
       <div class="db-prog-meta">
         <span class="db-prog-conf">${p.div}</span>
         <span>${p.conf}</span>
         <span>${p.state}</span>
-        ${p.verified ? `<span class="verified-dot"></span>` : `<span class="community-dot"></span>`}
+        ${p.verified ? `<span class="verified-dot" title="Verified"></span>` : `<span class="community-dot" title="Community data"></span>`}
+        ${bestReply ? `<span style="font-size:10px;color:var(--green2);font-weight:700">${bestReply}% reply</span>` : ''}
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 function setDBFilter(f, el) {
   dbFilter = f;
+  dbStateFilter = 'all'; // reset state when division changes
   document.querySelectorAll('#db-div-row .db-filter').forEach(x => x.classList.remove('active'));
   el.classList.add('active');
   renderDB();
 }
+function setDBSort(val) { dbSort = val; renderDB(); }
 function setDBState(s, el) {
   dbStateFilter = s;
   document.querySelectorAll('#db-state-row .db-filter').forEach(x => x.classList.remove('active'));
@@ -2422,8 +2684,8 @@ function selectProgram(id) {
       <div class="coach-top">
         <div><div class="coach-name">${c.name}</div><div class="coach-role">${c.role}${c.replyRate ? ' · <span style="color:var(--green2);font-weight:700;font-size:11px">'+c.replyRate+'% reply rate</span>' : ''}</div></div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="btn btn-green btn-sm" onclick="writeEmailForDB('${selectedProgram.id}','${c.name}','${c.role}')">✉ Email</button>
-          ${c.twitter?`<button class="btn btn-sm" style="background:#000;color:#fff;border:none" onclick="openTwitterDM('${c.twitter}')"><span style="font-size:12px;font-weight:800">𝕏</span> DM</button>`:''}
+          <button class="btn btn-green btn-sm" onclick="writeEmailForDB(${JSON.stringify(selectedProgram.id)},${JSON.stringify(c.name)})">✉ Email</button>
+          ${c.twitter?`<button class="btn btn-sm" style="background:#000;color:#fff;border:none" onclick="openTwitterDM(${JSON.stringify(c.twitter)})"><span style="font-size:12px;font-weight:800">𝕏</span> DM</button>`:''}
         </div>
       </div>
       <div class="coach-contact">
@@ -2471,7 +2733,7 @@ function selectProgram(id) {
     </div>
     <div class="db-actions">
       <button class="btn btn-primary btn-sm" onclick="addDBSchoolToTracker('${selectedProgram.id}')">+ Add to My Schools</button>
-      <button class="btn btn-navy btn-sm" onclick="writeEmailForDB('${selectedProgram.id}','${selectedProgram.coaches[0]?.name||''}','Head Coach')">✉ Write Email to Coach</button>
+      <button class="btn btn-navy btn-sm" onclick="writeEmailForDB(${JSON.stringify(selectedProgram.id)},${JSON.stringify(selectedProgram.coaches[0]?.name||'')})">✉ Write Email to Coach</button>
       <button class="btn btn-ghost btn-sm" onclick="copyText(\`${allContact.replace(/`/g,"'")}\`)" title="Copy all coach contact info">📋 Copy All Contacts</button>
       <button class="btn btn-ghost btn-sm" onclick="openContrib('${selectedProgram.id}')">🤝 Contribute</button>
     </div>
@@ -2488,7 +2750,9 @@ function addDBSchoolToTracker(programId) {
     coach:hc?.name||'', email:hc?.email||'', twitter:hc?.twitter||'',
     schol:'', visit:'', contacted:'', gpa:'', film:'', notes:p.notes||''
   });
-  updateCount(); showToast(`${p.name} added to My Schools!`);
+  try { localStorage.setItem('rp_schools', JSON.stringify(mySchools)); } catch(e) {}
+  updateCount(); renderSchools(); renderDashSchools(); renderPipelineStrip(); renderDB();
+  showToast(`✅ ${p.name} added to My Schools!`);
 }
 function writeEmailForDB(programId, coachName) {
   const p = coachDB.find(x => x.id === programId);
@@ -2552,6 +2816,39 @@ function daysSince(dateStr) {
 
 function renderSchools() {
   const grid = document.getElementById('school-grid');
+
+  // Update filter pill counts
+  const statusCounts = {};
+  mySchools.forEach(s => { statusCounts[s.status] = (statusCounts[s.status]||0)+1; });
+  document.querySelectorAll('.filter-pill').forEach(pill => {
+    const match = pill.getAttribute('onclick')?.match(/'([^']+)'/);
+    if(match) {
+      const f = match[1];
+      const count = f === 'all' ? mySchools.length : (statusCounts[f]||0);
+      pill.setAttribute('data-label', pill.getAttribute('data-label') || pill.textContent.replace(/\s*\(\d+\)$/, ''));
+      pill.textContent = (pill.getAttribute('data-label') || f) + (count > 0 ? ` (${count})` : '');
+    }
+  });
+
+  // Follow-up alert bar
+  const followUpSchools = mySchools.filter(s => {
+    if(!s.contacted) return false;
+    const d = daysSince(s.contacted);
+    return d > 14 && !['Interested','Offer Received','Committed'].includes(s.status);
+  });
+  let alertBar = document.getElementById('tracker-followup-bar');
+  if(!alertBar) {
+    alertBar = document.createElement('div');
+    alertBar.id = 'tracker-followup-bar';
+    grid.parentNode.insertBefore(alertBar, grid);
+  }
+  if(followUpSchools.length > 0) {
+    alertBar.style.cssText = 'background:#fef3c7;border:1.5px solid #fcd34d;border-radius:8px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap';
+    alertBar.innerHTML = `<span style="font-size:16px">⚠️</span><span style="font-size:13px;font-weight:600;color:#92400e;flex:1">${followUpSchools.length} school${followUpSchools.length>1?'s':''} need a follow-up (14+ days without contact): ${followUpSchools.map(s=>`<strong>${s.name}</strong>`).join(', ')}</span><button class="btn btn-sm" style="background:#92400e;color:#fff;border:none" onclick="setFilter('Contacted',document.querySelector('.filter-pill[onclick*=Contacted]'))">Show them →</button>`;
+  } else {
+    alertBar.style.display = 'none';
+  }
+
   let filtered = mySchools.filter(s => {
     const mf = currentFilter==='all' || s.status===currentFilter;
     const ms = !searchQuery || s.name.toLowerCase().includes(searchQuery) || (s.coach||'').toLowerCase().includes(searchQuery);
@@ -2589,7 +2886,11 @@ function renderSchools() {
       ${s.notes?`<div class="school-notes">${s.notes}</div>`:''}
       <div class="school-actions">
         <button class="btn btn-ghost btn-sm" onclick="writeEmailForSchool(${s.id})">✉ Email</button>
+        ${needsFollowUp ? `<button class="btn btn-sm" style="background:var(--gold);color:var(--navy);border:none;font-weight:700" onclick="markContactedToday(${s.id})" title="Mark as contacted today">✓ Contacted</button>` : `<button class="btn btn-ghost btn-sm" onclick="markContactedToday(${s.id})" title="Mark as contacted today">📅 Contacted</button>`}
         ${s.twitter?`<button class="btn btn-sm" style="background:#000;color:#fff;border:none" onclick="openTwitterDM('${s.twitter}')"><span style="font-size:11px;font-weight:800">𝕏</span></button>`:''}
+        <select class="btn btn-ghost btn-sm" style="cursor:pointer;padding:4px 6px;font-size:11px" onchange="quickSetStatus(${s.id},this.value)" title="Change status">
+          ${['Researching','Tracking','Contacted','Emailed','Interested','Offer Received','Committed'].map(st=>`<option ${s.status===st?'selected':''}>${st}</option>`).join('')}
+        </select>
         <button class="btn btn-ghost btn-sm" onclick="editSchool(${s.id})">Edit</button>
         <button class="btn btn-danger btn-sm" onclick="deleteSchool(${s.id})">Delete</button>
       </div>
@@ -2629,6 +2930,24 @@ function renderDashSchools() {
   }).join('') + (mySchools.length > 5 ? `<div style="text-align:center;padding:8px 0 4px;font-size:12px;color:var(--text3)">+${mySchools.length-5} more · <span style="color:var(--navy);font-weight:700;cursor:pointer" onclick="navTo('tracker')">View all →</span></div>` : '');
 }
 
+function markContactedToday(id) {
+  const s = mySchools.find(x => x.id === id);
+  if(!s) return;
+  s.contacted = new Date().toISOString().split('T')[0];
+  if(s.status === 'Tracking' || s.status === 'Researching') s.status = 'Contacted';
+  try { localStorage.setItem('rp_schools', JSON.stringify(mySchools)); } catch(e) {}
+  updateCount(); renderSchools(); renderDashSchools(); buildDashNotifications(); renderDashMilestones();
+  showToast(`✅ ${s.name} marked as contacted today`);
+}
+
+function quickSetStatus(id, status) {
+  const s = mySchools.find(x => x.id === id);
+  if(!s) return;
+  s.status = status;
+  try { localStorage.setItem('rp_schools', JSON.stringify(mySchools)); } catch(e) {}
+  updateCount(); renderSchools(); renderDashSchools(); renderPipelineStrip();
+}
+
 function setFilter(f, el) {
   currentFilter = f;
   document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
@@ -2644,6 +2963,8 @@ function updateCount() {
   if(ss) ss.textContent = mySchools.length;
   updateDashStats();
   renderDashMilestones();
+  renderDashSchools();
+  renderNextAction();
 }
 
 // ── SCHOOL MODAL ─────────────────────────────────────────────
@@ -2716,7 +3037,15 @@ function deleteSchool(id) {
 }
 function writeEmailForSchool(id) {
   const s = mySchools.find(x=>x.id===id);
-  if(s) { document.getElementById('e-school').value = s.name+(s.coach?' — '+s.coach:''); navTo('email'); }
+  if(!s) return;
+  document.getElementById('e-school').value = s.name + (s.coach ? ' — ' + s.coach : '');
+  // Auto-switch email type based on school status
+  const autoType = s.contacted ? 'Follow-Up' : s.status === 'Offer Received' ? 'Thank You' : 'First Contact';
+  emailType = autoType;
+  document.querySelectorAll('.type-chip').forEach(c => {
+    c.classList.toggle('active', c.textContent.trim() === autoType);
+  });
+  navTo('email');
 }
 function closeModal() { document.getElementById('modal-bg').classList.remove('open'); }
 document.getElementById('modal-bg').addEventListener('click', e=>{if(e.target===e.currentTarget)closeModal();});
@@ -2738,9 +3067,62 @@ function updateWordCount() {
   const out = document.getElementById('email-output');
   const wc = document.getElementById('word-count');
   if(!wc || out.classList.contains('empty')) { if(wc) wc.textContent=''; return; }
-  const words = out.textContent.trim().split(/\s+/).filter(Boolean).length;
-  wc.textContent = `${words} words`;
-  wc.style.color = words > 200 ? 'var(--red)' : words > 150 ? '#f59e0b' : 'var(--text3)';
+  const body = getEmailBody();
+  const words = (body||out.textContent).trim().split(/\s+/).filter(Boolean).length;
+  const ideal = emailType === 'Follow-Up' ? 80 : emailType === 'Thank You' ? 100 : 130;
+  wc.textContent = `${words} words (target: <${ideal})`;
+  wc.style.color = words > ideal+30 ? 'var(--red)' : words > ideal ? '#f59e0b' : 'var(--green2)';
+}
+
+function getEmailSubject() {
+  const out = document.getElementById('email-output');
+  if(!out || out.classList.contains('empty')) return '';
+  const lines = out.textContent.split('\n');
+  const subjectLine = lines.find(l => l.toLowerCase().startsWith('subject:'));
+  return subjectLine ? subjectLine.replace(/^subject:\s*/i, '').trim() : '';
+}
+
+function getEmailBody() {
+  const out = document.getElementById('email-output');
+  if(!out || out.classList.contains('empty')) return '';
+  const text = out.textContent;
+  const match = text.match(/^subject:[^\n]*\n+/im);
+  return match ? text.slice(match.index + match[0].length).trim() : text;
+}
+
+function renderEmailSubjectStrip() {
+  const subject = getEmailSubject();
+  const strip = document.getElementById('email-subject-strip');
+  const subjectText = document.getElementById('email-subject-text');
+  if(strip && subjectText) {
+    if(subject) {
+      subjectText.textContent = subject;
+      strip.style.display = '';
+    } else {
+      strip.style.display = 'none';
+    }
+  }
+}
+
+function copySubject() {
+  const subject = getEmailSubject();
+  if(subject) navigator.clipboard.writeText(subject).then(() => showToast('Subject copied!'));
+  else showToast('No subject line found');
+}
+
+function copyBodyOnly() {
+  const body = getEmailBody();
+  if(body) navigator.clipboard.writeText(body).then(() => showToast('Email body copied!'));
+  else showToast('No email to copy');
+}
+
+function quickMarkReplied(id) {
+  const e = emailHistory.find(x => x.id === id);
+  if(e) {
+    e.status = 'Replied — Positive';
+    try { localStorage.setItem('rp_history', JSON.stringify(emailHistory)); } catch(err) {}
+    renderHistory(); updateDashStats(); showToast('✅ Marked as replied!');
+  }
 }
 function filterSchoolSuggestions(val) {
   const box = document.getElementById('school-suggestions');
@@ -2808,6 +3190,7 @@ function buildFallbackEmail(name,pos,stats,schoolName,fullCoachName,coachLastNam
     'Thank You':       `Thank You — ${firstName} ${lastName}`,
     'Verbal Commit':   `Verbal Commitment — ${firstName} ${lastName}, ${posShort} ${gradYear}`,
     'Decommit':        `Withdrawing Commitment — ${firstName} ${lastName}`,
+    'Showcase Invite': `${posShort} — ${firstName} ${lastName} — Competing ${notes ? 'at '+notes : 'This Weekend'}`,
   };
   const subject = subjects[type]||subjects['First Contact'];
 
@@ -2854,6 +3237,14 @@ function buildFallbackEmail(name,pos,stats,schoolName,fullCoachName,coachLastNam
     body=`${greeting},\n\nI am writing to express my verbal commitment to ${schoolName} for the class of ${gradYear}.\n\nAfter careful consideration, I am confident your program is the right fit for me both athletically and academically. I am excited to compete at the ${div} level and contribute to your pitching staff.\n\nThank you for believing in me. I look forward to officially joining the ${schoolName} baseball family.\n\n${firstName} ${lastName}`;
   } else if(type==='Decommit') {
     body=`${greeting},\n\nI am writing to respectfully withdraw my verbal commitment to ${schoolName}.\n\nThis was not an easy decision, and I have deep respect for you and your program. Circumstances have changed, and after reflection, I believe it is best for both parties that I re-enter the recruiting process.\n\nThank you for the opportunity you provided me. I wish ${schoolName} baseball continued success.\n\nRespectfully,\n${firstName} ${lastName}`;
+  } else if(type==='Showcase Invite') {
+    const eventName = notes || 'an upcoming showcase event';
+    const hs = playerProfile?.hs || '';
+    if(tone==='Casual'){
+      body=`${greeting},\n\nWanted to give you a heads up — I'll be at ${eventName}. ${firstName} ${lastName}, ${posShort}, class of ${gradYear}${hometown?', from '+hometown:''}.\n\n${statLine ? 'Current stats: '+statLine+'.' : ''}\n\nIf you're going to be there, I'd love a chance to show you what I can do. Let me know!\n\n${firstName}`;
+    } else {
+      body=`${greeting},\n\nI wanted to personally invite you to come see me compete at ${eventName}. My name is ${firstName} ${lastName}, a ${posShort} from ${hometown||'Florida'} in the class of ${gradYear}.\n\n${statLine ? 'Current stats: '+statLine+'.' : ''} ${hs ? 'I compete for '+hs+'.' : ''}\n\nIf your staff will be in attendance, I would welcome the opportunity to introduce myself in person and show you my ability firsthand.\n\nThank you for your time,\n${firstName} ${lastName}`;
+    }
   } else {
     body=`${greeting},\n\nMy name is ${firstName} ${lastName}, a ${posShort} from ${hometown||'Florida'} in the class of ${gradYear}. ${statLine ? 'This season: '+statLine+'.' : ''}\n\n${progFact}${notes?'\n\n'+notes:''}\n\nI would love to connect with your staff. Please let me know if there is interest.\n\nThank you,\n${firstName} ${lastName}`;
   }
@@ -2943,6 +3334,7 @@ Format: "Subject: " (specific subject line, not generic), blank line, then the c
   const emailText = out.textContent;
   document.getElementById('gen-badge').style.display='flex';
   document.getElementById('output-actions').style.display='flex';
+  renderEmailSubjectStrip();
   updateWordCount();
   btn.innerHTML='<span class="spark">✦</span> Generate Email'; btn.disabled=false;
   // Auto-log to email history
@@ -2975,8 +3367,15 @@ function openGmailDraft() {
   const subjectLine = lines.find(l => l.startsWith('Subject:'));
   const subject = subjectLine ? subjectLine.replace(/^Subject:\s*/,'').trim() : '';
   const bodyLines = lines.slice(lines.indexOf(subjectLine)+1).join('\n').trim();
-  const toEmail = document.getElementById('e-school').value.includes('@') ? '' : '';
-  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines)}`;
+  // Look up coach email from DB based on school field value
+  const schoolFieldVal = document.getElementById('e-school').value.trim();
+  const schoolNameOnly = schoolFieldVal.split('—')[0].trim();
+  const dbMatch = coachDB.find(p => p.name.toLowerCase() === schoolNameOnly.toLowerCase())
+    || coachDB.find(p => schoolNameOnly.toLowerCase().includes(p.name.toLowerCase()))
+    || coachDB.find(p => p.name.toLowerCase().includes(schoolNameOnly.toLowerCase()));
+  const hc = dbMatch?.coaches?.find(c => c.role === 'Head Coach') || dbMatch?.coaches?.[0] || null;
+  const toEmail = hc?.email || '';
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1${toEmail ? '&to='+encodeURIComponent(toEmail) : ''}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines)}`;
   window.open(gmailUrl, '_blank');
 }
 function clearEmail() {
@@ -3020,9 +3419,32 @@ function toggleMilestone(el) {
   const done=el.classList.contains('done-item');
   if(done){check.textContent='✓';check.style.background='var(--green)';check.style.borderColor='var(--green)';}
   else{check.textContent='';check.style.background='';check.style.borderColor='';}
-  if(el.dataset.key) milestoneState[el.dataset.key]=done;
+  if(el.dataset.key) {
+    milestoneState[el.dataset.key]=done;
+    try { localStorage.setItem('rp_milestones', JSON.stringify(milestoneState)); } catch(e) {}
+  }
 }
+function autoCheckMilestones() {
+  // Auto-mark milestones based on real user data (only if not manually toggled)
+  const autoChecks = {
+    film:    () => !!(playerProfile.film || playerProfile.hudl),
+    profile: () => getProfileScore() >= 60,
+    list:    () => mySchools.length >= 10,
+    emails10:() => emailHistory.length >= 10,
+    more10:  () => emailHistory.length >= 20,
+    compare: () => (myOffers||[]).length >= 2,
+    verbal:  () => mySchools.some(s => s.status === 'Committed'),
+    nli:     () => mySchools.some(s => s.status === 'Committed'),
+  };
+  Object.entries(autoChecks).forEach(([key, check]) => {
+    if(milestoneState[key] === undefined && check()) {
+      milestoneState[key] = true;
+    }
+  });
+}
+
 function restoreMilestones() {
+  autoCheckMilestones();
   document.querySelectorAll('.milestone[data-key]').forEach(el => {
     const key=el.dataset.key;
     if(milestoneState[key]===true) {
@@ -3185,7 +3607,7 @@ Body under 120 words. Format: "Subject: " then blank line then email. No bracket
   updateCount();
   renderCampaign();
   document.getElementById('ap-stat-sent').textContent = apCampaign.length;
-  document.getElementById('ap-stat-pending').textContent = apCampaign.filter(e => e.status === 'review').length;
+  document.getElementById('ap-stat-pending').textContent = apCampaign.filter(e => !e.approved).length;
   document.getElementById('ap-queue-count').textContent = apCampaign.length + ' emails';
   const btnEnd = document.getElementById('ap-gen-btn');
   if(btnEnd) { btnEnd.innerHTML = '🤖 Generate Campaign'; btnEnd.disabled = false; }
@@ -3193,7 +3615,7 @@ Body under 120 words. Format: "Subject: " then blank line then email. No bracket
 }
 
 function generateFallbackEmail(name, pos, year, stats, program, coachName) {
-  const lastName = coachName.split(' ').pop();
+  const lastName = coachName ? coachName.trim().split(' ').pop() : '';
   const statsLine = stats ? `This past season: ${stats}.` : '';
   const confDetail = program.conf ? ` competing in the ${program.conf}` : '';
   const hometown = playerProfile.hometown || 'Florida';
@@ -3344,6 +3766,9 @@ function saveProfile() {
   try { localStorage.setItem('rp_profile', JSON.stringify(playerProfile)); } catch(e) {}
   showToast('✅ Profile saved!');
   calcReadinessScore();
+  updateDashReadiness();
+  renderNextAction();
+  refreshRefCode();
 }
 
 function shareProfile() {
@@ -3522,10 +3947,6 @@ function addShowcaseToTimeline(name) {
   }
 }
 
-// ── UPDATE SWITCH VIEW FOR NEW TABS ──────────────────────────
-const _origSwitch = switchView;
-
-
 // ── EMAIL HISTORY ─────────────────────────────────────────────
 let emailHistory = [];
 try { const _eh = localStorage.getItem('rp_history'); if(_eh) emailHistory = JSON.parse(_eh); } catch(e) {}
@@ -3576,9 +3997,75 @@ function deleteHistory(id) {
 
 
 
+// ── DATA BACKUP / RESTORE ─────────────────────────────────────
+function exportData() {
+  const keys = ['rp_profile','rp_schools','rp_history','rp_offers','rp_plan','rp_milestones','rp_refcode','rp_referred_by','rp_onboarded','rp_seen'];
+  const backup = { version: 1, exported: new Date().toISOString(), data: {} };
+  keys.forEach(k => { try { backup.data[k] = JSON.parse(localStorage.getItem(k)); } catch(e) { backup.data[k] = localStorage.getItem(k); } });
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'recruitpro-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('Backup downloaded!');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const backup = JSON.parse(e.target.result);
+      if(!backup.data) throw new Error('Invalid backup file');
+      Object.entries(backup.data).forEach(([k, v]) => {
+        if(v === null || v === undefined) return;
+        localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v));
+      });
+      showToast('Data restored! Reloading...');
+      setTimeout(() => location.reload(), 1200);
+    } catch(err) {
+      showToast('Import failed: invalid backup file');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
 // ── REFERRAL SYSTEM ───────────────────────────────────────────
-let refCode = 'JAKE32';
+function generateRefCode(name) {
+  const first = (name||'').trim().split(' ')[0].replace(/[^a-zA-Z]/g,'').toUpperCase().substring(0,5) || 'RP';
+  const num = Math.floor(Math.random() * 90) + 10;
+  return first + num;
+}
+let refCode = (function() {
+  try {
+    const saved = localStorage.getItem('rp_refcode');
+    if(saved) return saved;
+    const code = generateRefCode(playerProfile?.name || 'RP');
+    localStorage.setItem('rp_refcode', code);
+    return code;
+  } catch(e) { return 'RP32'; }
+})();
 let refCount = 0;
+
+function refreshRefCode() {
+  try {
+    const existing = localStorage.getItem('rp_refcode');
+    if(!existing || existing === 'JAKE32' || existing === 'RP32') {
+      refCode = generateRefCode(playerProfile?.name);
+      localStorage.setItem('rp_refcode', refCode);
+    }
+    const url = 'recruitpro-app.netlify.app?ref=' + refCode;
+    const el = document.getElementById('ref-link');
+    if(el) el.textContent = url;
+    const textEl = document.getElementById('ref-text-msg');
+    if(textEl) textEl.textContent = "Hey — my son went through recruiting and it was overwhelming. Found this app called RecruitPro that organizes everything, writes coach emails with AI, and compares scholarship offers. $20/month, free trial here: " + url;
+    const socialEl = document.getElementById('ref-social-msg');
+    if(socialEl) socialEl.textContent = "If your son is going through baseball recruiting right now — this app is a game changer. School tracker, AI email writer, scholarship calculator. Built by a Chipola JC pitcher who went through it himself. Free trial ➜ " + url + " #baseballrecruiting #collegebaseball";
+  } catch(e) {}
+}
 
 function copyRefLink() {
   navigator.clipboard.writeText('https://recruitpro-app.netlify.app?ref=' + refCode)
@@ -3602,25 +4089,29 @@ function shareIG() { showToast('Copy the link and paste it in your Instagram sto
 
 // ── DASHBOARD UPGRADE — add recruiting score card ─────────────
 function updateDashReadiness() {
-  const scoreEl = document.getElementById('rr-score');
-  if(scoreEl) {
-    const score = parseInt(scoreEl.textContent) || 0;
-    const dashScore = document.getElementById('dash-rr-score');
-    if(dashScore) dashScore.textContent = score;
-    const dashLabel = document.getElementById('dash-rr-label');
-    if(dashLabel) {
-      if(score>=90) dashLabel.textContent='Excellent';
-      else if(score>=70) dashLabel.textContent='Good';
-      else if(score>=50) dashLabel.textContent='Fair';
-      else dashLabel.textContent='Needs Work';
-    }
+  const score = getProfileScore();
+  const dashScore = document.getElementById('dash-rr-score');
+  if(dashScore) dashScore.textContent = score;
+  const dashLabel = document.getElementById('dash-rr-label');
+  if(dashLabel) {
+    if(score>=90) { dashLabel.textContent='Excellent'; dashLabel.style.color='var(--green2)'; }
+    else if(score>=70) { dashLabel.textContent='Good'; dashLabel.style.color='var(--gold)'; }
+    else if(score>=50) { dashLabel.textContent='Fair'; dashLabel.style.color='#fb923c'; }
+    else { dashLabel.textContent='Needs Work'; dashLabel.style.color='var(--red)'; }
+  }
+  // Also update the ring color
+  const ring = dashScore?.closest('[style*="border:4px solid"]');
+  if(ring) {
+    const col = score>=90?'var(--green2)':score>=70?'var(--gold)':score>=50?'#fb923c':'var(--red)';
+    ring.style.borderColor = col;
+    if(dashScore) dashScore.style.color = col;
   }
 }
 
 
 // ── RECRUITING CALENDAR ───────────────────────────────────────
-let calYear = 2026;
-let calMonth = 2; // 0-indexed, so 2 = March
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth(); // 0-indexed, current month
 let calEvents = [
   {id:1, title:'FSU Unofficial Visit', date:'2026-04-15', type:'visit', notes:''},
   {id:2, title:'Follow up — Stetson', date:'2026-03-20', type:'follow', notes:'No response in 2 weeks'},
@@ -3860,6 +4351,7 @@ function renderHistory() {
               <option ${e.status==='Replied — Not Recruiting'?'selected':''}>Replied — Not Recruiting</option>
               <option ${e.status==='Follow-Up Needed'?'selected':''}>Follow-Up Needed</option>
             </select>
+            ${!e.status?.startsWith('Replied') ? `<button class="btn btn-green btn-sm" onclick="quickMarkReplied(${e.id})" title="Mark as replied">✓ Replied</button>` : ''}
             <button class="btn btn-ghost btn-sm" onclick="logFollowUp(${e.id})">+ Follow-Up</button>
             <button class="btn btn-danger btn-sm" onclick="deleteHistory(${e.id})">Remove</button>
           </div>
@@ -3974,7 +4466,6 @@ function updateSidebarUser() {
 }
 
 // Intercept nav clicks — called from switchView
-const _originalSwitchView = null;
 function paywallSwitchView(id, el) {
   // Proceed with normal navigation
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -4218,6 +4709,7 @@ function initApp() {
   recalc();
   renderDB();
   calcReadinessScore();
+  updateDashReadiness();
   renderCalendar();
   buildDashNotifications();
   renderDashMilestones();
@@ -4232,8 +4724,160 @@ function initApp() {
   }
 }
 
+// ── ONBOARDING WIZARD ────────────────────────────────────────
+let wizSelectedDivs = new Set();
+
+function showOnboardingWizard() {
+  document.getElementById('onboarding-wizard').classList.remove('hidden');
+}
+function hideOnboardingWizard() {
+  document.getElementById('onboarding-wizard').classList.add('hidden');
+}
+
+function wizNext1() {
+  const name = document.getElementById('w-name').value.trim();
+  const year = document.getElementById('w-year').value;
+  const pos  = document.getElementById('w-pos').value;
+  if(!name) { document.getElementById('w-name').focus(); showToast('Enter your name to continue'); return; }
+  if(!pos)  { document.getElementById('w-pos').focus();  showToast('Select your position'); return; }
+  document.getElementById('wiz-step-1').style.display = 'none';
+  document.getElementById('wiz-step-2').style.display = '';
+}
+function wizBack1() {
+  document.getElementById('wiz-step-2').style.display = 'none';
+  document.getElementById('wiz-step-1').style.display = '';
+}
+function wizNext2() {
+  document.getElementById('wiz-step-2').style.display = 'none';
+  document.getElementById('wiz-step-3').style.display = '';
+  wizGeneratePreview();
+}
+function wizBack2() {
+  document.getElementById('wiz-step-3').style.display = 'none';
+  document.getElementById('wiz-step-2').style.display = '';
+}
+
+function wizToggleDiv(el, div) {
+  if(div === 'Any') {
+    wizSelectedDivs.clear();
+    document.querySelectorAll('.wiz-div-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    wizSelectedDivs.add('Any');
+  } else {
+    document.querySelector('.wiz-div-btn[onclick*="Any"]')?.classList.remove('active');
+    wizSelectedDivs.delete('Any');
+    el.classList.toggle('active');
+    if(el.classList.contains('active')) wizSelectedDivs.add(div);
+    else wizSelectedDivs.delete(div);
+  }
+  wizGeneratePreview();
+}
+
+function wizGeneratePreview() {
+  const name  = document.getElementById('w-name').value.trim() || 'Athlete';
+  const pos   = document.getElementById('w-pos').value  || 'pitcher';
+  const year  = document.getElementById('w-year').value || '2026';
+  const velo  = document.getElementById('w-velo').value.trim();
+  const era   = document.getElementById('w-era').value.trim();
+  const record= document.getElementById('w-record').value.trim();
+  const gpa   = document.getElementById('w-gpa').value.trim();
+  const city  = document.getElementById('w-city').value.trim() || 'Florida';
+
+  // Pick a sample program matching selected division
+  const targetDiv = [...wizSelectedDivs].filter(d => d !== 'Any')[0] || 'D1';
+  const sample = coachDB.find(p => p.div === targetDiv) || coachDB[0];
+  if(!sample) return;
+
+  const hc = sample.coaches?.find(c => c.role === 'Head Coach') || sample.coaches?.[0];
+  const coachLast = hc?.name ? hc.name.trim().split(' ').pop() : 'Coach';
+  const statLine = [velo ? velo+' mph FB' : '', era ? era+' ERA' : '', record || ''].filter(Boolean).join(', ');
+
+  const firstName = name.split(' ')[0];
+  const lastName  = name.split(' ').slice(1).join(' ');
+  const preview = `Subject: ${pos} Prospect — ${name} — Class of ${year}
+
+Coach ${coachLast},
+
+My name is ${firstName} ${lastName}, a ${pos} from ${city} in the class of ${year}.${statLine ? ' This season: ' + statLine + '.' : ''}${gpa ? ' GPA: ' + gpa + '.' : ''}
+
+I've been following ${sample.name}${sample.conf ? ' ('+sample.conf+')' : ''} closely — your program is at the top of my list.
+
+Can we set up a call, or can I send film your way?
+
+Thank you,
+${firstName} ${lastName || ''}`.trim();
+
+  document.getElementById('wiz-email-preview').textContent = preview;
+  document.getElementById('wiz-preview-wrap').style.display = '';
+}
+
+function finishOnboarding() {
+  // Save all wizard data into the real profile
+  const name   = document.getElementById('w-name').value.trim();
+  const year   = document.getElementById('w-year').value;
+  const pos    = document.getElementById('w-pos').value;
+  const city   = document.getElementById('w-city').value.trim();
+  const hs     = document.getElementById('w-hs').value.trim();
+  const velo   = document.getElementById('w-velo').value.trim();
+  const era    = document.getElementById('w-era').value.trim();
+  const record = document.getElementById('w-record').value.trim();
+  const gpa    = document.getElementById('w-gpa').value.trim();
+  const film   = document.getElementById('w-film').value.trim();
+  const divs   = wizSelectedDivs.size ? [...wizSelectedDivs].join(', ') : '';
+
+  if(!name) { wizBack1(); showToast('Enter your name first'); return; }
+
+  // Fill the real profile form fields
+  const set = (id, val) => { const el = document.getElementById(id); if(el && val) el.value = val; };
+  set('pf-name', name); set('pf-year', year); set('pf-pos', pos);
+  set('pf-city', city); set('pf-hs', hs);   set('pf-gpa', gpa);
+  set('pf-velo', velo); set('pf-era', era);  set('pf-record', record);
+  set('pf-film', film); set('pf-divs', divs);
+
+  // Save profile
+  saveProfile();
+
+  // Mark onboarding complete
+  try { localStorage.setItem('rp_onboarded', '1'); } catch(e) {}
+
+  // Hide wizard and banner, refresh dashboard
+  hideOnboardingWizard();
+  const banner = document.getElementById('onboarding-banner');
+  if(banner) banner.style.display = 'none';
+  updateDashStats();
+  renderNextAction();
+  calcReadinessScore();
+
+  refreshRefCode();
+  showToast('✅ Profile saved! Welcome to RecruitPro.');
+}
+
+function skipOnboarding() {
+  try { localStorage.setItem('rp_onboarded', '1'); } catch(e) {}
+  hideOnboardingWizard();
+}
+
+// ── REF PARAM DETECTION ──────────────────────────────────────
+(function detectRefParam() {
+  try {
+    const urlRef = new URLSearchParams(window.location.search).get('ref');
+    if(urlRef) {
+      localStorage.setItem('rp_referred_by', urlRef);
+      // Show a welcome toast for referred users on first visit
+      if(!localStorage.getItem('rp_onboarded')) {
+        setTimeout(() => showToast('👋 Welcome! You were referred by a RecruitPro user.'), 1200);
+      }
+    }
+  } catch(e) {}
+})();
+
 // ── INIT ─────────────────────────────────────────────────────
 initApp();
+
+// Show onboarding wizard on first visit (no saved profile)
+if(!localStorage.getItem('rp_onboarded') && !localStorage.getItem('rp_profile')) {
+  showOnboardingWizard();
+}
 
 </script>
 <script>

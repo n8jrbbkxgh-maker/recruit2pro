@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# junior - RecruitPro baseball recruiting platform launcher
+
+set -e
+
+RECRUITPRO_URL="https://recruitpro.netlify.app"
+
+usage() {
+  cat <<EOF
+junior - RecruitPro baseball recruiting platform
+
+Usage:
+  junior [command]
+
+Commands:
+  open        Open RecruitPro in your browser (default)
+  version     Show version information
+  help        Show this help message
+
+Examples:
+  junior
+  junior open
+EOF
+}
+
+open_app() {
+  echo "Opening RecruitPro at $RECRUITPRO_URL ..."
+  if command -v open &>/dev/null; then
+    open "$RECRUITPRO_URL"
+  elif command -v xdg-open &>/dev/null; then
+    xdg-open "$RECRUITPRO_URL"
+  elif command -v python3 &>/dev/null; then
+    python3 -m webbrowser "$RECRUITPRO_URL"
+  else
+    echo "Visit RecruitPro at: $RECRUITPRO_URL"
+  fi
+}
+
+case "${1:-open}" in
+  open)   open_app ;;
+  version) echo "junior 1.0.0" ;;
+  help|--help|-h) usage ;;
+  *)
+    echo "Unknown command: $1" >&2
+    usage
+    exit 1
+    ;;
+esac

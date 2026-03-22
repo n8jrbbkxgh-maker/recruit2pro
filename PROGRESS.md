@@ -52,21 +52,7 @@ Last Updated: 2026-03-21
 
 ---
 
-## OPEN QUESTIONS (blocking Phase 1)
-1. Monetization model?
-2. Target sport scope (baseball only or multi-sport)?
-3. AI provider preference (Claude vs OpenAI)?
-4. Deployment target (Vercel? self-hosted?)?
-5. Existing user data to migrate from app.html?
-
----
-
 ## KNOWN BUGS / TECH DEBT
-- app.html is a monolithic 4,278-line file — migration target, not maintained further
-- No backend/auth currently exists
-
----
-
-## NEXT STEPS
-- Receive answers to clarifying questions
-- Scaffold Next.js + Supabase project (Phase 1)
+- app.html is a monolithic single-file app — all features built inline (HTML/CSS/JS)
+- No backend/auth — all data persists via localStorage; export/import backup added as mitigation
+- AI emails require `ANTHROPIC_API_KEY` env var set in Netlify dashboard; falls back to template engine if missing

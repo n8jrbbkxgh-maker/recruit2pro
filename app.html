@@ -1316,6 +1316,16 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
           <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:16px;padding:14px" onclick="saveProfile()">Save Profile</button>
         </div>
       </div>
+
+      <!-- Data Backup -->
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-top:20px">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--navy);margin-bottom:6px">Data Backup</div>
+        <div style="font-size:13px;color:var(--text3);margin-bottom:14px">Export all your data to a file so you never lose it if you clear your browser or switch devices.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇ Export Backup</button>
+          <label class="btn btn-ghost btn-sm" style="cursor:pointer">⬆ Import Backup<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
+        </div>
+      </div>
     </div>
 
     <!-- OFFER TRACKER -->
@@ -1456,7 +1466,7 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
         <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:24px">
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:var(--navy);margin-bottom:16px">Your Referral Link</div>
-          <div style="background:var(--off);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:13px;color:var(--navy3);font-family:monospace;margin-bottom:12px;word-break:break-all" id="ref-link">recruitpro-app.netlify.app?ref=JAKE32</div>
+          <div style="background:var(--off);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:13px;color:var(--navy3);font-family:monospace;margin-bottom:12px;word-break:break-all" id="ref-link"></div>
           <button class="btn btn-primary btn-sm" style="width:100%;justify-content:center" onclick="copyRefLink()">Copy Referral Link</button>
           <div style="margin-top:16px">
             <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:10px">Share directly</div>
@@ -1494,12 +1504,12 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
           <div style="background:var(--off);border-radius:var(--r-sm);padding:16px">
             <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Text Message</div>
-            <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px" id="ref-text-msg">Hey — my son went through recruiting and it was overwhelming. Found this app called RecruitPro that organizes everything, writes coach emails with AI, and compares scholarship offers. $20/month, free trial here: recruitpro-app.netlify.app?ref=JAKE32</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px" id="ref-text-msg"></div>
             <button class="btn btn-ghost btn-sm" onclick="copyRefMsg('text')">Copy Text</button>
           </div>
           <div style="background:var(--off);border-radius:var(--r-sm);padding:16px">
             <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Social Post</div>
-            <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px" id="ref-social-msg">If your son is going through baseball recruiting right now — this app is a game changer. School tracker, AI email writer, scholarship calculator. Built by a Chipola JC pitcher who went through it himself. Free trial ➜ recruitpro-app.netlify.app?ref=JAKE32 #baseballrecruiting #collegebaseball</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px" id="ref-social-msg"></div>
             <button class="btn btn-ghost btn-sm" onclick="copyRefMsg('social')">Copy Post</button>
           </div>
         </div>
@@ -3987,6 +3997,42 @@ function deleteHistory(id) {
 
 
 
+// ── DATA BACKUP / RESTORE ─────────────────────────────────────
+function exportData() {
+  const keys = ['rp_profile','rp_schools','rp_history','rp_offers','rp_plan','rp_milestones','rp_refcode','rp_referred_by','rp_onboarded','rp_seen'];
+  const backup = { version: 1, exported: new Date().toISOString(), data: {} };
+  keys.forEach(k => { try { backup.data[k] = JSON.parse(localStorage.getItem(k)); } catch(e) { backup.data[k] = localStorage.getItem(k); } });
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'recruitpro-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('Backup downloaded!');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const backup = JSON.parse(e.target.result);
+      if(!backup.data) throw new Error('Invalid backup file');
+      Object.entries(backup.data).forEach(([k, v]) => {
+        if(v === null || v === undefined) return;
+        localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v));
+      });
+      showToast('Data restored! Reloading...');
+      setTimeout(() => location.reload(), 1200);
+    } catch(err) {
+      showToast('Import failed: invalid backup file');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
 // ── REFERRAL SYSTEM ───────────────────────────────────────────
 function generateRefCode(name) {
   const first = (name||'').trim().split(' ')[0].replace(/[^a-zA-Z]/g,'').toUpperCase().substring(0,5) || 'RP';
@@ -4005,15 +4051,19 @@ let refCode = (function() {
 let refCount = 0;
 
 function refreshRefCode() {
-  // Called when profile name changes
   try {
     const existing = localStorage.getItem('rp_refcode');
     if(!existing || existing === 'JAKE32' || existing === 'RP32') {
       refCode = generateRefCode(playerProfile?.name);
       localStorage.setItem('rp_refcode', refCode);
-      const el = document.getElementById('ref-link');
-      if(el) el.textContent = 'recruitpro.netlify.app?ref=' + refCode;
     }
+    const url = 'recruitpro-app.netlify.app?ref=' + refCode;
+    const el = document.getElementById('ref-link');
+    if(el) el.textContent = url;
+    const textEl = document.getElementById('ref-text-msg');
+    if(textEl) textEl.textContent = "Hey — my son went through recruiting and it was overwhelming. Found this app called RecruitPro that organizes everything, writes coach emails with AI, and compares scholarship offers. $20/month, free trial here: " + url;
+    const socialEl = document.getElementById('ref-social-msg');
+    if(socialEl) socialEl.textContent = "If your son is going through baseball recruiting right now — this app is a game changer. School tracker, AI email writer, scholarship calculator. Built by a Chipola JC pitcher who went through it himself. Free trial ➜ " + url + " #baseballrecruiting #collegebaseball";
   } catch(e) {}
 }
 

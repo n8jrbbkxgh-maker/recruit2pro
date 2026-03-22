@@ -954,6 +954,7 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
               <div class="type-chip" onclick="setEmailType(this,'Follow-Up')">Follow-Up</div>
               <div class="type-chip" onclick="setEmailType(this,'Visit Request')">Visit Request</div>
               <div class="type-chip" onclick="setEmailType(this,'Thank You')">Thank You</div>
+              <div class="type-chip" onclick="setEmailType(this,'Showcase Invite')">Showcase Invite</div>
               <div class="type-chip" onclick="setEmailType(this,'Verbal Commit')">Verbal Commit</div>
               <div class="type-chip" onclick="setEmailType(this,'Decommit')">Decommit</div>
             </div>
@@ -988,9 +989,19 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
             <div class="output-label">Generated Email</div>
             <div style="display:flex;align-items:center;gap:10px"><span id="word-count" style="font-size:12px;color:var(--text3)"></span><div class="gen-badge" id="gen-badge" style="display:none">✓ Ready to send</div></div>
           </div>
+          <div id="email-subject-strip" style="display:none;background:var(--off);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:8px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:3px">Subject Line</div>
+                <div style="font-size:13.5px;font-weight:600;color:var(--navy)" id="email-subject-text"></div>
+              </div>
+              <button class="btn btn-ghost btn-sm" style="flex-shrink:0;font-size:11px;padding:4px 10px" onclick="copySubject()">📋 Copy Subject</button>
+            </div>
+          </div>
           <div class="email-output empty" id="email-output">Fill in the details and click Generate — your email will appear here in seconds.</div>
           <div class="output-actions" id="output-actions" style="display:none">
-            <button class="btn btn-navy btn-sm" onclick="copyEmail()" id="copy-btn">📋 Copy Email</button>
+            <button class="btn btn-navy btn-sm" onclick="copyEmail()" id="copy-btn">📋 Copy All</button>
+            <button class="btn btn-ghost btn-sm" onclick="copyBodyOnly()">📝 Copy Body</button>
             <button class="btn btn-ghost btn-sm" onclick="openGmailDraft()" title="Open Gmail with this email pre-filled">✉ Open in Gmail</button>
             <button class="btn btn-ghost btn-sm" onclick="generateEmail()">↻ Regenerate</button>
             <button class="btn btn-ghost btn-sm" onclick="clearEmail()">Clear</button>
@@ -2937,7 +2948,15 @@ function deleteSchool(id) {
 }
 function writeEmailForSchool(id) {
   const s = mySchools.find(x=>x.id===id);
-  if(s) { document.getElementById('e-school').value = s.name+(s.coach?' — '+s.coach:''); navTo('email'); }
+  if(!s) return;
+  document.getElementById('e-school').value = s.name + (s.coach ? ' — ' + s.coach : '');
+  // Auto-switch email type based on school status
+  const autoType = s.contacted ? 'Follow-Up' : s.status === 'Offer Received' ? 'Thank You' : 'First Contact';
+  emailType = autoType;
+  document.querySelectorAll('.type-chip').forEach(c => {
+    c.classList.toggle('active', c.textContent.trim() === autoType);
+  });
+  navTo('email');
 }
 function closeModal() { document.getElementById('modal-bg').classList.remove('open'); }
 document.getElementById('modal-bg').addEventListener('click', e=>{if(e.target===e.currentTarget)closeModal();});
@@ -2959,9 +2978,62 @@ function updateWordCount() {
   const out = document.getElementById('email-output');
   const wc = document.getElementById('word-count');
   if(!wc || out.classList.contains('empty')) { if(wc) wc.textContent=''; return; }
-  const words = out.textContent.trim().split(/\s+/).filter(Boolean).length;
-  wc.textContent = `${words} words`;
-  wc.style.color = words > 200 ? 'var(--red)' : words > 150 ? '#f59e0b' : 'var(--text3)';
+  const body = getEmailBody();
+  const words = (body||out.textContent).trim().split(/\s+/).filter(Boolean).length;
+  const ideal = emailType === 'Follow-Up' ? 80 : emailType === 'Thank You' ? 100 : 130;
+  wc.textContent = `${words} words (target: <${ideal})`;
+  wc.style.color = words > ideal+30 ? 'var(--red)' : words > ideal ? '#f59e0b' : 'var(--green2)';
+}
+
+function getEmailSubject() {
+  const out = document.getElementById('email-output');
+  if(!out || out.classList.contains('empty')) return '';
+  const lines = out.textContent.split('\n');
+  const subjectLine = lines.find(l => l.toLowerCase().startsWith('subject:'));
+  return subjectLine ? subjectLine.replace(/^subject:\s*/i, '').trim() : '';
+}
+
+function getEmailBody() {
+  const out = document.getElementById('email-output');
+  if(!out || out.classList.contains('empty')) return '';
+  const text = out.textContent;
+  const match = text.match(/^subject:[^\n]*\n+/im);
+  return match ? text.slice(match.index + match[0].length).trim() : text;
+}
+
+function renderEmailSubjectStrip() {
+  const subject = getEmailSubject();
+  const strip = document.getElementById('email-subject-strip');
+  const subjectText = document.getElementById('email-subject-text');
+  if(strip && subjectText) {
+    if(subject) {
+      subjectText.textContent = subject;
+      strip.style.display = '';
+    } else {
+      strip.style.display = 'none';
+    }
+  }
+}
+
+function copySubject() {
+  const subject = getEmailSubject();
+  if(subject) navigator.clipboard.writeText(subject).then(() => showToast('Subject copied!'));
+  else showToast('No subject line found');
+}
+
+function copyBodyOnly() {
+  const body = getEmailBody();
+  if(body) navigator.clipboard.writeText(body).then(() => showToast('Email body copied!'));
+  else showToast('No email to copy');
+}
+
+function quickMarkReplied(id) {
+  const e = emailHistory.find(x => x.id === id);
+  if(e) {
+    e.status = 'Replied — Positive';
+    try { localStorage.setItem('rp_history', JSON.stringify(emailHistory)); } catch(err) {}
+    renderHistory(); updateDashStats(); showToast('✅ Marked as replied!');
+  }
 }
 function filterSchoolSuggestions(val) {
   const box = document.getElementById('school-suggestions');
@@ -3029,6 +3101,7 @@ function buildFallbackEmail(name,pos,stats,schoolName,fullCoachName,coachLastNam
     'Thank You':       `Thank You — ${firstName} ${lastName}`,
     'Verbal Commit':   `Verbal Commitment — ${firstName} ${lastName}, ${posShort} ${gradYear}`,
     'Decommit':        `Withdrawing Commitment — ${firstName} ${lastName}`,
+    'Showcase Invite': `${posShort} — ${firstName} ${lastName} — Competing ${notes ? 'at '+notes : 'This Weekend'}`,
   };
   const subject = subjects[type]||subjects['First Contact'];
 
@@ -3075,6 +3148,14 @@ function buildFallbackEmail(name,pos,stats,schoolName,fullCoachName,coachLastNam
     body=`${greeting},\n\nI am writing to express my verbal commitment to ${schoolName} for the class of ${gradYear}.\n\nAfter careful consideration, I am confident your program is the right fit for me both athletically and academically. I am excited to compete at the ${div} level and contribute to your pitching staff.\n\nThank you for believing in me. I look forward to officially joining the ${schoolName} baseball family.\n\n${firstName} ${lastName}`;
   } else if(type==='Decommit') {
     body=`${greeting},\n\nI am writing to respectfully withdraw my verbal commitment to ${schoolName}.\n\nThis was not an easy decision, and I have deep respect for you and your program. Circumstances have changed, and after reflection, I believe it is best for both parties that I re-enter the recruiting process.\n\nThank you for the opportunity you provided me. I wish ${schoolName} baseball continued success.\n\nRespectfully,\n${firstName} ${lastName}`;
+  } else if(type==='Showcase Invite') {
+    const eventName = notes || 'an upcoming showcase event';
+    const hs = playerProfile?.hs || '';
+    if(tone==='Casual'){
+      body=`${greeting},\n\nWanted to give you a heads up — I'll be at ${eventName}. ${firstName} ${lastName}, ${posShort}, class of ${gradYear}${hometown?', from '+hometown:''}.\n\n${statLine ? 'Current stats: '+statLine+'.' : ''}\n\nIf you're going to be there, I'd love a chance to show you what I can do. Let me know!\n\n${firstName}`;
+    } else {
+      body=`${greeting},\n\nI wanted to personally invite you to come see me compete at ${eventName}. My name is ${firstName} ${lastName}, a ${posShort} from ${hometown||'Florida'} in the class of ${gradYear}.\n\n${statLine ? 'Current stats: '+statLine+'.' : ''} ${hs ? 'I compete for '+hs+'.' : ''}\n\nIf your staff will be in attendance, I would welcome the opportunity to introduce myself in person and show you my ability firsthand.\n\nThank you for your time,\n${firstName} ${lastName}`;
+    }
   } else {
     body=`${greeting},\n\nMy name is ${firstName} ${lastName}, a ${posShort} from ${hometown||'Florida'} in the class of ${gradYear}. ${statLine ? 'This season: '+statLine+'.' : ''}\n\n${progFact}${notes?'\n\n'+notes:''}\n\nI would love to connect with your staff. Please let me know if there is interest.\n\nThank you,\n${firstName} ${lastName}`;
   }
@@ -3164,6 +3245,7 @@ Format: "Subject: " (specific subject line, not generic), blank line, then the c
   const emailText = out.textContent;
   document.getElementById('gen-badge').style.display='flex';
   document.getElementById('output-actions').style.display='flex';
+  renderEmailSubjectStrip();
   updateWordCount();
   btn.innerHTML='<span class="spark">✦</span> Generate Email'; btn.disabled=false;
   // Auto-log to email history
@@ -4090,6 +4172,7 @@ function renderHistory() {
               <option ${e.status==='Replied — Not Recruiting'?'selected':''}>Replied — Not Recruiting</option>
               <option ${e.status==='Follow-Up Needed'?'selected':''}>Follow-Up Needed</option>
             </select>
+            ${!e.status?.startsWith('Replied') ? `<button class="btn btn-green btn-sm" onclick="quickMarkReplied(${e.id})" title="Mark as replied">✓ Replied</button>` : ''}
             <button class="btn btn-ghost btn-sm" onclick="logFollowUp(${e.id})">+ Follow-Up</button>
             <button class="btn btn-danger btn-sm" onclick="deleteHistory(${e.id})">Remove</button>
           </div>

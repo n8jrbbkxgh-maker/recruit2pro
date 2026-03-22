@@ -12,6 +12,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RecruitPro — Baseball Recruiting Platform</title>
+<meta name="description" content="The baseball recruiting app built by a player. AI emails, 370+ coach contacts, scholarship calculator, and full recruiting tracker — free trial.">
+<meta property="og:title" content="RecruitPro — Baseball Recruiting Platform">
+<meta property="og:description" content="AI recruiting emails, 370+ coach contacts, and a full scholarship tracker. Built by a Chipola JC pitcher for baseball families.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://recruitpro.netlify.app">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RecruitPro — Baseball Recruiting Platform">
+<meta name="twitter:description" content="AI recruiting emails, 370+ coach contacts, and a full scholarship tracker. Free trial — no credit card.">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -584,6 +592,9 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
   .btn-sm{padding:5px 10px;font-size:12px}
   .school-actions .btn-sm{font-size:11px;padding:5px 8px}
 }
+/* Upgrade nav pulse */
+@keyframes upgradePulse{0%,100%{box-shadow:0 0 0 0 rgba(232,160,32,.5)}50%{box-shadow:0 0 0 6px rgba(232,160,32,0)}}
+.nav-upgrade-pulse{animation:upgradePulse 2.4s ease-in-out infinite}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
@@ -646,7 +657,7 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
     <div class="nav-item" onclick="switchView('history',this)"><span class="nav-icon">📬</span> Email History</div>
     <div class="nav-item" onclick="switchView('calendar',this)" style="position:relative"><span class="nav-icon">📆</span> Calendar <span class="nav-badge" id="cal-notif-badge" style="display:none;background:var(--red);color:#fff">0</span></div>
     <div class="nav-item" onclick="switchView('refer',this)" style="margin-top:8px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2)"><span class="nav-icon">🎁</span> Refer & Earn</div>
-    <div class="nav-item" onclick="switchView('upgrade',this)" style="margin-top:4px;background:rgba(232,160,32,.1);border:1px solid rgba(232,160,32,.3)"><span class="nav-icon">⚡</span> Upgrade to Pro</div>
+    <div class="nav-item nav-upgrade-pulse" onclick="switchView('upgrade',this)" style="margin-top:4px;background:rgba(232,160,32,.12);border:1px solid rgba(232,160,32,.4)"><span class="nav-icon">⚡</span> Upgrade to Pro</div>
   </nav>
   <div class="sidebar-footer">
 
@@ -1535,7 +1546,7 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
           <span style="font-size:18px">🔥</span>
           <span style="font-size:13px;font-weight:700;color:#fff">Recruiting windows close fast — D1 coaches fill their class boards <em>before</em> junior year ends</span>
         </div>
-        <button class="btn" style="background:#fff;color:#c0392b;font-weight:800;font-size:13px;padding:8px 18px;border-radius:99px;white-space:nowrap" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh','_blank')">Start Free Trial →</button>
+        <button class="btn" style="background:#fff;color:#c0392b;font-weight:800;font-size:13px;padding:8px 18px;border-radius:99px;white-space:nowrap" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh?utm_source=recruitpro&utm_medium=app&utm_campaign=upgrade','_blank')">Start Free Trial →</button>
       </div>
 
       <div class="upgrade-hero">
@@ -1558,7 +1569,7 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--gold);margin-bottom:4px">$24.99/mo vs. a $40,000–$200,000 scholarship</div>
           <div style="font-size:13px;color:rgba(255,255,255,.6);line-height:1.6">One well-timed email to the right coach can change your son's entire path. Autopilot sends 12+ of those emails in the time it takes to write one manually.</div>
         </div>
-        <button class="btn btn-primary" style="white-space:nowrap" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh','_blank')">Try Free for 7 Days</button>
+        <button class="btn btn-primary" style="white-space:nowrap" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh?utm_source=recruitpro&utm_medium=app&utm_campaign=upgrade','_blank')">Try Free for 7 Days</button>
       </div>
 
       <div class="upgrade-plans">
@@ -1580,7 +1591,7 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
             <li><span class="cross" style="color:var(--border2)">–</span> <span style="color:var(--text3)">Bulk personalized emails (12+ at once)</span></li>
             <li><span class="cross" style="color:var(--border2)">–</span> <span style="color:var(--text3)">Auto follow-up sequences</span></li>
           </ul>
-          <button class="plan-btn plan-btn-secondary" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh','_blank')">Get Basic</button>
+          <button class="plan-btn plan-btn-secondary" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh?utm_source=recruitpro&utm_medium=app&utm_campaign=upgrade','_blank')">Get Basic</button>
         </div>
 
         <div class="plan-card featured">
@@ -1599,7 +1610,7 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
             <li><span class="check">✓</span> Copy bulk coach contact info</li>
             <li><span class="check">✓</span> Priority support + early feature access</li>
           </ul>
-          <button class="plan-btn plan-btn-primary" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh','_blank')">Start Free 7-Day Trial</button>
+          <button class="plan-btn plan-btn-primary" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh?utm_source=recruitpro&utm_medium=app&utm_campaign=upgrade','_blank')">Start Free 7-Day Trial</button>
           <div style="text-align:center;margin-top:10px;font-size:12px;color:var(--text3)">No credit card required · Cancel anytime</div>
         </div>
       </div>
@@ -1659,8 +1670,18 @@ body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);dis
       <div style="background:linear-gradient(135deg,var(--navy),var(--navy3));border-radius:var(--r);padding:32px 24px;text-align:center;margin-bottom:16px">
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:#fff;margin-bottom:8px">Your son's scholarship window is open <span style="color:var(--gold)">right now.</span></div>
         <div style="font-size:14px;color:rgba(255,255,255,.55);margin-bottom:24px;max-width:440px;margin-left:auto;margin-right:auto;margin-top:8px;line-height:1.7">Most families wait too long and miss the window. The ones who get offers are the ones coaches hear from — repeatedly, professionally, and at the right time.</div>
-        <button class="btn btn-primary" style="font-size:16px;padding:14px 32px;border-radius:99px" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh','_blank')">Start Your Free 7-Day Trial →</button>
+        <button class="btn btn-primary" style="font-size:16px;padding:14px 32px;border-radius:99px" onclick="window.open('https://recruitpro.maxwellboyatt.gumroad.com/l/giewkh?utm_source=recruitpro&utm_medium=app&utm_campaign=upgrade','_blank')">Start Your Free 7-Day Trial →</button>
         <div style="font-size:12px;color:rgba(255,255,255,.35);margin-top:12px">No credit card · Cancel anytime · Takes 60 seconds to set up</div>
+      </div>
+
+      <!-- License key input for existing customers -->
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px 24px;margin-bottom:16px">
+        <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:4px">Already purchased?</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:14px">Enter the license key from your Gumroad receipt to unlock full access.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <input id="license-key-input" type="text" placeholder="XXXXXXXX-XXXXXXXX" style="flex:1;min-width:180px;padding:9px 13px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:14px;font-family:'Barlow',sans-serif;outline:none;color:var(--text)">
+          <button class="btn btn-primary btn-sm" onclick="validateGumroadKey(document.getElementById('license-key-input').value.trim())">Unlock Access</button>
+        </div>
       </div>
 
     </div>
@@ -3737,6 +3758,7 @@ function saveProfile() {
   calcReadinessScore();
   updateDashReadiness();
   renderNextAction();
+  refreshRefCode();
 }
 
 function shareProfile() {
@@ -3966,8 +3988,34 @@ function deleteHistory(id) {
 
 
 // ── REFERRAL SYSTEM ───────────────────────────────────────────
-let refCode = 'JAKE32';
+function generateRefCode(name) {
+  const first = (name||'').trim().split(' ')[0].replace(/[^a-zA-Z]/g,'').toUpperCase().substring(0,5) || 'RP';
+  const num = Math.floor(Math.random() * 90) + 10;
+  return first + num;
+}
+let refCode = (function() {
+  try {
+    const saved = localStorage.getItem('rp_refcode');
+    if(saved) return saved;
+    const code = generateRefCode(playerProfile?.name || 'RP');
+    localStorage.setItem('rp_refcode', code);
+    return code;
+  } catch(e) { return 'RP32'; }
+})();
 let refCount = 0;
+
+function refreshRefCode() {
+  // Called when profile name changes
+  try {
+    const existing = localStorage.getItem('rp_refcode');
+    if(!existing || existing === 'JAKE32' || existing === 'RP32') {
+      refCode = generateRefCode(playerProfile?.name);
+      localStorage.setItem('rp_refcode', refCode);
+      const el = document.getElementById('ref-link');
+      if(el) el.textContent = 'recruitpro.netlify.app?ref=' + refCode;
+    }
+  } catch(e) {}
+}
 
 function copyRefLink() {
   navigator.clipboard.writeText('https://recruitpro-app.netlify.app?ref=' + refCode)
@@ -4750,6 +4798,7 @@ function finishOnboarding() {
   renderNextAction();
   calcReadinessScore();
 
+  refreshRefCode();
   showToast('✅ Profile saved! Welcome to RecruitPro.');
 }
 
@@ -4757,6 +4806,20 @@ function skipOnboarding() {
   try { localStorage.setItem('rp_onboarded', '1'); } catch(e) {}
   hideOnboardingWizard();
 }
+
+// ── REF PARAM DETECTION ──────────────────────────────────────
+(function detectRefParam() {
+  try {
+    const urlRef = new URLSearchParams(window.location.search).get('ref');
+    if(urlRef) {
+      localStorage.setItem('rp_referred_by', urlRef);
+      // Show a welcome toast for referred users on first visit
+      if(!localStorage.getItem('rp_onboarded')) {
+        setTimeout(() => showToast('👋 Welcome! You were referred by a RecruitPro user.'), 1200);
+      }
+    }
+  } catch(e) {}
+})();
 
 // ── INIT ─────────────────────────────────────────────────────
 initApp();

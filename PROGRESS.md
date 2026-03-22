@@ -1,6 +1,6 @@
 # RecruitPro — Project Memory
 
-## Status: PHASE 3 COMPLETE
+## Status: PHASE 4 COMPLETE
 Last Updated: 2026-03-21
 
 ---
@@ -24,6 +24,13 @@ Last Updated: 2026-03-21
 - [x] **Phase 3: Word count guidance** — counts body words only (not subject), colors green/yellow/red relative to per-type ideal (Follow-Up 80, Thank You 100, others 130)
 - [x] **Phase 3: Auto-switch email type** — opening Email Writer from My Schools auto-selects Follow-Up if contacted, Thank You if offer received, First Contact otherwise
 - [x] **Phase 3: Quick Replied button** — green "✓ Replied" one-click button on every history row that hasn't replied yet; saves to localStorage
+- [x] **Phase 4: Milestone persistence** — milestoneState now saves to rp_milestones in localStorage; survives refresh
+- [x] **Phase 4: Timeline auto-check** — milestones auto-mark done based on real data (film set, profile score ≥60, 10+ schools, 10+ emails, committed status, etc.)
+- [x] **Phase 4: Tracker filter pill counts** — each status pill now shows live count (All 8, Contacted 3, etc.)
+- [x] **Phase 4: Follow-up alert bar** — yellow warning bar above school grid listing schools needing contact after 14+ days
+- [x] **Phase 4: Quick "Mark Contacted" button** — one-click on school card updates contacted date to today; glows gold if overdue
+- [x] **Phase 4: Inline status dropdown** — change school status directly on card without opening Edit modal
+- [x] **Phase 4: updateCount wired** — now calls renderDashSchools() + renderNextAction() so dashboard updates immediately when schools change
 
 ---
 
@@ -34,7 +41,7 @@ Last Updated: 2026-03-21
 | 1 | Foundation (Onboarding, Core UI, Data sync) | ✅ Complete |
 | 2 | Coach Database + Search | ✅ Complete |
 | 3 | AI Email Generator | ✅ Complete |
-| 4 | Athlete Dashboard + Tracking | Pending |
+| 4 | Athlete Dashboard + Tracking | ✅ Complete |
 | 5 | Monetization, Polish & Launch | Pending |
 
 ---

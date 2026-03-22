@@ -2308,6 +2308,7 @@ let selectedProgram = null;
 let contribProgramId = null;
 let communityContribs = {};
 let milestoneState = {};
+try { const _ms = localStorage.getItem('rp_milestones'); if(_ms) milestoneState = JSON.parse(_ms); } catch(e) {}
 
 // ── MOBILE ───────────────────────────────────────────────────
 function toggleSidebar() {
@@ -2784,6 +2785,39 @@ function daysSince(dateStr) {
 
 function renderSchools() {
   const grid = document.getElementById('school-grid');
+
+  // Update filter pill counts
+  const statusCounts = {};
+  mySchools.forEach(s => { statusCounts[s.status] = (statusCounts[s.status]||0)+1; });
+  document.querySelectorAll('.filter-pill').forEach(pill => {
+    const match = pill.getAttribute('onclick')?.match(/'([^']+)'/);
+    if(match) {
+      const f = match[1];
+      const count = f === 'all' ? mySchools.length : (statusCounts[f]||0);
+      pill.setAttribute('data-label', pill.getAttribute('data-label') || pill.textContent.replace(/\s*\(\d+\)$/, ''));
+      pill.textContent = (pill.getAttribute('data-label') || f) + (count > 0 ? ` (${count})` : '');
+    }
+  });
+
+  // Follow-up alert bar
+  const followUpSchools = mySchools.filter(s => {
+    if(!s.contacted) return false;
+    const d = daysSince(s.contacted);
+    return d > 14 && !['Interested','Offer Received','Committed'].includes(s.status);
+  });
+  let alertBar = document.getElementById('tracker-followup-bar');
+  if(!alertBar) {
+    alertBar = document.createElement('div');
+    alertBar.id = 'tracker-followup-bar';
+    grid.parentNode.insertBefore(alertBar, grid);
+  }
+  if(followUpSchools.length > 0) {
+    alertBar.style.cssText = 'background:#fef3c7;border:1.5px solid #fcd34d;border-radius:8px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap';
+    alertBar.innerHTML = `<span style="font-size:16px">⚠️</span><span style="font-size:13px;font-weight:600;color:#92400e;flex:1">${followUpSchools.length} school${followUpSchools.length>1?'s':''} need a follow-up (14+ days without contact): ${followUpSchools.map(s=>`<strong>${s.name}</strong>`).join(', ')}</span><button class="btn btn-sm" style="background:#92400e;color:#fff;border:none" onclick="setFilter('Contacted',document.querySelector('.filter-pill[onclick*=Contacted]'))">Show them →</button>`;
+  } else {
+    alertBar.style.display = 'none';
+  }
+
   let filtered = mySchools.filter(s => {
     const mf = currentFilter==='all' || s.status===currentFilter;
     const ms = !searchQuery || s.name.toLowerCase().includes(searchQuery) || (s.coach||'').toLowerCase().includes(searchQuery);
@@ -2821,7 +2855,11 @@ function renderSchools() {
       ${s.notes?`<div class="school-notes">${s.notes}</div>`:''}
       <div class="school-actions">
         <button class="btn btn-ghost btn-sm" onclick="writeEmailForSchool(${s.id})">✉ Email</button>
+        ${needsFollowUp ? `<button class="btn btn-sm" style="background:var(--gold);color:var(--navy);border:none;font-weight:700" onclick="markContactedToday(${s.id})" title="Mark as contacted today">✓ Contacted</button>` : `<button class="btn btn-ghost btn-sm" onclick="markContactedToday(${s.id})" title="Mark as contacted today">📅 Contacted</button>`}
         ${s.twitter?`<button class="btn btn-sm" style="background:#000;color:#fff;border:none" onclick="openTwitterDM('${s.twitter}')"><span style="font-size:11px;font-weight:800">𝕏</span></button>`:''}
+        <select class="btn btn-ghost btn-sm" style="cursor:pointer;padding:4px 6px;font-size:11px" onchange="quickSetStatus(${s.id},this.value)" title="Change status">
+          ${['Researching','Tracking','Contacted','Emailed','Interested','Offer Received','Committed'].map(st=>`<option ${s.status===st?'selected':''}>${st}</option>`).join('')}
+        </select>
         <button class="btn btn-ghost btn-sm" onclick="editSchool(${s.id})">Edit</button>
         <button class="btn btn-danger btn-sm" onclick="deleteSchool(${s.id})">Delete</button>
       </div>
@@ -2861,6 +2899,24 @@ function renderDashSchools() {
   }).join('') + (mySchools.length > 5 ? `<div style="text-align:center;padding:8px 0 4px;font-size:12px;color:var(--text3)">+${mySchools.length-5} more · <span style="color:var(--navy);font-weight:700;cursor:pointer" onclick="navTo('tracker')">View all →</span></div>` : '');
 }
 
+function markContactedToday(id) {
+  const s = mySchools.find(x => x.id === id);
+  if(!s) return;
+  s.contacted = new Date().toISOString().split('T')[0];
+  if(s.status === 'Tracking' || s.status === 'Researching') s.status = 'Contacted';
+  try { localStorage.setItem('rp_schools', JSON.stringify(mySchools)); } catch(e) {}
+  updateCount(); renderSchools(); renderDashSchools(); buildDashNotifications(); renderDashMilestones();
+  showToast(`✅ ${s.name} marked as contacted today`);
+}
+
+function quickSetStatus(id, status) {
+  const s = mySchools.find(x => x.id === id);
+  if(!s) return;
+  s.status = status;
+  try { localStorage.setItem('rp_schools', JSON.stringify(mySchools)); } catch(e) {}
+  updateCount(); renderSchools(); renderDashSchools(); renderPipelineStrip();
+}
+
 function setFilter(f, el) {
   currentFilter = f;
   document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
@@ -2876,6 +2932,8 @@ function updateCount() {
   if(ss) ss.textContent = mySchools.length;
   updateDashStats();
   renderDashMilestones();
+  renderDashSchools();
+  renderNextAction();
 }
 
 // ── SCHOOL MODAL ─────────────────────────────────────────────
@@ -3330,9 +3388,32 @@ function toggleMilestone(el) {
   const done=el.classList.contains('done-item');
   if(done){check.textContent='✓';check.style.background='var(--green)';check.style.borderColor='var(--green)';}
   else{check.textContent='';check.style.background='';check.style.borderColor='';}
-  if(el.dataset.key) milestoneState[el.dataset.key]=done;
+  if(el.dataset.key) {
+    milestoneState[el.dataset.key]=done;
+    try { localStorage.setItem('rp_milestones', JSON.stringify(milestoneState)); } catch(e) {}
+  }
 }
+function autoCheckMilestones() {
+  // Auto-mark milestones based on real user data (only if not manually toggled)
+  const autoChecks = {
+    film:    () => !!(playerProfile.film || playerProfile.hudl),
+    profile: () => getProfileScore() >= 60,
+    list:    () => mySchools.length >= 10,
+    emails10:() => emailHistory.length >= 10,
+    more10:  () => emailHistory.length >= 20,
+    compare: () => (myOffers||[]).length >= 2,
+    verbal:  () => mySchools.some(s => s.status === 'Committed'),
+    nli:     () => mySchools.some(s => s.status === 'Committed'),
+  };
+  Object.entries(autoChecks).forEach(([key, check]) => {
+    if(milestoneState[key] === undefined && check()) {
+      milestoneState[key] = true;
+    }
+  });
+}
+
 function restoreMilestones() {
+  autoCheckMilestones();
   document.querySelectorAll('.milestone[data-key]').forEach(el => {
     const key=el.dataset.key;
     if(milestoneState[key]===true) {

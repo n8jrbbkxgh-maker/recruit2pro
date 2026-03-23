@@ -114,7 +114,7 @@ html,body{height:100%;overflow:hidden;background:var(--navy);font-family:'Inter'
 .autocomplete-item span{color:var(--text3);font-size:12px;margin-left:6px}
 
 /* ── COACH CARDS ───────────────────────────────────────── */
-.coach-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin:0 16px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;transition:box-shadow .15s}
+.coach-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin:0 16px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;transition:box-shadow .15s;contain:layout style}
 .coach-card:active{box-shadow:0 0 0 2px var(--gold)}
 .coach-card-left{flex:1;min-width:0}
 .coach-card-name{font-size:15px;font-weight:700;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -124,7 +124,7 @@ html,body{height:100%;overflow:hidden;background:var(--navy);font-family:'Inter'
 /* ── BOTTOM SHEET ──────────────────────────────────────── */
 .sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;opacity:0;pointer-events:none;transition:opacity .25s}
 .sheet-overlay.open{opacity:1;pointer-events:all}
-.bottom-sheet{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-radius:20px 20px 0 0;z-index:301;max-height:88vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1)}
+.bottom-sheet{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-radius:20px 20px 0 0;z-index:301;max-height:88vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);will-change:transform}
 .bottom-sheet.open{transform:translateY(0)}
 .sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0}
 .sheet-scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px calc(var(--safe-bottom) + 16px);flex:1}
@@ -962,8 +962,10 @@ let profile = {};
 let divFilter = 'all';
 let stateFilter = 'all';
 let searchQuery = '';
-let visibleCount = 20;
+let visibleCount = 30;
 let searchTimer = null;
+let _cachedFiltered = null;
+let _coachesRendered = false;
 let selectedCoach = null;
 let emailType = 'first';
 let selectedSchool = null;
@@ -1003,7 +1005,7 @@ function switchTab(tab) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
   document.getElementById('nav-' + tab).classList.add('active');
-  if (tab === 'coaches') renderCoaches();
+  if (tab === 'coaches' && !_coachesRendered) renderCoaches();
   if (tab === 'home') updateHomeUI();
 }
 
@@ -1123,71 +1125,117 @@ function updateHomeUI() {
 // COACH LIST
 // ════════════════════════════════════════════════════════════
 function getFilteredCoaches() {
-  return coachDB.filter(c => {
+  _cachedFiltered = coachDB.filter(c => {
     if (divFilter !== 'all' && c.div !== divFilter) return false;
     if (stateFilter !== 'all' && c.state !== stateFilter) return false;
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       return c.name.toLowerCase().includes(q) ||
-        c.abbr.toLowerCase().includes(q) ||
+        (c.abbr && c.abbr.toLowerCase().includes(q)) ||
         c.state.toLowerCase().includes(q) ||
         c.conf.toLowerCase().includes(q) ||
         c.coaches.some(hc => hc.name && hc.name.toLowerCase().includes(q));
     }
     return true;
   });
+  return _cachedFiltered;
+}
+
+// Build a single coach card HTML string
+function buildCoachCard(c) {
+  const hc = c.coaches.find(x => x.role && x.role.toLowerCase().includes('head')) || c.coaches[0];
+  const hcText = hc ? hc.name : 'Staff contact not listed';
+  const divClass = `badge-${c.div.toLowerCase()}`;
+  return `<div class="coach-card" data-sid="${esc(c.id)}" onclick="openCoachSheet(this.dataset.sid)">
+    <div class="coach-card-left">
+      <div class="coach-card-name">${esc(c.name)}</div>
+      <div class="coach-card-meta">${esc(c.conf)} · ${esc(c.state)}</div>
+      <div class="coach-card-hc">${esc(hcText)}</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
+      <span class="badge ${divClass}">${esc(c.div)}</span>
+      ${c.verified ? '<span style="font-size:10px;color:var(--green);font-weight:700">✓ verified</span>' : ''}
+    </div>
+  </div>`;
 }
 
 function renderCoaches() {
   const list = getFilteredCoaches();
-  const shown = list.slice(0, visibleCount);
   const el = document.getElementById('coach-list');
   const countEl = document.getElementById('coach-count-label');
-  const loadMore = document.getElementById('load-more-wrap');
+  const loadMoreWrap = document.getElementById('load-more-wrap');
   if (countEl) countEl.textContent = `${list.length} programs`;
-  if (!shown.length) {
+  if (!list.length) {
     el.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No programs found</div><div class="empty-sub">Try a different search or filter</div></div>`;
-    loadMore.style.display = 'none';
+    loadMoreWrap.style.display = 'none';
+    _coachesRendered = true;
     return;
   }
-  el.innerHTML = shown.map(c => {
-    const hc = c.coaches.find(x => x.role && x.role.toLowerCase().includes('head')) || c.coaches[0];
-    const hcText = hc ? hc.name : 'Staff contact not listed';
-    const divClass = `badge-${c.div.toLowerCase()}`;
-    return `<div class="coach-card" data-sid="${esc(c.id)}" onclick="openCoachSheet(this.dataset.sid)">
-      <div class="coach-card-left">
-        <div class="coach-card-name">${esc(c.name)}</div>
-        <div class="coach-card-meta">${esc(c.conf)} · ${esc(c.state)}</div>
-        <div class="coach-card-hc">${esc(hcText)}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
-        <span class="badge ${divClass}">${esc(c.div)}</span>
-        ${c.verified ? '<span style="font-size:10px;color:var(--green);font-weight:700">✓ verified</span>' : ''}
-      </div>
-    </div>`;
-  }).join('');
-  loadMore.style.display = list.length > visibleCount ? 'block' : 'none';
+  const shown = list.slice(0, visibleCount);
+  // Use DocumentFragment for faster DOM insertion
+  const frag = document.createDocumentFragment();
+  const tmp = document.createElement('div');
+  tmp.innerHTML = shown.map(buildCoachCard).join('');
+  while (tmp.firstChild) frag.appendChild(tmp.firstChild);
+  el.innerHTML = '';
+  el.appendChild(frag);
+  loadMoreWrap.style.display = list.length > visibleCount ? 'block' : 'none';
+  _coachesRendered = true;
+  setupInfiniteScroll();
+}
+
+// Append more cards without re-rendering existing ones
+function appendMoreCoaches() {
+  const list = _cachedFiltered || getFilteredCoaches();
+  const el = document.getElementById('coach-list');
+  const loadMoreWrap = document.getElementById('load-more-wrap');
+  const prev = visibleCount;
+  visibleCount += 30;
+  const newItems = list.slice(prev, visibleCount);
+  if (!newItems.length) { loadMoreWrap.style.display = 'none'; return; }
+  const tmp = document.createElement('div');
+  tmp.innerHTML = newItems.map(buildCoachCard).join('');
+  while (tmp.firstChild) el.appendChild(tmp.firstChild);
+  loadMoreWrap.style.display = list.length > visibleCount ? 'block' : 'none';
 }
 
 function loadMore() {
-  visibleCount += 20;
-  renderCoaches();
+  appendMoreCoaches();
+}
+
+// Intersection Observer for infinite scroll
+let _scrollObserver = null;
+function setupInfiniteScroll() {
+  if (_scrollObserver) _scrollObserver.disconnect();
+  const sentinel = document.getElementById('load-more-wrap');
+  if (!sentinel) return;
+  _scrollObserver = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) appendMoreCoaches();
+  }, { threshold: 0.1 });
+  _scrollObserver.observe(sentinel);
+}
+
+function invalidateCoachCache() {
+  _cachedFiltered = null;
+  _coachesRendered = false;
 }
 
 function debounceSearch() {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => {
     searchQuery = document.getElementById('coach-search').value.trim();
-    visibleCount = 20;
+    visibleCount = 30;
+    invalidateCoachCache();
     renderCoaches();
-  }, 200);
+  }, 150);
 }
 
 function setDivFilter(btn, div) {
   divFilter = div;
   document.querySelectorAll('#div-pills .pill').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  visibleCount = 20;
+  visibleCount = 30;
+  invalidateCoachCache();
   renderCoaches();
 }
 
@@ -1195,7 +1243,8 @@ function setStateFilter(btn, st) {
   stateFilter = st;
   document.querySelectorAll('#state-pills .pill').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  visibleCount = 20;
+  visibleCount = 30;
+  invalidateCoachCache();
   renderCoaches();
 }
 

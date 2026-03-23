@@ -1362,62 +1362,138 @@ async function regenerateEmail() {
   await generateEmail();
 }
 
-function buildEmailPrompt(type, school, hc, p, notes) {
-  const coachName = hc ? hc.name.split(' ').pop() : 'Coach';
-  const playerStr = [
-    p.name ? `Name: ${p.name}` : null,
-    p.pos ? `Position: ${p.pos}` : null,
-    p.year ? `Grad Year: ${p.year}` : null,
-    p.hometown ? `Hometown: ${p.hometown}` : null,
-    p.school ? `High School/Club: ${p.school}` : null,
-    p.gpa ? `GPA: ${p.gpa}` : null,
-    p.sat ? `SAT/ACT: ${p.sat}` : null,
-    p.stats ? `Stats: ${p.stats}` : null,
-    p.film ? `Film: ${p.film}` : null,
-    p.email ? `Email: ${p.email}` : null,
-  ].filter(Boolean).join('\n');
+// ── SYSTEM PROMPT (used for every email generation call) ──
+const EMAIL_SYSTEM_PROMPT = `You are a college baseball recruiting email specialist who has placed 200+ players in college programs. You write emails that coaches actually open and reply to. Your emails are short, specific, confident, and personal. You always address the coach by last name. You always name the specific school and conference. You never use generic filler language. Every email sounds like a real athlete wrote it.
 
-  const typeInstructions = {
-    first: `Write a first-contact recruiting email from a baseball player to a college coach. The email should be confident, direct, and specific. Include the player's top 2-3 stats, a mention of something specific about the school's program (based on division: ${school.div}, conference: ${school.conf}), and a clear ask to be evaluated. Keep it under 200 words. No fluff.`,
-    followup: `Write a follow-up recruiting email. The player emailed 2-3 weeks ago and hasn't heard back. Reference that this is a follow-up, add a new piece of information (recent tournament result, updated stats, or new film), and re-express genuine interest. Keep it under 150 words. Professional but persistent.`,
-    thankyou: `Write a thank-you email after a campus visit or phone call with a coach. Reference specific things discussed (keep them generic but realistic), express genuine excitement about the program, and reaffirm interest. Under 120 words.`,
-    showcase: `Write an email to invite a coach to watch the player at an upcoming showcase/tournament. Include hypothetical event details (make up a realistic showcase name and date), the player's key stats, and why this program is a specific fit. Under 150 words.`,
+NEVER use these phrases: "I have always dreamed", "hard worker", "honored", "great fit", "I believe I would", "passionate about baseball", "pursue my dreams", "take my game to the next level", "I am reaching out because", "give me the opportunity", "I feel that", "I am confident that".
+
+FORMAT YOUR RESPONSE EXACTLY AS:
+SUBJECT: [subject line]
+BODY:
+[email body only — no subject, no explanation]`;
+
+function buildEmailPrompt(type, school, hc, p, notes) {
+  // Extract coach name parts
+  const coachFullName = hc ? hc.name : 'Coach';
+  const nameParts = coachFullName.split(' ');
+  const coachLastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : coachFullName;
+  const coachFirstName = nameParts[0];
+
+  // Player info
+  const playerFirst = p.name ? p.name.split(' ')[0] : 'Player';
+  const playerName = p.name || '[Player Name]';
+  const pos = p.pos || 'Baseball Player';
+  const year = p.year || '[Year]';
+  const hometown = p.hometown || '[Hometown]';
+  const hsClub = p.school || '[High School/Club]';
+  const gpa = p.gpa || '';
+  const sat = p.sat || '';
+  const stats = p.stats || '[Key stats]';
+  const film = p.film || '';
+
+  // Program context
+  const schoolName = school.name;
+  const division = school.div;
+  const conference = school.conf;
+  const programNotes = school.notes || `${division} program in the ${conference}`;
+
+  // Subject line formula
+  const subject = `${pos} — ${playerName}, Class of ${year} — ${schoolName}`;
+
+  const templates = {
+    first: `Write a first-contact recruiting email from ${playerName} (${pos}, Class of ${year}) to Coach ${coachLastName} at ${schoolName}.
+
+REQUIREMENTS:
+- Open with exactly: "Coach ${coachLastName},"
+- First sentence names ${schoolName} and the ${conference} specifically
+- Reference this specific program fact in the email: "${programNotes}"
+- Include the player's best 2-3 stats from: ${stats}
+- Hometown: ${hometown} | School/Club: ${hsClub}${gpa ? ' | GPA: ' + gpa : ''}${film ? ' | Film: ' + film : ''}
+- End with ONE specific ask: a 10-minute call or permission to send film
+- Sign off with just the player's first name: ${playerFirst}
+- Body must be 100-140 words (not counting greeting and signoff)
+- Sound like a confident 17-year-old athlete, not a cover letter
+${notes ? '- Additional context: ' + notes : ''}
+
+Use this EXACT subject line:
+SUBJECT: ${subject}`,
+
+    followup: `Write a follow-up recruiting email. ${playerName} (${pos}, Class of ${year}) emailed Coach ${coachLastName} at ${schoolName} about 3 weeks ago with no reply.
+
+REQUIREMENTS:
+- Open with exactly: "Coach ${coachLastName},"
+- Mention ${schoolName} and the ${conference} by name
+- Reference that this is a follow-up (brief — one sentence max)
+- Add ONE new piece of info not in the first email (recent tournament result, a new stat, or updated film)
+- Stats available: ${stats}${film ? ' | Film: ' + film : ''}
+- Still interested in: "${programNotes}"
+- End with a specific yes/no question to prompt a reply
+- Sign off: ${playerFirst}
+- Body 100-130 words — confident, not apologetic
+${notes ? '- Additional context: ' + notes : ''}
+
+SUBJECT: ${subject} — Follow Up`,
+
+    thankyou: `Write a thank-you email from ${playerName} (${pos}, Class of ${year}) to Coach ${coachLastName} after a campus visit or phone call about ${schoolName}.
+
+REQUIREMENTS:
+- Open with exactly: "Coach ${coachLastName},"
+- Name ${schoolName} and the ${conference} specifically
+- Reference one specific concrete thing from the visit/call (be realistic — e.g., facility tour, pitching session discussion, academic advisor meeting)
+- Reaffirm interest in the program: "${programNotes}"
+- Short and warm — 80-110 words in the body
+- End with clear next step the player will take
+- Sign off: ${playerFirst}
+${notes ? '- Additional context: ' + notes : ''}
+
+SUBJECT: Thank You — ${playerName}, ${pos}, Class of ${year} — ${schoolName}`,
+
+    showcase: `Write a showcase invite email from ${playerName} (${pos}, Class of ${year}) to Coach ${coachLastName} at ${schoolName}.
+
+REQUIREMENTS:
+- Open with exactly: "Coach ${coachLastName},"
+- Lead with the player's single best stat from: ${stats}
+- Give a specific showcase event: create a realistic name (e.g., "Perfect Game Southeast Qualifier"), a plausible date 3-6 weeks out, and a realistic city
+- Include jersey number (make up a realistic number if not provided)
+- Name ${schoolName} and the ${conference} — show you know the program: "${programNotes}"
+- Hometown: ${hometown}${film ? ' | Film: ' + film : ''}
+- Ask specifically: "Will you be attending / Can you send a staff member?"
+- Sign off: ${playerFirst}
+- Body 110-140 words
+${notes ? '- Additional context: ' + notes : ''}
+
+SUBJECT: Showcase Invite — ${playerName}, ${pos} — ${schoolName}`
   };
 
-  return `${typeInstructions[type]}
-
-Player Info:
-${playerStr || 'No player info provided — use reasonable placeholder details'}
-
-School: ${school.name} (${school.div}, ${school.conf}, ${school.state})
-Head Coach: Coach ${coachName}
-${notes ? `Additional context: ${notes}` : ''}
-
-Format your response EXACTLY as:
-SUBJECT: [subject line here]
-BODY:
-[email body here]
-
-Do not include any explanation. Just the subject and body.`;
+  return templates[type] || templates.first;
 }
 
 function parseEmailResult(text) {
   const subjectMatch = text.match(/SUBJECT:\s*(.+)/i);
   const bodyMatch = text.match(/BODY:\s*([\s\S]+)/i);
-  const subject = subjectMatch ? subjectMatch[1].trim() : 'Recruiting Interest — ' + (profile.pos || 'Baseball Player') + ' — ' + (profile.year || '');
-  const body = bodyMatch ? bodyMatch[1].trim() : text.trim();
+  const subject = subjectMatch
+    ? subjectMatch[1].trim()
+    : `${profile.pos || 'Baseball Player'} — ${profile.name || 'Player'}, Class of ${profile.year || ''} — ${selectedSchool ? selectedSchool.name : 'Recruiting Interest'}`;
+  const body = bodyMatch ? bodyMatch[1].trim() : text.replace(/^SUBJECT:.*\n?/i, '').trim();
   return { subject, body };
 }
 
-async function callAI(prompt) {
+async function callAI(userPrompt) {
   const resp = await fetch('/.netlify/functions/ai-proxy', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt, max_tokens: 600 })
+    body: JSON.stringify({
+      system: EMAIL_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: userPrompt }],
+      max_tokens: 700
+    })
   });
   if (!resp.ok) throw new Error('AI proxy error: ' + resp.status);
   const data = await resp.json();
-  return data.content?.[0]?.text || data.text || data.completion || '';
+  // Handle Anthropic Messages API response
+  if (data.content && Array.isArray(data.content)) return data.content[0]?.text || '';
+  // Fallback for other formats
+  return data.text || data.completion || '';
 }
 
 function copyGeneratedEmail() {

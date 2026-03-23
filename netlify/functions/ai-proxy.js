@@ -23,6 +23,18 @@ exports.handler = async function(event) {
     return { statusCode: 400, body: JSON.stringify({ error: 'Invalid request body' }) };
   }
 
+  // Support both messages array and legacy prompt string
+  const messages = body.messages || [{ role: 'user', content: body.prompt || '' }];
+
+  const requestBody = {
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: body.max_tokens || 800,
+    messages
+  };
+
+  // Optional system prompt
+  if (body.system) requestBody.system = body.system;
+
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -31,11 +43,7 @@ exports.handler = async function(event) {
         'x-api-key': process.env.ANTHROPIC_API_KEY,
         'anthropic-version': '2023-06-01'
       },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: body.max_tokens || 1000,
-        messages: body.messages
-      })
+      body: JSON.stringify(requestBody)
     });
 
     const data = await response.json();
@@ -55,3 +63,4 @@ exports.handler = async function(event) {
     };
   }
 };
+

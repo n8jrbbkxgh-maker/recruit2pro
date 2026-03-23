@@ -114,7 +114,7 @@ html,body{height:100%;overflow:hidden;background:var(--navy);font-family:'Inter'
 .autocomplete-item span{color:var(--text3);font-size:12px;margin-left:6px}
 
 /* ── COACH CARDS ───────────────────────────────────────── */
-.coach-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin:0 16px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;transition:box-shadow .15s}
+.coach-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin:0 16px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;transition:box-shadow .15s;contain:layout style}
 .coach-card:active{box-shadow:0 0 0 2px var(--gold)}
 .coach-card-left{flex:1;min-width:0}
 .coach-card-name{font-size:15px;font-weight:700;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -124,7 +124,7 @@ html,body{height:100%;overflow:hidden;background:var(--navy);font-family:'Inter'
 /* ── BOTTOM SHEET ──────────────────────────────────────── */
 .sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;opacity:0;pointer-events:none;transition:opacity .25s}
 .sheet-overlay.open{opacity:1;pointer-events:all}
-.bottom-sheet{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-radius:20px 20px 0 0;z-index:301;max-height:88vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1)}
+.bottom-sheet{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-radius:20px 20px 0 0;z-index:301;max-height:88vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);will-change:transform}
 .bottom-sheet.open{transform:translateY(0)}
 .sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0}
 .sheet-scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px calc(var(--safe-bottom) + 16px);flex:1}
@@ -219,12 +219,120 @@ html,body{height:100%;overflow:hidden;background:var(--navy);font-family:'Inter'
 .spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-top-color:var(--white);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── MOBILE OVERRIDES ──────────────────────────────────── */
+/* ── MOBILE QA — 390px iPhone 14 ──────────────────────── */
+
+/* Prevent horizontal overflow everywhere */
+body,#app,.tab-content{max-width:100vw;overflow-x:hidden}
+
+/* All tappable elements: minimum 44px height */
+.btn{min-height:44px}
+.pill{min-height:44px;display:inline-flex;align-items:center}
+.nav-btn{min-height:44px}
+.toggle-btn{min-height:44px}
+.type-pill{min-height:36px;display:inline-flex;align-items:center}
+.coach-card{min-height:64px}
+
+/* Input fields: 16px font prevents iOS zoom on focus */
+.form-input,.form-select,.form-textarea,.search-input{font-size:16px !important}
+
+/* Bottom nav always above content */
+#bottom-nav{z-index:100}
+.tab-content{padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 24px)}
+
+/* Pill rows: horizontal scroll, no wrap, no horizontal page overflow */
+.pill-row{
+  display:flex;flex-wrap:nowrap;overflow-x:auto;
+  padding:0 16px 4px;gap:6px;
+  scrollbar-width:none;-ms-overflow-style:none;
+  /* Prevent pill row from creating page-level overflow */
+  max-width:100vw;box-sizing:border-box;
+}
+.pill-row::-webkit-scrollbar{display:none}
+.pill{flex-shrink:0}
+
+/* Autocomplete dropdown: never overflow screen */
+.autocomplete-drop{
+  max-width:calc(100vw - 32px);
+  left:0;right:0;
+}
+
+/* Generated email box: selectable text */
+.email-body-text{
+  user-select:text;-webkit-user-select:text;
+  word-break:break-word;overflow-wrap:break-word;
+}
+
+/* Email action buttons: wrap on small screens */
+.email-actions{flex-wrap:wrap;gap:8px}
+.email-actions .btn{flex:1;min-width:80px}
+
+/* AP card actions: wrap */
+.ap-card-actions{flex-wrap:wrap;gap:6px}
+
+/* Autopilot div/state pills: wrap */
+#ap-div-pills,#ap-state-pills{flex-wrap:wrap}
+
+/* Type selector pills: wrap */
+.type-selector{flex-wrap:wrap}
+
+/* Coach card: no overflow */
+.coach-card{overflow:hidden}
+.coach-card-name{max-width:calc(100vw - 120px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Bottom sheet: proper inset & scrollable */
+.sheet-scroll{
+  padding-bottom:calc(var(--safe-bottom) + 32px);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.bottom-sheet{max-height:88vh;overflow:hidden}
+
+/* Modal: proper inset & scrollable */
+.modal-box{max-height:90vh}
+.modal-scroll{
+  padding-bottom:calc(var(--safe-bottom) + 32px);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* Profile grid: single column on mobile */
+.profile-grid{grid-template-columns:1fr !important}
+
+/* Minimum readable font sizes */
+.coach-card-meta,.coach-card-hc,.staff-contact,.re-preview,.ap-card-preview{font-size:13px}
+
+/* Quick actions: 3 columns always fit */
+.quick-actions{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  padding:12px 12px 0;
+}
+.qa-btn{padding:14px 6px;min-height:80px}
+.qa-label{font-size:11px;line-height:1.3}
+
+/* Ensure section headings don't overflow */
+.section-title{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* Home hero: no overflow */
+.home-hero{overflow:hidden}
+.next-step-text{word-break:break-word;overflow-wrap:break-word}
+
+/* Autopilot match count: large but contained */
+.autopilot-match-count{line-height:1}
+
+/* Load more button: full width, easy tap */
+#load-more-wrap .btn{width:100%;min-height:44px}
+
 @media(max-width:390px){
-  .profile-grid{grid-template-columns:1fr}
-  .quick-actions{grid-template-columns:repeat(3,1fr);gap:8px}
   .qa-btn{padding:12px 4px}
   .qa-label{font-size:10px}
+  .btn-sm{height:40px;padding:0 10px;font-size:13px}
+  .email-actions .btn{font-size:12px;padding:0 10px}
 }
 </style>
 </head>
@@ -951,8 +1059,8 @@ const coachDB = [
    coaches:[{role:'Head Coach',name:'Rob Summerhill',email:'rsummerhill@sgsc.edu',phone:'912-260-4400'}],
    notes:'South Georgia JUCO. Pipeline to Georgia and Georgia Southern.',verified:false,contributions:7},
   {id:'indian_river',name:'Indian River State College',abbr:'IRSC',div:'JUCO',conf:'FCSAA',state:'FL',
-   coaches:[{role:'Head Coach',name:'Tim Corbin',email:'tcorbin@irsc.edu',phone:'772-462-7750'}],
-   notes:'Treasure Coast JUCO. Good pipeline to Florida programs.',verified:false,contributions:11},
+   coaches:[],
+   notes:'Treasure Coast JUCO. Good pipeline to Florida programs.',verified:false,contributions:0},
 ];
 
 // ════════════════════════════════════════════════════════════
@@ -962,8 +1070,10 @@ let profile = {};
 let divFilter = 'all';
 let stateFilter = 'all';
 let searchQuery = '';
-let visibleCount = 20;
+let visibleCount = 30;
 let searchTimer = null;
+let _cachedFiltered = null;
+let _coachesRendered = false;
 let selectedCoach = null;
 let emailType = 'first';
 let selectedSchool = null;
@@ -1003,7 +1113,7 @@ function switchTab(tab) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
   document.getElementById('nav-' + tab).classList.add('active');
-  if (tab === 'coaches') renderCoaches();
+  if (tab === 'coaches' && !_coachesRendered) renderCoaches();
   if (tab === 'home') updateHomeUI();
 }
 
@@ -1123,71 +1233,117 @@ function updateHomeUI() {
 // COACH LIST
 // ════════════════════════════════════════════════════════════
 function getFilteredCoaches() {
-  return coachDB.filter(c => {
+  _cachedFiltered = coachDB.filter(c => {
     if (divFilter !== 'all' && c.div !== divFilter) return false;
     if (stateFilter !== 'all' && c.state !== stateFilter) return false;
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       return c.name.toLowerCase().includes(q) ||
-        c.abbr.toLowerCase().includes(q) ||
+        (c.abbr && c.abbr.toLowerCase().includes(q)) ||
         c.state.toLowerCase().includes(q) ||
         c.conf.toLowerCase().includes(q) ||
         c.coaches.some(hc => hc.name && hc.name.toLowerCase().includes(q));
     }
     return true;
   });
+  return _cachedFiltered;
+}
+
+// Build a single coach card HTML string
+function buildCoachCard(c) {
+  const hc = c.coaches.find(x => x.role && x.role.toLowerCase().includes('head')) || c.coaches[0];
+  const hcText = hc ? hc.name : 'Staff contact not listed';
+  const divClass = `badge-${c.div.toLowerCase()}`;
+  return `<div class="coach-card" data-sid="${esc(c.id)}" onclick="openCoachSheet(this.dataset.sid)">
+    <div class="coach-card-left">
+      <div class="coach-card-name">${esc(c.name)}</div>
+      <div class="coach-card-meta">${esc(c.conf)} · ${esc(c.state)}</div>
+      <div class="coach-card-hc">${esc(hcText)}</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
+      <span class="badge ${divClass}">${esc(c.div)}</span>
+      ${c.verified ? '<span style="font-size:10px;color:var(--green);font-weight:700">✓ verified</span>' : ''}
+    </div>
+  </div>`;
 }
 
 function renderCoaches() {
   const list = getFilteredCoaches();
-  const shown = list.slice(0, visibleCount);
   const el = document.getElementById('coach-list');
   const countEl = document.getElementById('coach-count-label');
-  const loadMore = document.getElementById('load-more-wrap');
+  const loadMoreWrap = document.getElementById('load-more-wrap');
   if (countEl) countEl.textContent = `${list.length} programs`;
-  if (!shown.length) {
+  if (!list.length) {
     el.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No programs found</div><div class="empty-sub">Try a different search or filter</div></div>`;
-    loadMore.style.display = 'none';
+    loadMoreWrap.style.display = 'none';
+    _coachesRendered = true;
     return;
   }
-  el.innerHTML = shown.map(c => {
-    const hc = c.coaches.find(x => x.role && x.role.toLowerCase().includes('head')) || c.coaches[0];
-    const hcText = hc ? hc.name : 'Staff contact not listed';
-    const divClass = `badge-${c.div.toLowerCase()}`;
-    return `<div class="coach-card" data-sid="${esc(c.id)}" onclick="openCoachSheet(this.dataset.sid)">
-      <div class="coach-card-left">
-        <div class="coach-card-name">${esc(c.name)}</div>
-        <div class="coach-card-meta">${esc(c.conf)} · ${esc(c.state)}</div>
-        <div class="coach-card-hc">${esc(hcText)}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
-        <span class="badge ${divClass}">${esc(c.div)}</span>
-        ${c.verified ? '<span style="font-size:10px;color:var(--green);font-weight:700">✓ verified</span>' : ''}
-      </div>
-    </div>`;
-  }).join('');
-  loadMore.style.display = list.length > visibleCount ? 'block' : 'none';
+  const shown = list.slice(0, visibleCount);
+  // Use DocumentFragment for faster DOM insertion
+  const frag = document.createDocumentFragment();
+  const tmp = document.createElement('div');
+  tmp.innerHTML = shown.map(buildCoachCard).join('');
+  while (tmp.firstChild) frag.appendChild(tmp.firstChild);
+  el.innerHTML = '';
+  el.appendChild(frag);
+  loadMoreWrap.style.display = list.length > visibleCount ? 'block' : 'none';
+  _coachesRendered = true;
+  setupInfiniteScroll();
+}
+
+// Append more cards without re-rendering existing ones
+function appendMoreCoaches() {
+  const list = _cachedFiltered || getFilteredCoaches();
+  const el = document.getElementById('coach-list');
+  const loadMoreWrap = document.getElementById('load-more-wrap');
+  const prev = visibleCount;
+  visibleCount += 30;
+  const newItems = list.slice(prev, visibleCount);
+  if (!newItems.length) { loadMoreWrap.style.display = 'none'; return; }
+  const tmp = document.createElement('div');
+  tmp.innerHTML = newItems.map(buildCoachCard).join('');
+  while (tmp.firstChild) el.appendChild(tmp.firstChild);
+  loadMoreWrap.style.display = list.length > visibleCount ? 'block' : 'none';
 }
 
 function loadMore() {
-  visibleCount += 20;
-  renderCoaches();
+  appendMoreCoaches();
+}
+
+// Intersection Observer for infinite scroll
+let _scrollObserver = null;
+function setupInfiniteScroll() {
+  if (_scrollObserver) _scrollObserver.disconnect();
+  const sentinel = document.getElementById('load-more-wrap');
+  if (!sentinel) return;
+  _scrollObserver = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) appendMoreCoaches();
+  }, { threshold: 0.1 });
+  _scrollObserver.observe(sentinel);
+}
+
+function invalidateCoachCache() {
+  _cachedFiltered = null;
+  _coachesRendered = false;
 }
 
 function debounceSearch() {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => {
     searchQuery = document.getElementById('coach-search').value.trim();
-    visibleCount = 20;
+    visibleCount = 30;
+    invalidateCoachCache();
     renderCoaches();
-  }, 200);
+  }, 150);
 }
 
 function setDivFilter(btn, div) {
   divFilter = div;
   document.querySelectorAll('#div-pills .pill').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  visibleCount = 20;
+  visibleCount = 30;
+  invalidateCoachCache();
   renderCoaches();
 }
 
@@ -1195,7 +1351,8 @@ function setStateFilter(btn, st) {
   stateFilter = st;
   document.querySelectorAll('#state-pills .pill').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  visibleCount = 20;
+  visibleCount = 30;
+  invalidateCoachCache();
   renderCoaches();
 }
 
@@ -1362,62 +1519,138 @@ async function regenerateEmail() {
   await generateEmail();
 }
 
-function buildEmailPrompt(type, school, hc, p, notes) {
-  const coachName = hc ? hc.name.split(' ').pop() : 'Coach';
-  const playerStr = [
-    p.name ? `Name: ${p.name}` : null,
-    p.pos ? `Position: ${p.pos}` : null,
-    p.year ? `Grad Year: ${p.year}` : null,
-    p.hometown ? `Hometown: ${p.hometown}` : null,
-    p.school ? `High School/Club: ${p.school}` : null,
-    p.gpa ? `GPA: ${p.gpa}` : null,
-    p.sat ? `SAT/ACT: ${p.sat}` : null,
-    p.stats ? `Stats: ${p.stats}` : null,
-    p.film ? `Film: ${p.film}` : null,
-    p.email ? `Email: ${p.email}` : null,
-  ].filter(Boolean).join('\n');
+// ── SYSTEM PROMPT (used for every email generation call) ──
+const EMAIL_SYSTEM_PROMPT = `You are a college baseball recruiting email specialist who has placed 200+ players in college programs. You write emails that coaches actually open and reply to. Your emails are short, specific, confident, and personal. You always address the coach by last name. You always name the specific school and conference. You never use generic filler language. Every email sounds like a real athlete wrote it.
 
-  const typeInstructions = {
-    first: `Write a first-contact recruiting email from a baseball player to a college coach. The email should be confident, direct, and specific. Include the player's top 2-3 stats, a mention of something specific about the school's program (based on division: ${school.div}, conference: ${school.conf}), and a clear ask to be evaluated. Keep it under 200 words. No fluff.`,
-    followup: `Write a follow-up recruiting email. The player emailed 2-3 weeks ago and hasn't heard back. Reference that this is a follow-up, add a new piece of information (recent tournament result, updated stats, or new film), and re-express genuine interest. Keep it under 150 words. Professional but persistent.`,
-    thankyou: `Write a thank-you email after a campus visit or phone call with a coach. Reference specific things discussed (keep them generic but realistic), express genuine excitement about the program, and reaffirm interest. Under 120 words.`,
-    showcase: `Write an email to invite a coach to watch the player at an upcoming showcase/tournament. Include hypothetical event details (make up a realistic showcase name and date), the player's key stats, and why this program is a specific fit. Under 150 words.`,
+NEVER use these phrases: "I have always dreamed", "hard worker", "honored", "great fit", "I believe I would", "passionate about baseball", "pursue my dreams", "take my game to the next level", "I am reaching out because", "give me the opportunity", "I feel that", "I am confident that".
+
+FORMAT YOUR RESPONSE EXACTLY AS:
+SUBJECT: [subject line]
+BODY:
+[email body only — no subject, no explanation]`;
+
+function buildEmailPrompt(type, school, hc, p, notes) {
+  // Extract coach name parts
+  const coachFullName = hc ? hc.name : 'Coach';
+  const nameParts = coachFullName.split(' ');
+  const coachLastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : coachFullName;
+  const coachFirstName = nameParts[0];
+
+  // Player info
+  const playerFirst = p.name ? p.name.split(' ')[0] : 'Player';
+  const playerName = p.name || '[Player Name]';
+  const pos = p.pos || 'Baseball Player';
+  const year = p.year || '[Year]';
+  const hometown = p.hometown || '[Hometown]';
+  const hsClub = p.school || '[High School/Club]';
+  const gpa = p.gpa || '';
+  const sat = p.sat || '';
+  const stats = p.stats || '[Key stats]';
+  const film = p.film || '';
+
+  // Program context
+  const schoolName = school.name;
+  const division = school.div;
+  const conference = school.conf;
+  const programNotes = school.notes || `${division} program in the ${conference}`;
+
+  // Subject line formula
+  const subject = `${pos} — ${playerName}, Class of ${year} — ${schoolName}`;
+
+  const templates = {
+    first: `Write a first-contact recruiting email from ${playerName} (${pos}, Class of ${year}) to Coach ${coachLastName} at ${schoolName}.
+
+REQUIREMENTS:
+- Open with exactly: "Coach ${coachLastName},"
+- First sentence names ${schoolName} and the ${conference} specifically
+- Reference this specific program fact in the email: "${programNotes}"
+- Include the player's best 2-3 stats from: ${stats}
+- Hometown: ${hometown} | School/Club: ${hsClub}${gpa ? ' | GPA: ' + gpa : ''}${film ? ' | Film: ' + film : ''}
+- End with ONE specific ask: a 10-minute call or permission to send film
+- Sign off with just the player's first name: ${playerFirst}
+- Body must be 100-140 words (not counting greeting and signoff)
+- Sound like a confident 17-year-old athlete, not a cover letter
+${notes ? '- Additional context: ' + notes : ''}
+
+Use this EXACT subject line:
+SUBJECT: ${subject}`,
+
+    followup: `Write a follow-up recruiting email. ${playerName} (${pos}, Class of ${year}) emailed Coach ${coachLastName} at ${schoolName} about 3 weeks ago with no reply.
+
+REQUIREMENTS:
+- Open with exactly: "Coach ${coachLastName},"
+- Mention ${schoolName} and the ${conference} by name
+- Reference that this is a follow-up (brief — one sentence max)
+- Add ONE new piece of info not in the first email (recent tournament result, a new stat, or updated film)
+- Stats available: ${stats}${film ? ' | Film: ' + film : ''}
+- Still interested in: "${programNotes}"
+- End with a specific yes/no question to prompt a reply
+- Sign off: ${playerFirst}
+- Body 100-130 words — confident, not apologetic
+${notes ? '- Additional context: ' + notes : ''}
+
+SUBJECT: ${subject} — Follow Up`,
+
+    thankyou: `Write a thank-you email from ${playerName} (${pos}, Class of ${year}) to Coach ${coachLastName} after a campus visit or phone call about ${schoolName}.
+
+REQUIREMENTS:
+- Open with exactly: "Coach ${coachLastName},"
+- Name ${schoolName} and the ${conference} specifically
+- Reference one specific concrete thing from the visit/call (be realistic — e.g., facility tour, pitching session discussion, academic advisor meeting)
+- Reaffirm interest in the program: "${programNotes}"
+- Short and warm — 80-110 words in the body
+- End with clear next step the player will take
+- Sign off: ${playerFirst}
+${notes ? '- Additional context: ' + notes : ''}
+
+SUBJECT: Thank You — ${playerName}, ${pos}, Class of ${year} — ${schoolName}`,
+
+    showcase: `Write a showcase invite email from ${playerName} (${pos}, Class of ${year}) to Coach ${coachLastName} at ${schoolName}.
+
+REQUIREMENTS:
+- Open with exactly: "Coach ${coachLastName},"
+- Lead with the player's single best stat from: ${stats}
+- Give a specific showcase event: create a realistic name (e.g., "Perfect Game Southeast Qualifier"), a plausible date 3-6 weeks out, and a realistic city
+- Include jersey number (make up a realistic number if not provided)
+- Name ${schoolName} and the ${conference} — show you know the program: "${programNotes}"
+- Hometown: ${hometown}${film ? ' | Film: ' + film : ''}
+- Ask specifically: "Will you be attending / Can you send a staff member?"
+- Sign off: ${playerFirst}
+- Body 110-140 words
+${notes ? '- Additional context: ' + notes : ''}
+
+SUBJECT: Showcase Invite — ${playerName}, ${pos} — ${schoolName}`
   };
 
-  return `${typeInstructions[type]}
-
-Player Info:
-${playerStr || 'No player info provided — use reasonable placeholder details'}
-
-School: ${school.name} (${school.div}, ${school.conf}, ${school.state})
-Head Coach: Coach ${coachName}
-${notes ? `Additional context: ${notes}` : ''}
-
-Format your response EXACTLY as:
-SUBJECT: [subject line here]
-BODY:
-[email body here]
-
-Do not include any explanation. Just the subject and body.`;
+  return templates[type] || templates.first;
 }
 
 function parseEmailResult(text) {
   const subjectMatch = text.match(/SUBJECT:\s*(.+)/i);
   const bodyMatch = text.match(/BODY:\s*([\s\S]+)/i);
-  const subject = subjectMatch ? subjectMatch[1].trim() : 'Recruiting Interest — ' + (profile.pos || 'Baseball Player') + ' — ' + (profile.year || '');
-  const body = bodyMatch ? bodyMatch[1].trim() : text.trim();
+  const subject = subjectMatch
+    ? subjectMatch[1].trim()
+    : `${profile.pos || 'Baseball Player'} — ${profile.name || 'Player'}, Class of ${profile.year || ''} — ${selectedSchool ? selectedSchool.name : 'Recruiting Interest'}`;
+  const body = bodyMatch ? bodyMatch[1].trim() : text.replace(/^SUBJECT:.*\n?/i, '').trim();
   return { subject, body };
 }
 
-async function callAI(prompt) {
+async function callAI(userPrompt) {
   const resp = await fetch('/.netlify/functions/ai-proxy', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt, max_tokens: 600 })
+    body: JSON.stringify({
+      system: EMAIL_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: userPrompt }],
+      max_tokens: 700
+    })
   });
   if (!resp.ok) throw new Error('AI proxy error: ' + resp.status);
   const data = await resp.json();
-  return data.content?.[0]?.text || data.text || data.completion || '';
+  // Handle Anthropic Messages API response
+  if (data.content && Array.isArray(data.content)) return data.content[0]?.text || '';
+  // Fallback for other formats
+  return data.text || data.completion || '';
 }
 
 function copyGeneratedEmail() {
@@ -1597,22 +1830,8 @@ function sendApViaGmail(schoolId) {
 // ════════════════════════════════════════════════════════════
 // GMAIL OAUTH
 // ════════════════════════════════════════════════════════════
-// Gmail uses compose URL — opens Gmail with pre-filled content, no OAuth needed
-function updateGmailUI() {
-  const card = document.getElementById('gmail-card');
-  const statusEl = document.getElementById('gmail-status-text');
-  const subEl = document.getElementById('gmail-sub-text');
-  const btn = document.getElementById('gmail-btn');
-  if (!card) return;
-  statusEl.textContent = 'Open directly in Gmail';
-  subEl.textContent = 'Pre-fills subject, body & coach email';
-  btn.textContent = 'Open Gmail';
-  btn.className = 'btn btn-sm btn-navy';
-  card.style.display = 'none'; // Hide — the Send button in email result handles this
-}
-
+// Gmail uses compose URL — opens Gmail compose tab with pre-filled content, no OAuth needed
 function handleGmailBtn() {
-  // opens Gmail compose — see sendViaGmail
   sendViaGmail();
 }
 

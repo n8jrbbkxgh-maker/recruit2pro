@@ -1830,22 +1830,8 @@ function sendApViaGmail(schoolId) {
 // ════════════════════════════════════════════════════════════
 // GMAIL OAUTH
 // ════════════════════════════════════════════════════════════
-// Gmail uses compose URL — opens Gmail with pre-filled content, no OAuth needed
-function updateGmailUI() {
-  const card = document.getElementById('gmail-card');
-  const statusEl = document.getElementById('gmail-status-text');
-  const subEl = document.getElementById('gmail-sub-text');
-  const btn = document.getElementById('gmail-btn');
-  if (!card) return;
-  statusEl.textContent = 'Open directly in Gmail';
-  subEl.textContent = 'Pre-fills subject, body & coach email';
-  btn.textContent = 'Open Gmail';
-  btn.className = 'btn btn-sm btn-navy';
-  card.style.display = 'none'; // Hide — the Send button in email result handles this
-}
-
+// Gmail uses compose URL — opens Gmail compose tab with pre-filled content, no OAuth needed
 function handleGmailBtn() {
-  // opens Gmail compose — see sendViaGmail
   sendViaGmail();
 }
 

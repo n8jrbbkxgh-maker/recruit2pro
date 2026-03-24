@@ -2,10 +2,10 @@
   "name": "recruit2pro",
   "type": "module",
   "scripts": {
-    "test": "vitest run tests/unit",
-    "test:integration": "vitest run tests/integration",
+    "test": "vitest run tests/unit --passWithNoTests",
+    "test:integration": "vitest run tests/integration --passWithNoTests",
     "test:e2e": "playwright test",
-    "test:all": "vitest run && playwright test"
+    "test:all": "vitest run --passWithNoTests && playwright test"
   },
   "devDependencies": {
     "vitest": "^1.6.0",

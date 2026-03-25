@@ -593,6 +593,10 @@ body,#app,.tab-content{max-width:100vw;overflow-x:hidden}
       <div style="margin-top:20px;display:flex;gap:10px">
         <button class="btn btn-gold btn-full" onclick="saveProfile()">Save Profile</button>
       </div>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="openBillingPortal()">💳 Manage Billing</button>
+        <button class="btn btn-ghost btn-sm" onclick="handleLogOut()">Log Out</button>
+      </div>
       <div style="margin-top:12px;background:var(--off);border-radius:var(--r-sm);padding:12px">
         <div style="font-size:12px;font-weight:700;color:var(--text3);margin-bottom:8px">DATA BACKUP</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -604,7 +608,43 @@ body,#app,.tab-content{max-width:100vw;overflow-x:hidden}
   </div>
 </div>
 
-<script>
+<!-- ── PAYWALL ──────────────────────────────────────────────── -->
+<div id="paywall" style="display:none;position:fixed;inset:0;background:var(--navy);z-index:1000;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center">
+  <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--white);margin-bottom:8px">RECRUIT<span style="color:var(--gold)">PRO</span></div>
+  <div style="font-size:16px;color:rgba(255,255,255,.7);margin-bottom:32px;max-width:320px;line-height:1.5">Find coaches, write real emails, get recruited.</div>
+  <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px 24px;max-width:360px;width:100%;margin-bottom:24px">
+    <div style="font-size:42px;font-weight:900;font-family:'Barlow Condensed',sans-serif;color:var(--gold)">$20<span style="font-size:18px;color:rgba(255,255,255,.5)">/mo</span></div>
+    <div style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:20px">Cancel anytime</div>
+    <ul style="list-style:none;text-align:left;font-size:14px;color:rgba(255,255,255,.85);line-height:2.2;margin-bottom:24px">
+      <li>✅ 373+ college baseball programs</li>
+      <li>✅ Verified coach emails &amp; contacts</li>
+      <li>✅ AI email writer (4 types)</li>
+      <li>✅ Autopilot batch campaigns</li>
+      <li>✅ Gmail compose integration</li>
+      <li>✅ Cloud sync across devices</li>
+    </ul>
+    <button class="btn btn-gold" id="subscribe-btn" onclick="startCheckout()">Subscribe — $20/mo</button>
+  </div>
+  <button class="btn btn-ghost" style="max-width:360px;width:100%;color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.1)" onclick="handleLogOut()">Log out</button>
+</div>
+
+<!-- ── GRACE BANNER ─────────────────────────────────────── -->
+<div id="grace-banner" style="display:none;background:#92400e;color:#fef3c7;padding:10px 16px;font-size:13px;font-weight:600;text-align:center;position:sticky;top:0;z-index:200">
+  ⚠ Payment issue — update your billing to keep access. <a onclick="openBillingPortal()" style="color:#fef3c7;text-decoration:underline;cursor:pointer">Manage billing →</a>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '/js/config.js'
+import { calcReadiness, getNextStep, validateProfile } from '/js/profile.js'
+import { getFilteredCoaches, getApMatches, getUniqueStates } from '/js/coaches.js'
+import { buildEmailPrompt, parseEmailResult, capEmailHistory, EMAIL_SYSTEM_PROMPT } from '/js/emails.js'
+import { getAccessStatus } from '/js/auth.js'
+import { getProfile, upsertProfile, getEmails, insertEmail, getSubscription } from '/js/db.js'
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+let currentUser = null
+
 // ════════════════════════════════════════════════════════════
 // CONFIG
 // ════════════════════════════════════════════════════════════
@@ -1067,6 +1107,7 @@ const coachDB = [
 // STATE
 // ════════════════════════════════════════════════════════════
 let profile = {};
+let emailHistory = [];
 let divFilter = 'all';
 let stateFilter = 'all';
 let searchQuery = '';
@@ -1088,14 +1129,44 @@ let profileDivs = [];
 // ════════════════════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
-  loadProfile();
+document.addEventListener('DOMContentLoaded', async () => {
+  // 1. Auth gate
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) { window.location.href = '/auth.html'; return }
+
+  currentUser = session.user
+
+  // 2. Subscription gate
+  const sub = await getSubscription(supabase, currentUser.id)
+  const access = getAccessStatus(sub)
+
+  if (access === 'blocked') {
+    showPaywall()
+    return
+  }
+  if (access === 'grace') {
+    showGraceBanner()
+  }
+
+  // 3. Load data from Supabase
+  profile = await getProfile(supabase, currentUser.id) || {}
+  emailHistory = await getEmails(supabase, currentUser.id)
+
+  // 4. Init UI
+  profileDivs = profile.target_divs || [];
   renderStatePills();
   renderCoaches();
-  renderRecentEmails();
-  renderApStatePills();
+  updateHomeUI()
+  renderRecentEmails()
+  renderApStatePills()
   updateApMatchCount();
-  updateHomeUI();
+
+  // 5. Handle checkout success redirect
+  const urlParams = new URLSearchParams(window.location.search)
+  if (urlParams.get('checkout') === 'success') {
+    toast('🎉 Welcome to RecruitPro Pro!')
+    window.history.replaceState({}, '', '/app.html')
+  }
 });
 
 // ════════════════════════════════════════════════════════════
@@ -1128,29 +1199,31 @@ function setEmailMode(mode) {
 // ════════════════════════════════════════════════════════════
 // PROFILE
 // ════════════════════════════════════════════════════════════
-function loadProfile() {
-  try { profile = JSON.parse(localStorage.getItem('rp_profile') || '{}'); } catch(e) { profile = {}; }
-  profileDivs = profile.targetDivs || [];
-  updateHomeUI();
-}
-
-function saveProfile() {
-  profile.name = document.getElementById('p-name').value.trim();
-  profile.pos = document.getElementById('p-pos').value;
-  profile.year = document.getElementById('p-year').value.trim();
-  profile.hometown = document.getElementById('p-hometown').value.trim();
-  profile.school = document.getElementById('p-school').value.trim();
-  profile.gpa = document.getElementById('p-gpa').value.trim();
-  profile.sat = document.getElementById('p-sat').value.trim();
-  profile.stats = document.getElementById('p-stats').value.trim();
-  profile.film = document.getElementById('p-film').value.trim();
-  profile.email = document.getElementById('p-email').value.trim();
-  profile.targetDivs = profileDivs;
-  localStorage.setItem('rp_profile', JSON.stringify(profile));
-  closeProfileModal();
-  updateHomeUI();
-  renderRecentEmails();
-  toast('Profile saved ✓');
+async function saveProfile() {
+  const p = {
+    name: document.getElementById('p-name').value.trim(),
+    pos: document.getElementById('p-pos').value,
+    year: document.getElementById('p-year').value.trim(),
+    hometown: document.getElementById('p-hometown').value.trim(),
+    high_school: document.getElementById('p-school').value.trim(),
+    gpa: document.getElementById('p-gpa').value.trim(),
+    sat_act: document.getElementById('p-sat').value.trim(),
+    stats: document.getElementById('p-stats').value.trim(),
+    film_url: document.getElementById('p-film').value.trim(),
+    email: document.getElementById('p-email').value.trim(),
+    target_divs: profileDivs,
+  }
+  const validation = validateProfile({ gpa: p.gpa, year: p.year, film: p.film_url })
+  if (!validation.valid) {
+    const firstError = Object.values(validation.errors)[0]
+    toast('⚠ ' + firstError); return
+  }
+  await upsertProfile(supabase, currentUser.id, p)
+  profile = p
+  closeProfileModal()
+  updateHomeUI()
+  renderRecentEmails()
+  toast('Profile saved ✓')
 }
 
 function openProfileModal() {
@@ -1160,11 +1233,11 @@ function openProfileModal() {
   document.getElementById('p-pos').value = profile.pos || '';
   document.getElementById('p-year').value = profile.year || '';
   document.getElementById('p-hometown').value = profile.hometown || '';
-  document.getElementById('p-school').value = profile.school || '';
+  document.getElementById('p-school').value = profile.high_school || profile.school || '';
   document.getElementById('p-gpa').value = profile.gpa || '';
-  document.getElementById('p-sat').value = profile.sat || '';
+  document.getElementById('p-sat').value = profile.sat_act || profile.sat || '';
   document.getElementById('p-stats').value = profile.stats || '';
-  document.getElementById('p-film').value = profile.film || '';
+  document.getElementById('p-film').value = profile.film_url || profile.film || '';
   document.getElementById('p-email').value = profile.email || '';
   // restore div pills
   document.querySelectorAll('#p-div-pills .type-pill').forEach(b => {
@@ -1184,26 +1257,9 @@ function togglePDiv(btn, div) {
   });
 }
 
-function calcReadiness() {
-  const fields = ['name','pos','year','hometown','school','gpa','stats','film','email'];
-  const filled = fields.filter(f => profile[f] && profile[f].toString().trim().length > 0).length;
-  return Math.round((filled / fields.length) * 100);
-}
-
-function getNextStep() {
-  if (!profile.name) return 'Complete your player profile to get started';
-  if (!profile.pos) return 'Add your position to your profile';
-  if (!profile.stats) return 'Add your stats (velocity, GPA, batting avg, etc.) to your profile';
-  if (!profile.film) return 'Add a Hudl or YouTube film link to your profile';
-  if (!profile.email) return 'Add your email address so coaches can reply';
-  const emails = getSavedEmails();
-  if (emails.length === 0) return 'Write your first coach email — tap "Write Email"';
-  if (emails.length < 5) return 'Send emails to 5+ coaches — use Autopilot to scale';
-  return 'Keep sending — most recruits hear back after 8-12 emails per school';
-}
 
 function updateHomeUI() {
-  const pct = calcReadiness();
+  const pct = calcReadiness(profile);
   const bar = document.getElementById('readiness-bar');
   const pctEl = document.getElementById('readiness-pct');
   if (bar) bar.style.width = pct + '%';
@@ -1219,7 +1275,7 @@ function updateHomeUI() {
     avatarEl.textContent = initials;
   }
   const nextEl = document.getElementById('next-step-text');
-  if (nextEl) nextEl.textContent = getNextStep();
+  if (nextEl) nextEl.textContent = getNextStep(profile, emailHistory.length);
 
   const hint = document.getElementById('writer-profile-hint');
   if (hint) {
@@ -1232,20 +1288,8 @@ function updateHomeUI() {
 // ════════════════════════════════════════════════════════════
 // COACH LIST
 // ════════════════════════════════════════════════════════════
-function getFilteredCoaches() {
-  _cachedFiltered = coachDB.filter(c => {
-    if (divFilter !== 'all' && c.div !== divFilter) return false;
-    if (stateFilter !== 'all' && c.state !== stateFilter) return false;
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      return c.name.toLowerCase().includes(q) ||
-        (c.abbr && c.abbr.toLowerCase().includes(q)) ||
-        c.state.toLowerCase().includes(q) ||
-        c.conf.toLowerCase().includes(q) ||
-        c.coaches.some(hc => hc.name && hc.name.toLowerCase().includes(q));
-    }
-    return true;
-  });
+function getFilteredCoachesLocal() {
+  _cachedFiltered = getFilteredCoaches(coachDB, { divFilter, stateFilter, searchQuery });
   return _cachedFiltered;
 }
 
@@ -1268,7 +1312,7 @@ function buildCoachCard(c) {
 }
 
 function renderCoaches() {
-  const list = getFilteredCoaches();
+  const list = getFilteredCoachesLocal();
   const el = document.getElementById('coach-list');
   const countEl = document.getElementById('coach-count-label');
   const loadMoreWrap = document.getElementById('load-more-wrap');
@@ -1294,7 +1338,7 @@ function renderCoaches() {
 
 // Append more cards without re-rendering existing ones
 function appendMoreCoaches() {
-  const list = _cachedFiltered || getFilteredCoaches();
+  const list = _cachedFiltered || getFilteredCoachesLocal();
   const el = document.getElementById('coach-list');
   const loadMoreWrap = document.getElementById('load-more-wrap');
   const prev = visibleCount;
@@ -1357,7 +1401,7 @@ function setStateFilter(btn, st) {
 }
 
 function renderStatePills() {
-  const states = [...new Set(coachDB.map(c => c.state))].sort();
+  const states = getUniqueStates(coachDB);
   const wrap = document.getElementById('state-pills');
   const existing = wrap.innerHTML;
   states.forEach(st => {
@@ -1519,138 +1563,24 @@ async function regenerateEmail() {
   await generateEmail();
 }
 
-// ── SYSTEM PROMPT (used for every email generation call) ──
-const EMAIL_SYSTEM_PROMPT = `You are a college baseball recruiting email specialist who has placed 200+ players in college programs. You write emails that coaches actually open and reply to. Your emails are short, specific, confident, and personal. You always address the coach by last name. You always name the specific school and conference. You never use generic filler language. Every email sounds like a real athlete wrote it.
-
-NEVER use these phrases: "I have always dreamed", "hard worker", "honored", "great fit", "I believe I would", "passionate about baseball", "pursue my dreams", "take my game to the next level", "I am reaching out because", "give me the opportunity", "I feel that", "I am confident that".
-
-FORMAT YOUR RESPONSE EXACTLY AS:
-SUBJECT: [subject line]
-BODY:
-[email body only — no subject, no explanation]`;
-
-function buildEmailPrompt(type, school, hc, p, notes) {
-  // Extract coach name parts
-  const coachFullName = hc ? hc.name : 'Coach';
-  const nameParts = coachFullName.split(' ');
-  const coachLastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : coachFullName;
-  const coachFirstName = nameParts[0];
-
-  // Player info
-  const playerFirst = p.name ? p.name.split(' ')[0] : 'Player';
-  const playerName = p.name || '[Player Name]';
-  const pos = p.pos || 'Baseball Player';
-  const year = p.year || '[Year]';
-  const hometown = p.hometown || '[Hometown]';
-  const hsClub = p.school || '[High School/Club]';
-  const gpa = p.gpa || '';
-  const sat = p.sat || '';
-  const stats = p.stats || '[Key stats]';
-  const film = p.film || '';
-
-  // Program context
-  const schoolName = school.name;
-  const division = school.div;
-  const conference = school.conf;
-  const programNotes = school.notes || `${division} program in the ${conference}`;
-
-  // Subject line formula
-  const subject = `${pos} — ${playerName}, Class of ${year} — ${schoolName}`;
-
-  const templates = {
-    first: `Write a first-contact recruiting email from ${playerName} (${pos}, Class of ${year}) to Coach ${coachLastName} at ${schoolName}.
-
-REQUIREMENTS:
-- Open with exactly: "Coach ${coachLastName},"
-- First sentence names ${schoolName} and the ${conference} specifically
-- Reference this specific program fact in the email: "${programNotes}"
-- Include the player's best 2-3 stats from: ${stats}
-- Hometown: ${hometown} | School/Club: ${hsClub}${gpa ? ' | GPA: ' + gpa : ''}${film ? ' | Film: ' + film : ''}
-- End with ONE specific ask: a 10-minute call or permission to send film
-- Sign off with just the player's first name: ${playerFirst}
-- Body must be 100-140 words (not counting greeting and signoff)
-- Sound like a confident 17-year-old athlete, not a cover letter
-${notes ? '- Additional context: ' + notes : ''}
-
-Use this EXACT subject line:
-SUBJECT: ${subject}`,
-
-    followup: `Write a follow-up recruiting email. ${playerName} (${pos}, Class of ${year}) emailed Coach ${coachLastName} at ${schoolName} about 3 weeks ago with no reply.
-
-REQUIREMENTS:
-- Open with exactly: "Coach ${coachLastName},"
-- Mention ${schoolName} and the ${conference} by name
-- Reference that this is a follow-up (brief — one sentence max)
-- Add ONE new piece of info not in the first email (recent tournament result, a new stat, or updated film)
-- Stats available: ${stats}${film ? ' | Film: ' + film : ''}
-- Still interested in: "${programNotes}"
-- End with a specific yes/no question to prompt a reply
-- Sign off: ${playerFirst}
-- Body 100-130 words — confident, not apologetic
-${notes ? '- Additional context: ' + notes : ''}
-
-SUBJECT: ${subject} — Follow Up`,
-
-    thankyou: `Write a thank-you email from ${playerName} (${pos}, Class of ${year}) to Coach ${coachLastName} after a campus visit or phone call about ${schoolName}.
-
-REQUIREMENTS:
-- Open with exactly: "Coach ${coachLastName},"
-- Name ${schoolName} and the ${conference} specifically
-- Reference one specific concrete thing from the visit/call (be realistic — e.g., facility tour, pitching session discussion, academic advisor meeting)
-- Reaffirm interest in the program: "${programNotes}"
-- Short and warm — 80-110 words in the body
-- End with clear next step the player will take
-- Sign off: ${playerFirst}
-${notes ? '- Additional context: ' + notes : ''}
-
-SUBJECT: Thank You — ${playerName}, ${pos}, Class of ${year} — ${schoolName}`,
-
-    showcase: `Write a showcase invite email from ${playerName} (${pos}, Class of ${year}) to Coach ${coachLastName} at ${schoolName}.
-
-REQUIREMENTS:
-- Open with exactly: "Coach ${coachLastName},"
-- Lead with the player's single best stat from: ${stats}
-- Give a specific showcase event: create a realistic name (e.g., "Perfect Game Southeast Qualifier"), a plausible date 3-6 weeks out, and a realistic city
-- Include jersey number (make up a realistic number if not provided)
-- Name ${schoolName} and the ${conference} — show you know the program: "${programNotes}"
-- Hometown: ${hometown}${film ? ' | Film: ' + film : ''}
-- Ask specifically: "Will you be attending / Can you send a staff member?"
-- Sign off: ${playerFirst}
-- Body 110-140 words
-${notes ? '- Additional context: ' + notes : ''}
-
-SUBJECT: Showcase Invite — ${playerName}, ${pos} — ${schoolName}`
-  };
-
-  return templates[type] || templates.first;
-}
-
-function parseEmailResult(text) {
-  const subjectMatch = text.match(/SUBJECT:\s*(.+)/i);
-  const bodyMatch = text.match(/BODY:\s*([\s\S]+)/i);
-  const subject = subjectMatch
-    ? subjectMatch[1].trim()
-    : `${profile.pos || 'Baseball Player'} — ${profile.name || 'Player'}, Class of ${profile.year || ''} — ${selectedSchool ? selectedSchool.name : 'Recruiting Interest'}`;
-  const body = bodyMatch ? bodyMatch[1].trim() : text.replace(/^SUBJECT:.*\n?/i, '').trim();
-  return { subject, body };
-}
-
 async function callAI(userPrompt) {
+  const { data: { session } } = await supabase.auth.getSession()
   const resp = await fetch('/.netlify/functions/ai-proxy', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session.access_token}`
+    },
     body: JSON.stringify({
       system: EMAIL_SYSTEM_PROMPT,
       messages: [{ role: 'user', content: userPrompt }],
       max_tokens: 700
     })
-  });
-  if (!resp.ok) throw new Error('AI proxy error: ' + resp.status);
-  const data = await resp.json();
-  // Handle Anthropic Messages API response
-  if (data.content && Array.isArray(data.content)) return data.content[0]?.text || '';
-  // Fallback for other formats
-  return data.text || data.completion || '';
+  })
+  if (!resp.ok) throw new Error('AI proxy error: ' + resp.status)
+  const data = await resp.json()
+  if (data.content && Array.isArray(data.content)) return data.content[0]?.text || ''
+  return data.text || data.completion || ''
 }
 
 function copyGeneratedEmail() {
@@ -1666,18 +1596,19 @@ function copyGeneratedEmail() {
 // ════════════════════════════════════════════════════════════
 // EMAIL HISTORY
 // ════════════════════════════════════════════════════════════
-function getSavedEmails() {
-  try { return JSON.parse(localStorage.getItem('rp_emails') || '[]'); } catch(e) { return []; }
-}
-
-function saveEmailToHistory(school, type, subject, body) {
-  const emails = getSavedEmails();
-  emails.unshift({ id: Date.now(), schoolId: school.id, school: school.name, type, subject, body, ts: Date.now() });
-  localStorage.setItem('rp_emails', JSON.stringify(emails.slice(0, 100)));
+async function saveEmailToHistory(school, type, subject, body) {
+  await insertEmail(supabase, currentUser.id, {
+    school_id: school.id,
+    school_name: school.name,
+    type,
+    subject,
+    body,
+  })
+  emailHistory = await getEmails(supabase, currentUser.id)
 }
 
 function renderRecentEmails() {
-  const emails = getSavedEmails().slice(0, 3);
+  const emails = emailHistory.slice(0, 3);
   const el = document.getElementById('recent-emails-list');
   if (!emails.length) {
     el.innerHTML = `<div class="empty-state" style="padding:24px"><div class="empty-icon">📬</div><div class="empty-title">No emails yet</div><div class="empty-sub">Generate your first coach email to see it here</div></div>`;
@@ -1686,19 +1617,18 @@ function renderRecentEmails() {
   el.innerHTML = emails.map(e => `
     <div class="recent-email-card">
       <div class="re-top">
-        <div class="re-school">${e.school}</div>
+        <div class="re-school">${e.school_name || e.school}</div>
         <div class="re-type">${e.type}</div>
       </div>
       <div class="re-preview">${e.subject ? 'Sub: ' + e.subject + '\n' : ''}${e.body}</div>
       <div style="margin-top:8px">
-        <button class="btn btn-ghost btn-xs" onclick="quickCopy(${e.id})">📋 Copy</button>
+        <button class="btn btn-ghost btn-xs" onclick="quickCopyEmail(${JSON.stringify(e.id)})">📋 Copy</button>
       </div>
     </div>`).join('');
 }
 
-function quickCopy(id) {
-  const emails = getSavedEmails();
-  const e = emails.find(x => x.id === id);
+function quickCopyEmail(id) {
+  const e = emailHistory.find(x => x.id === id);
   if (!e) return;
   const full = `Subject: ${e.subject}\n\n${e.body}`;
   navigator.clipboard.writeText(full).then(() => toast('Copied!')).catch(() => {
@@ -1717,7 +1647,7 @@ function toggleApDiv(btn, div) {
 }
 
 function renderApStatePills() {
-  const states = [...new Set(coachDB.map(c => c.state))].sort();
+  const states = getUniqueStates(coachDB);
   const wrap = document.getElementById('ap-state-pills');
   wrap.innerHTML = states.map(st => `<button class="pill" data-st="${st}" onclick="toggleApState(this,'${st}')">${st}</button>`).join('');
 }
@@ -1729,22 +1659,17 @@ function toggleApState(btn, st) {
   updateApMatchCount();
 }
 
-function getApMatches() {
-  return coachDB.filter(c => {
-    if (apDivs.length && !apDivs.includes(c.div)) return false;
-    if (apStates.length && !apStates.includes(c.state)) return false;
-    if (apSentIds.has(c.id)) return false;
-    return true;
-  });
+function getApMatchesLocal() {
+  return getApMatches(coachDB, { apDivs, apStates, sentIds: apSentIds });
 }
 
 function updateApMatchCount() {
   const el = document.getElementById('ap-match-count');
-  if (el) el.textContent = getApMatches().length;
+  if (el) el.textContent = getApMatchesLocal().length;
 }
 
 async function runAutopilot() {
-  const matches = getApMatches();
+  const matches = getApMatchesLocal();
   if (!matches.length) { toast('No programs match your filters'); return; }
   if (!profile.name) { toast('Complete your profile first'); openProfileModal(); return; }
 
@@ -1854,8 +1779,8 @@ function openGmailCompose(to, subject, body) {
 // ════════════════════════════════════════════════════════════
 function exportData() {
   const data = {
-    profile: JSON.parse(localStorage.getItem('rp_profile') || '{}'),
-    emails: JSON.parse(localStorage.getItem('rp_emails') || '[]'),
+    profile: profile,
+    emails: emailHistory,
     exported: new Date().toISOString()
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -1870,12 +1795,14 @@ function importData(e) {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = ev => {
+  reader.onload = async ev => {
     try {
       const data = JSON.parse(ev.target.result);
-      if (data.profile) localStorage.setItem('rp_profile', JSON.stringify(data.profile));
-      if (data.emails) localStorage.setItem('rp_emails', JSON.stringify(data.emails));
-      loadProfile();
+      if (data.profile) {
+        await upsertProfile(supabase, currentUser.id, data.profile);
+        profile = data.profile;
+      }
+      updateHomeUI();
       renderRecentEmails();
       toast('Data imported ✓');
     } catch(err) { toast('Invalid backup file'); }
@@ -1905,6 +1832,86 @@ window.addEventListener('popstate', () => {
   closeCoachSheet();
   closeProfileModal();
 });
+
+// ════════════════════════════════════════════════════════════
+// AUTH + PAYWALL FUNCTIONS
+// ════════════════════════════════════════════════════════════
+function showPaywall() {
+  document.getElementById('paywall').style.display = 'flex'
+  const appEl = document.getElementById('app')
+  if (appEl) appEl.style.display = 'none'
+}
+
+function showGraceBanner() {
+  document.getElementById('grace-banner').style.display = 'block'
+}
+
+async function startCheckout() {
+  const btn = document.getElementById('subscribe-btn')
+  btn.disabled = true; btn.textContent = 'Loading…'
+  const { data: { session } } = await supabase.auth.getSession()
+  const resp = await fetch('/.netlify/functions/create-checkout', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session.access_token}`
+    },
+    body: JSON.stringify({})
+  })
+  const data = await resp.json()
+  if (data.url) window.location.href = data.url
+  else { btn.disabled = false; btn.textContent = 'Subscribe — $20/mo'; toast('Error starting checkout') }
+}
+
+async function openBillingPortal() {
+  const { data: { session } } = await supabase.auth.getSession()
+  const resp = await fetch('/.netlify/functions/customer-portal', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${session.access_token}` }
+  })
+  const data = await resp.json()
+  if (data.url) window.location.href = data.url
+}
+
+async function handleLogOut() {
+  await supabase.auth.signOut()
+  window.location.href = '/index.html'
+}
+
+// Expose functions called from HTML attributes (needed in module scope)
+window.switchTab = switchTab
+window.setEmailMode = setEmailMode
+window.openProfileModal = openProfileModal
+window.closeProfileModal = closeProfileModal
+window.saveProfile = saveProfile
+window.togglePDiv = togglePDiv
+window.exportData = exportData
+window.importData = importData
+window.setDivFilter = setDivFilter
+window.setStateFilter = setStateFilter
+window.loadMore = loadMore
+window.openCoachSheet = openCoachSheet
+window.closeCoachSheet = closeCoachSheet
+window.emailThisCoach = emailThisCoach
+window.setEmailType = setEmailType
+window.handleSchoolAutocomplete = handleSchoolAutocomplete
+window.selectSchool = selectSchool
+window.autofillFromProfile = autofillFromProfile
+window.generateEmail = generateEmail
+window.regenerateEmail = regenerateEmail
+window.copyGeneratedEmail = copyGeneratedEmail
+window.sendViaGmail = sendViaGmail
+window.quickCopyEmail = quickCopyEmail
+window.toggleApDiv = toggleApDiv
+window.toggleApState = toggleApState
+window.runAutopilot = runAutopilot
+window.copyApEmail = copyApEmail
+window.sendApViaGmail = sendApViaGmail
+window.dismissApCard = dismissApCard
+window.debounceSearch = debounceSearch
+window.startCheckout = startCheckout
+window.openBillingPortal = openBillingPortal
+window.handleLogOut = handleLogOut
 </script>
 </body>
 </html>

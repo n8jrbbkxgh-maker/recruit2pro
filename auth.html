@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>RecruitPro — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#0a1628;--gold:#e8a020;--white:#fff;--off:#f8f9fc;--border:#e2e8f0;--text3:#64748b;--red:#ef4444;--green:#22c55e;--r:12px}
+html,body{height:100%;background:var(--navy);font-family:'Inter',sans-serif}
+.page{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px}
+.logo{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:var(--white);letter-spacing:.04em;margin-bottom:8px}
+.logo em{color:var(--gold);font-style:normal}
+.tagline{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:32px;text-align:center}
+.card{background:var(--white);border-radius:var(--r);padding:28px 24px;width:100%;max-width:400px}
+.card-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--navy);margin-bottom:4px}
+.card-sub{font-size:13px;color:var(--text3);margin-bottom:20px}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.form-input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:11px 12px;font-size:16px;color:var(--navy);outline:none;font-family:'Inter',sans-serif;transition:border-color .15s}
+.form-input:focus{border-color:var(--navy)}
+.btn{width:100%;height:48px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;border:none;transition:opacity .15s;margin-top:4px;font-family:'Inter',sans-serif}
+.btn-gold{background:var(--gold);color:var(--navy)}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--navy);margin-top:8px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.toggle-link{text-align:center;margin-top:16px;font-size:13px;color:var(--text3)}
+.toggle-link a{color:var(--navy);font-weight:600;cursor:pointer;text-decoration:underline}
+.alert{padding:10px 12px;border-radius:8px;font-size:13px;font-weight:500;margin-bottom:14px;display:none}
+.alert-error{background:#fef2f2;color:var(--red);border:1px solid #fecaca}
+.alert-success{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0}
+.spinner{width:16px;height:16px;border:2px solid rgba(10,22,40,.3);border-top-color:var(--navy);border-radius:50%;animation:spin .6s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="logo">RECRUIT<em>PRO</em></div>
+  <div class="tagline">Find coaches. Write emails. Get recruited.</div>
+
+  <div class="card">
+    <!-- ALERT -->
+    <div class="alert alert-error" id="alert-error"></div>
+    <div class="alert alert-success" id="alert-success"></div>
+
+    <!-- SIGN UP PANEL -->
+    <div id="panel-signup">
+      <div class="card-title">Create Account</div>
+      <div class="card-sub">Start your baseball recruiting journey.</div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="signup-email" placeholder="jake@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="signup-password" placeholder="8+ characters" autocomplete="new-password">
+      </div>
+      <button class="btn btn-gold" id="signup-btn" onclick="handleSignUp()">Create Account</button>
+      <div class="toggle-link">Already have an account? <a onclick="showPanel('login')">Log in</a></div>
+    </div>
+
+    <!-- LOGIN PANEL -->
+    <div id="panel-login" style="display:none">
+      <div class="card-title">Welcome Back</div>
+      <div class="card-sub">Log in to your RecruitPro account.</div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="login-email" placeholder="jake@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="login-password" placeholder="Password" autocomplete="current-password">
+      </div>
+      <button class="btn btn-gold" id="login-btn" onclick="handleLogin()">Log In</button>
+      <button class="btn btn-ghost" onclick="showPanel('reset')">Forgot password?</button>
+      <div class="toggle-link">New here? <a onclick="showPanel('signup')">Create account</a></div>
+    </div>
+
+    <!-- RESET PANEL -->
+    <div id="panel-reset" style="display:none">
+      <div class="card-title">Reset Password</div>
+      <div class="card-sub">We'll email you a reset link.</div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="reset-email" placeholder="jake@email.com" autocomplete="email">
+      </div>
+      <button class="btn btn-gold" id="reset-btn" onclick="handleReset()">Send Reset Link</button>
+      <div class="toggle-link"><a onclick="showPanel('login')">← Back to login</a></div>
+    </div>
+
+    <!-- NEW PASSWORD PANEL (after clicking reset link) -->
+    <div id="panel-newpassword" style="display:none">
+      <div class="card-title">Set New Password</div>
+      <div class="card-sub">Choose a new password for your account.</div>
+      <div class="form-group">
+        <label class="form-label">New Password</label>
+        <input class="form-input" type="password" id="new-password" placeholder="8+ characters" autocomplete="new-password">
+      </div>
+      <button class="btn btn-gold" id="newpw-btn" onclick="handleNewPassword()">Update Password</button>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '/js/config.js'
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+// ── Panel switching ──────────────────────────────────────
+window.showPanel = (name) => {
+  ['signup','login','reset','newpassword'].forEach(p => {
+    document.getElementById('panel-' + p).style.display = p === name ? 'block' : 'none'
+  })
+  clearAlerts()
+}
+
+function showError(msg) {
+  const el = document.getElementById('alert-error')
+  el.textContent = msg; el.style.display = 'block'
+  document.getElementById('alert-success').style.display = 'none'
+}
+function showSuccess(msg) {
+  const el = document.getElementById('alert-success')
+  el.textContent = msg; el.style.display = 'block'
+  document.getElementById('alert-error').style.display = 'none'
+}
+function clearAlerts() {
+  document.getElementById('alert-error').style.display = 'none'
+  document.getElementById('alert-success').style.display = 'none'
+}
+function setLoading(btnId, loading) {
+  const btn = document.getElementById(btnId)
+  btn.disabled = loading
+  btn.innerHTML = loading ? '<span class="spinner"></span> Please wait…' : btn.dataset.label
+}
+
+// Store original button labels
+document.querySelectorAll('.btn').forEach(b => b.dataset.label = b.textContent)
+
+// ── Sign Up ──────────────────────────────────────────────
+window.handleSignUp = async () => {
+  const email = document.getElementById('signup-email').value.trim()
+  const password = document.getElementById('signup-password').value
+  if (!email || !password) return showError('Please fill in all fields')
+  if (password.length < 8) return showError('Password must be at least 8 characters')
+  setLoading('signup-btn', true)
+  const { error } = await supabase.auth.signUp({
+    email, password,
+    options: { emailRedirectTo: window.location.origin + '/auth.html' }
+  })
+  setLoading('signup-btn', false)
+  if (error) return showError(error.message)
+  showSuccess('Check your email to confirm your account, then log in below.')
+  showPanel('login')
+}
+
+// ── Log In ───────────────────────────────────────────────
+window.handleLogin = async () => {
+  const email = document.getElementById('login-email').value.trim()
+  const password = document.getElementById('login-password').value
+  if (!email || !password) return showError('Please fill in all fields')
+  setLoading('login-btn', true)
+  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  setLoading('login-btn', false)
+  if (error) return showError(error.message)
+  window.location.href = '/app.html'
+}
+
+// ── Reset Password ───────────────────────────────────────
+window.handleReset = async () => {
+  const email = document.getElementById('reset-email').value.trim()
+  if (!email) return showError('Enter your email address')
+  setLoading('reset-btn', true)
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/auth.html'
+  })
+  setLoading('reset-btn', false)
+  if (error) return showError(error.message)
+  showSuccess('Reset link sent. Check your email.')
+}
+
+// ── New Password ─────────────────────────────────────────
+window.handleNewPassword = async () => {
+  const password = document.getElementById('new-password').value
+  if (password.length < 8) return showError('Password must be at least 8 characters')
+  setLoading('newpw-btn', true)
+  const { error } = await supabase.auth.updateUser({ password })
+  setLoading('newpw-btn', false)
+  if (error) return showError(error.message)
+  showSuccess('Password updated! Redirecting…')
+  setTimeout(() => window.location.href = '/app.html', 1500)
+}
+
+// ── On Load: handle auth state ───────────────────────────
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    showPanel('newpassword')
+    return
+  }
+  if (event === 'SIGNED_IN' && session) {
+    // Already logged in — check for ?confirmed param
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('confirmed')) {
+      showSuccess('Email confirmed! You can now log in.')
+      showPanel('login')
+      return
+    }
+    // Otherwise redirect to app
+    window.location.href = '/app.html'
+    return
+  }
+})
+
+// Check initial state
+const { data: { session } } = await supabase.auth.getSession()
+if (session) {
+  window.location.href = '/app.html'
+}
+
+// Show login panel if ?login param in URL
+const params = new URLSearchParams(window.location.search)
+if (params.get('login')) showPanel('login')
+</script>
+</body>
+</html>

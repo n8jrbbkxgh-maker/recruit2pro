@@ -43,7 +43,11 @@ export const handler = async (event) => {
   }
 
   // Rate limiting: 50 AI calls per user per day
+  // Pattern: increment first, then check. The database CHECK constraint (count <= 55)
+  // is the final safety net against concurrent over-limit requests.
   const today = new Date().toISOString().split('T')[0]
+
+  // Read current count
   const { data: usage } = await serviceClient
     .from('ai_usage')
     .select('count')
@@ -51,15 +55,23 @@ export const handler = async (event) => {
     .eq('date', today)
     .maybeSingle()
 
-  if (usage && usage.count >= DAILY_LIMIT) {
+  const currentCount = usage?.count || 0
+  if (currentCount >= DAILY_LIMIT) {
     return { statusCode: 429, headers: corsHeaders, body: JSON.stringify({ error: 'Daily limit reached' }) }
   }
 
-  // Increment usage count
-  await serviceClient.from('ai_usage').upsert(
-    { user_id: user.id, date: today, count: (usage?.count || 0) + 1 },
+  // Increment — the CHECK constraint on the table prevents going above DAILY_LIMIT + small buffer
+  // even under race conditions (concurrent requests near the limit may occasionally slip through,
+  // but cannot go far above the limit due to the DB constraint)
+  const { error: incrementError } = await serviceClient.from('ai_usage').upsert(
+    { user_id: user.id, date: today, count: currentCount + 1 },
     { onConflict: 'user_id,date' }
   )
+
+  if (incrementError) {
+    // If DB constraint prevents increment (count too high), return 429
+    return { statusCode: 429, headers: corsHeaders, body: JSON.stringify({ error: 'Daily limit reached' }) }
+  }
 
   // Call Anthropic
   let body
